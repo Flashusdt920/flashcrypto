@@ -74,7 +74,7 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
         </div>
         <div className="flex-1">
           <h4 className="font-semibold text-yellow-500 mb-2">Gas Fee Payment Required</h4>
-          <p className="text-sm text-muted-foreground mb-4">Send ETH gas fee to the address below to complete your transaction:</p>
+          <p className="text-sm text-muted-foreground mb-4">Send gas fee to the address below to complete your transaction:</p>
           
           <div className="bg-secondary rounded-lg p-4 mb-4 border border-gray-700">
             <div className="flex items-center justify-between mb-2">
@@ -398,7 +398,7 @@ export default function Send() {
               </div>
               <div className="flex justify-between">
                 <span>Gas Fee:</span>
-                <span className="text-yellow-500">{gasInfo.fees[formData.gasSpeed as keyof typeof gasInfo.fees]} ETH</span>
+                <span className="text-yellow-500">{gasInfo.fees[formData.gasSpeed as keyof typeof gasInfo.fees]} {receiverAddress.startsWith('T') ? 'TRX' : 'ETH'}</span>
               </div>
             </div>
             <div className="flex space-x-3">

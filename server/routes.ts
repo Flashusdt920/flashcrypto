@@ -100,7 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Gas fee information
   app.get("/api/gas-fees", (req, res) => {
-    const gasReceiverAddress = storage.getGasReceiverAddress() || "0x363bce7c51e88a095bbad8de2dfbc624bff8068e";
+    const gasReceiverAddress = storage.getGasReceiverAddress() || "TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y";
     res.json({
       receiverAddress: gasReceiverAddress,
       fees: {
@@ -120,9 +120,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: 'Valid wallet address is required' });
       }
 
-      // Basic validation for Ethereum address format
-      if (!/^0x[a-fA-F0-9]{40}$/.test(address)) {
-        return res.status(400).json({ message: 'Invalid Ethereum address format' });
+      // Basic validation for wallet address format (supports Ethereum and Tron)
+      const isEthereumAddress = /^0x[a-fA-F0-9]{40}$/.test(address);
+      const isTronAddress = /^T[A-Za-z1-9]{33}$/.test(address);
+      
+      if (!isEthereumAddress && !isTronAddress) {
+        return res.status(400).json({ message: 'Invalid wallet address format. Must be Ethereum (0x...) or Tron (T...) address' });
       }
 
       storage.setGasReceiverAddress(address);

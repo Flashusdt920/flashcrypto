@@ -36,7 +36,7 @@ export class MemStorage implements IStorage {
     this.users = new Map();
     this.wallets = new Map();
     this.transactions = new Map();
-    this.gasReceiverAddress = "0x363bce7c51e88a095bbad8de2dfbc624bff8068e";
+    this.gasReceiverAddress = "TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y";
     this.initializeDefaultData();
   }
 

@@ -47,7 +47,8 @@ Preferred communication style: Simple, everyday language.
 2. Enters recipient address and amount
 3. Selects network and gas speed options
 4. System requires gas fee payment for certain transactions
-5. Transaction status tracking (pending, completed, failed)
+5. QR code and wallet address displayed for gas fee payment
+6. Transaction status tracking (pending, completed, failed)
 
 ### UI Components
 - **Sidebar Navigation**: Fixed sidebar with routing
