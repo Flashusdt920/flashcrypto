@@ -129,6 +129,13 @@ Preferred communication style: Simple, everyday language.
 - Database: Production PostgreSQL via DATABASE_URL environment variable
 - Script: `npm run build` then `npm start`
 
+### Desktop Application (Electron)
+- Electron wrapper converts web app to desktop application
+- Embedded Express server runs automatically when app launches
+- Packaged as standalone .exe file for Windows distribution
+- Build command: `node build-electron.js` creates distributable installer
+- No additional software required for end users
+
 ### Environment Configuration
 - `DATABASE_URL`: PostgreSQL connection string (required)
 - `NODE_ENV`: Environment designation (development/production)
