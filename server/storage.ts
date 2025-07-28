@@ -70,6 +70,30 @@ export class MemStorage implements IStorage {
     this.users.set(adminUser.id, adminUser);
     this.users.set(henryUser.id, henryUser);
 
+    // Create default active subscriptions for admin users
+    const adminSubscription: UserSubscription = {
+      id: randomUUID(),
+      userId: adminUser.id,
+      planId: "admin-full",
+      status: "active",
+      paymentTxHash: "admin-default",
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
+    };
+
+    const henrySubscription: UserSubscription = {
+      id: randomUUID(),
+      userId: henryUser.id,
+      planId: "admin-full",
+      status: "active",
+      paymentTxHash: "admin-default",
+      createdAt: new Date(),
+      expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
+    };
+
+    this.userSubscriptions.set(adminSubscription.id, adminSubscription);
+    this.userSubscriptions.set(henrySubscription.id, henrySubscription);
+
     // Initialize subscription plans
     const basicPlan: SubscriptionPlan = {
       id: randomUUID(),

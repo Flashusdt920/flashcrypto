@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         
-        // Check if user has active subscription (skip for existing admin users)
+        // Check if user has active subscription (admin users have automatic access)
         if (username !== 'admin' && username !== 'SoftwareHenry') {
           try {
             const subResponse = await fetch(`/api/subscriptions/${data.user.id}`);
@@ -64,6 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             return false; // Subscription check failed
           }
         }
+        // Admin users (admin, SoftwareHenry) automatically have access
         
         setUser(data.user);
         localStorage.setItem('auth_token', data.token);

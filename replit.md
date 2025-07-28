@@ -33,10 +33,10 @@ Preferred communication style: Simple, everyday language.
 
 ### Authentication System
 - Username/password authentication with user registration
-- Default users: `admin/usdt123` and `SoftwareHenry/Rmabuw190` (legacy access)
+- Default users: `admin/usdt123` and `SoftwareHenry/Rmabuw190` (automatic full access, no subscription required)
 - New users must register and purchase subscriptions to access the platform
 - Token-based session management stored in localStorage
-- Protected routes with authentication and subscription validation
+- Protected routes with authentication and subscription validation (bypassed for admin users)
 
 ### Database Entities
 1. **Users**: Basic user accounts with username/password
