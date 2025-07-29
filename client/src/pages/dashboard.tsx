@@ -33,7 +33,7 @@ export default function Dashboard() {
     },
     {
       icon: '⚡',
-      title: 'Gas Fees Paid',
+      title: 'Flash Fees Paid',
       value: '0.024 ETH',
       change: '-2.1%',
       positive: false,

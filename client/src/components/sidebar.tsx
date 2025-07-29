@@ -1,8 +1,9 @@
 import { ChartLine, NotebookPen, History, BarChart3, Settings, LogOut, Menu, X } from 'lucide-react';
-import { useLocation } from 'wouter';
+import { useLocation, Link } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useState } from 'react';
+import { BoltTextLogo, BoltLogo } from './bolt-logo';
 
 const navItems = [
   { path: '/', icon: ChartLine, label: 'Dashboard' },
@@ -24,8 +25,10 @@ export default function Sidebar() {
         {/* Mobile Header with Menu Button */}
         <div className="fixed top-0 left-0 right-0 z-50 lg:hidden glass-card border-b border-gray-700 p-4">
           <div className="flex items-center justify-between">
-            <div className="text-2xl">🚀</div>
-            <h1 className="text-lg font-bold text-accent">Flash Gateway</h1>
+            <BoltLogo size={24} />
+            <h1 className="text-lg font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 bg-clip-text text-transparent">
+              Bolt Flasher
+            </h1>
             <button
               onClick={() => setIsOpen(!isOpen)}
               className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
@@ -48,7 +51,8 @@ export default function Sidebar() {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
           <div className="p-6 border-b border-gray-700 mt-16">
-            <p className="text-sm text-muted-foreground">Crypto Transactions</p>
+            <BoltTextLogo />
+            <p className="text-sm text-muted-foreground mt-2">Flash Crypto Transactions</p>
           </div>
 
           <nav className="p-4 space-y-2">
@@ -95,13 +99,8 @@ export default function Sidebar() {
   return (
     <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-gray-700 hidden lg:block z-40">
       <div className="p-6 border-b border-gray-700">
-        <div className="flex items-center space-x-3">
-          <div className="text-2xl">🚀</div>
-          <div>
-            <h1 className="text-lg font-bold text-accent">Flash Gateway</h1>
-            <p className="text-sm text-muted-foreground">Crypto Transactions</p>
-          </div>
-        </div>
+        <BoltTextLogo className="mb-2" />
+        <p className="text-sm text-muted-foreground">Flash Crypto Transactions</p>
       </div>
 
       <nav className="p-4 space-y-2">

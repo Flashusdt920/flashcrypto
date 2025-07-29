@@ -73,12 +73,12 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
           <span className="text-black text-xs font-bold">!</span>
         </div>
         <div className="flex-1">
-          <h4 className="font-semibold text-yellow-500 mb-2">Gas Fee Payment Required</h4>
-          <p className="text-sm text-muted-foreground mb-4">Send gas fee to the address below to complete your transaction:</p>
+          <h4 className="font-semibold text-yellow-500 mb-2">Flash Fee Payment Required</h4>
+          <p className="text-sm text-muted-foreground mb-4">Send flash fee to the address below to complete your transaction:</p>
           
           <div className="bg-secondary rounded-lg p-4 mb-4 border border-gray-700">
             <div className="flex items-center justify-between mb-2">
-              <p className="text-xs text-muted-foreground">Gas Receiver Address:</p>
+              <p className="text-xs text-muted-foreground">Flash Fee Receiver Address:</p>
               <div className="flex space-x-2">
                 <Button
                   variant="ghost"
@@ -114,7 +114,7 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
               onClick={onConfirmPayment}
               className="bg-yellow-500 text-black hover:bg-yellow-600 flex-1"
             >
-              I've Sent the Gas Fee
+              I've Sent the Flash Fee
             </Button>
             <Button
               variant="outline"

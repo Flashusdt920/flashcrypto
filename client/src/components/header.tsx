@@ -1,6 +1,6 @@
 import { useAuth } from '@/hooks/use-auth';
-
 import { useIsMobile } from '@/hooks/use-mobile';
+import { BoltLogo } from './bolt-logo';
 
 export default function Header() {
   const { user } = useAuth();
@@ -11,10 +11,11 @@ export default function Header() {
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <h2 className="text-lg sm:text-xl font-semibold truncate">Dashboard</h2>
-          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Welcome back to your crypto gateway</p>
+          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Welcome back to Bolt Crypto Flasher</p>
         </div>
         
         <div className="flex items-center space-x-2 sm:space-x-4">
+          <BoltLogo size={20} className="hidden sm:block" />
           <div className="flex items-center space-x-1 sm:space-x-2">
             <div className="w-2 h-2 bg-green-500 rounded-full pulse-animation"></div>
             <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Online</span>

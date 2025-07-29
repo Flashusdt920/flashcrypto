@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import Register from './register';
+import { BoltTextLogo } from '@/components/bolt-logo';
 
 export default function Login() {
   const [username, setUsername] = useState('');
@@ -73,8 +74,10 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-black bg-opacity-50 border border-purple-500 shadow-2xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-white">Crypto Gateway</CardTitle>
-          <p className="text-gray-300 mt-2">Professional Multi-Chain Wallet Platform</p>
+          <div className="flex justify-center mb-4">
+            <BoltTextLogo />
+          </div>
+          <p className="text-gray-300 mt-2">Professional Flash Transaction Platform</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

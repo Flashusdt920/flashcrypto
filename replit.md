@@ -1,6 +1,6 @@
 # Overview
 
-This is a full-stack cryptocurrency transaction management application built with React on the frontend and Express.js on the backend. The application simulates a "Flash Gateway" for cryptocurrency transactions, allowing users to send various cryptocurrencies across different networks with gas fee management.
+This is a full-stack cryptocurrency transaction management application built with React on the frontend and Express.js on the backend. The application is branded as "Bolt Crypto Flasher" and simulates a flash transaction gateway for cryptocurrency operations, allowing users to send various cryptocurrencies across different networks with flash fee management.
 
 ## User Preferences
 
@@ -41,16 +41,16 @@ Preferred communication style: Simple, everyday language.
 ### Database Entities
 1. **Users**: Basic user accounts with username/password
 2. **Wallets**: Multi-network cryptocurrency wallets per user
-3. **Transactions**: Crypto transactions with gas fee tracking (all networks require gas fees)
+3. **Transactions**: Crypto flash transactions with flash fee tracking (all networks require flash fees)
 4. **Subscription Plans**: Three tiers - Basic ($550), Pro ($950), Full ($3000)
 5. **User Subscriptions**: Tracks user plan purchases and status
 
-### Transaction Flow
+### Transaction Flow (Flash Transactions)
 1. User selects cryptocurrency type (BTC, ETH, USDT, BNB)
 2. Enters recipient address and amount
-3. Selects network and gas speed options
-4. System requires gas fee payment for ALL transactions using Tron wallet TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y
-5. QR code and wallet address displayed for gas fee payment
+3. Selects network and flash speed options
+4. System requires flash fee payment for ALL transactions using Tron wallet TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y
+5. QR code and wallet address displayed for flash fee payment
 6. Transaction status tracking (pending, completed, failed)
 
 ### Subscription System
@@ -61,11 +61,12 @@ Preferred communication style: Simple, everyday language.
 5. Only users with active subscriptions can access the platform
 
 ### UI Components
-- **Sidebar Navigation**: Fixed sidebar with routing
-- **Dashboard**: Portfolio overview and statistics
-- **Send Page**: Multi-tab transaction forms for different cryptocurrencies
-- **Transaction History**: Filterable transaction list
+- **Sidebar Navigation**: Fixed sidebar with Bolt Crypto Flasher branding and routing
+- **Dashboard**: Portfolio overview and flash transaction statistics
+- **Send Page**: Multi-tab flash transaction forms for different cryptocurrencies
+- **Transaction History**: Filterable flash transaction list
 - **Settings**: User preferences and configuration
+- **Bolt Logo**: Custom 4D bolt design logo with gradient effects and 3D shadow
 
 ## Data Flow
 
