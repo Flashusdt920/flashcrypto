@@ -13,20 +13,20 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
-  
+
   // Wallet operations
   getWalletsByUserId(userId: string): Promise<Wallet[]>;
   createWallet(wallet: InsertWallet): Promise<Wallet>;
-  
+
   // Transaction operations
   getTransactionsByUserId(userId: string): Promise<Transaction[]>;
   createTransaction(transaction: InsertTransaction): Promise<Transaction>;
   updateTransaction(id: string, updates: Partial<Transaction>): Promise<Transaction>;
-  
+
   // Gas receiver address operations
   getGasReceiverAddress(): string | undefined;
   setGasReceiverAddress(address: string): void;
-  
+
   // Subscription operations
   getSubscriptionPlans(): Promise<SubscriptionPlan[]>;
   createSubscription(subscription: InsertUserSubscription): Promise<UserSubscription>;
@@ -59,7 +59,7 @@ export class MemStorage implements IStorage {
       password: "usdt123",
       createdAt: new Date(),
     };
-    
+
     const henryUser: User = {
       id: randomUUID(),
       username: "SoftwareHenry",
@@ -164,14 +164,19 @@ export class MemStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
+    const user = Array.from(this.users.values()).find(
       (user) => user.username === username,
     );
+    console.log(`Looking for user: ${username}, found:`, user ? `${user.username} with password ${user.password}` : 'not found');
+    return user;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = randomUUID();
     const user: User = { ...insertUser, id, createdAt: new Date() };
+
+    console.log(`Creating user: ${user.username} with password: ${user.password}`);
+
     this.users.set(id, user);
     return user;
   }
