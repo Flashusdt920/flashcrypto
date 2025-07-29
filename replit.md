@@ -20,8 +20,8 @@ Preferred communication style: Simple, everyday language.
 - **Framework**: Express.js with TypeScript
 - **Runtime**: Node.js with ES modules
 - **Database**: PostgreSQL with Drizzle ORM
-- **Database Provider**: Neon Database (@neondatabase/serverless)
-- **Session Management**: Simplified token-based authentication
+- **Database Provider**: PostgreSQL with Neon Database (@neondatabase/serverless)
+- **Session Management**: Database-backed session storage with PostgreSQL
 - **API Pattern**: RESTful endpoints under `/api` prefix
 
 ### Database Architecture
@@ -143,8 +143,9 @@ Preferred communication style: Simple, everyday language.
 - Database provisioning handled automatically by Drizzle configuration
 
 ### Storage Strategy
-- **Development**: In-memory storage with default data seeding
-- **Production**: PostgreSQL database with Drizzle ORM migrations
-- **Session Management**: Simplified token-based (not production-ready)
+- **Database**: PostgreSQL database with Drizzle ORM for all environments
+- **Data Persistence**: All user data, transactions, and subscriptions stored in database
+- **Session Management**: Database-backed session storage with PostgreSQL
+- **Default Data**: Automatic seeding of admin users and subscription plans on startup
 
 The application follows a typical full-stack React pattern with shared TypeScript types between frontend and backend, ensuring type safety across the entire application stack.

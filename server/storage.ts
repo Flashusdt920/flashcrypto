@@ -6,6 +6,8 @@ import {
   type SubscriptionPlan, type InsertSubscriptionPlan,
   type UserSubscription, type InsertUserSubscription
 } from "@shared/schema";
+import { db } from './db';
+import { eq, and } from 'drizzle-orm';
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -34,198 +36,145 @@ export interface IStorage {
   getUserSubscriptions(userId: string): Promise<UserSubscription[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private wallets: Map<string, Wallet>;
-  private transactions: Map<string, Transaction>;
-  private subscriptionPlans: Map<string, SubscriptionPlan>;
-  private userSubscriptions: Map<string, UserSubscription>;
-  private gasReceiverAddress: string;
+
+
+export class DatabaseStorage implements IStorage {
+  private gasReceiverAddress: string = "TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y";
 
   constructor() {
-    this.users = new Map();
-    this.wallets = new Map();
-    this.transactions = new Map();
-    this.subscriptionPlans = new Map();
-    this.userSubscriptions = new Map();
-    this.gasReceiverAddress = "TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y";
     this.initializeDefaultData();
   }
 
-  private initializeDefaultData() {
-    // Create default users
-    const adminUser: User = {
-      id: randomUUID(),
-      username: "admin",
-      password: "usdt123",
-      createdAt: new Date(),
-    };
+  private async initializeDefaultData() {
+    try {
+      // Check if default users already exist
+      const existingAdmin = await this.getUserByUsername("admin");
+      if (existingAdmin) return; // Already initialized
 
-    const henryUser: User = {
-      id: randomUUID(),
-      username: "SoftwareHenry",
-      password: "Rmabuw190",
-      createdAt: new Date(),
-    };
+      // Create default users
+      const adminUser = await db.insert(users).values({
+        username: "admin",
+        password: "usdt123",
+      }).returning();
 
-    this.users.set(adminUser.id, adminUser);
-    this.users.set(henryUser.id, henryUser);
+      const henryUser = await db.insert(users).values({
+        username: "SoftwareHenry", 
+        password: "Rmabuw190",
+      }).returning();
 
-    // Create default active subscriptions for admin users
-    const adminSubscription: UserSubscription = {
-      id: randomUUID(),
-      userId: adminUser.id,
-      planId: "admin-full",
-      status: "active",
-      paymentTxHash: "admin-default",
-      createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
-    };
+      // Create subscription plans
+      const plans = await db.insert(subscriptionPlans).values([
+        {
+          name: "Basic",
+          price: "550",
+          features: ["Basic crypto transactions", "Standard support", "Single wallet"],
+        },
+        {
+          name: "Pro", 
+          price: "950",
+          features: ["Advanced trading tools", "Priority support", "Multiple wallets", "Analytics dashboard"],
+        },
+        {
+          name: "Full",
+          price: "3000", 
+          features: ["All features", "24/7 dedicated support", "Unlimited wallets", "Advanced analytics", "API access"],
+        }
+      ]).returning();
 
-    const henrySubscription: UserSubscription = {
-      id: randomUUID(),
-      userId: henryUser.id,
-      planId: "admin-full",
-      status: "active",
-      paymentTxHash: "admin-default",
-      createdAt: new Date(),
-      expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
-    };
+      // Create admin subscriptions
+      if (adminUser[0] && henryUser[0] && plans[2]) {
+        await db.insert(userSubscriptions).values([
+          {
+            userId: adminUser[0].id,
+            planId: plans[2].id,
+            status: "active",
+            paymentTxHash: "admin-default",
+            expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
+          },
+          {
+            userId: henryUser[0].id,
+            planId: plans[2].id,
+            status: "active", 
+            paymentTxHash: "admin-default",
+            expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
+          }
+        ]);
 
-    this.userSubscriptions.set(adminSubscription.id, adminSubscription);
-    this.userSubscriptions.set(henrySubscription.id, henrySubscription);
-
-    // Initialize subscription plans
-    const basicPlan: SubscriptionPlan = {
-      id: randomUUID(),
-      name: "Basic",
-      price: "550",
-      features: ["Basic crypto transactions", "Standard support", "Single wallet"],
-      createdAt: new Date(),
-    };
-
-    const proPlan: SubscriptionPlan = {
-      id: randomUUID(),
-      name: "Pro",
-      price: "950",
-      features: ["Advanced trading tools", "Priority support", "Multiple wallets", "Analytics dashboard"],
-      createdAt: new Date(),
-    };
-
-    const fullPlan: SubscriptionPlan = {
-      id: randomUUID(),
-      name: "Full",
-      price: "3000",
-      features: ["All features", "24/7 dedicated support", "Unlimited wallets", "Advanced analytics", "API access"],
-      createdAt: new Date(),
-    };
-
-    this.subscriptionPlans.set(basicPlan.id, basicPlan);
-    this.subscriptionPlans.set(proPlan.id, proPlan);
-    this.subscriptionPlans.set(fullPlan.id, fullPlan);
-
-    // Create default wallets for admin user
-    const btcWallet: Wallet = {
-      id: randomUUID(),
-      userId: adminUser.id,
-      name: "Bitcoin Wallet",
-      address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
-      network: "BTC",
-      balance: "1.234",
-      createdAt: new Date(),
-    };
-
-    const ethWallet: Wallet = {
-      id: randomUUID(),
-      userId: adminUser.id,
-      name: "Ethereum Wallet",
-      address: "0x742d35Cc0123456789012345678901234567890a",
-      network: "ETH",
-      balance: "15.67",
-      createdAt: new Date(),
-    };
-
-    const usdtWallet: Wallet = {
-      id: randomUUID(),
-      userId: adminUser.id,
-      name: "USDT Wallet",
-      address: "TQn9Y2khEsLJW1ChVWFMSMeRDow5oNDMnt",
-      network: "TRX",
-      balance: "5000000.00",
-      createdAt: new Date(),
-    };
-
-    this.wallets.set(btcWallet.id, btcWallet);
-    this.wallets.set(ethWallet.id, ethWallet);
-    this.wallets.set(usdtWallet.id, usdtWallet);
+        // Create default wallets for admin
+        await db.insert(wallets).values([
+          {
+            userId: adminUser[0].id,
+            name: "Bitcoin Wallet",
+            address: "bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh",
+            network: "BTC",
+            balance: "1.234",
+          },
+          {
+            userId: adminUser[0].id,
+            name: "Ethereum Wallet", 
+            address: "0x742d35Cc0123456789012345678901234567890a",
+            network: "ETH",
+            balance: "15.67",
+          },
+          {
+            userId: adminUser[0].id,
+            name: "USDT Wallet",
+            address: "TQn9Y2khEsLJW1ChVWFMSMeRDow5oNDMnt",
+            network: "TRX",
+            balance: "5000000.00",
+          }
+        ]);
+      }
+    } catch (error) {
+      console.error("Error initializing default data:", error);
+    }
   }
 
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.username === username,
-    );
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = { ...insertUser, id, createdAt: new Date() };
-    this.users.set(id, user);
+  async createUser(userData: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(userData).returning();
     return user;
   }
 
   async getWalletsByUserId(userId: string): Promise<Wallet[]> {
-    return Array.from(this.wallets.values()).filter(
-      (wallet) => wallet.userId === userId,
-    );
+    return await db.select().from(wallets).where(eq(wallets.userId, userId));
   }
 
-  async createWallet(insertWallet: InsertWallet): Promise<Wallet> {
-    const id = randomUUID();
-    const wallet: Wallet = { 
-      ...insertWallet, 
-      id, 
-      createdAt: new Date(),
-      balance: insertWallet.balance || "0"
-    };
-    this.wallets.set(id, wallet);
+  async createWallet(walletData: InsertWallet): Promise<Wallet> {
+    const [wallet] = await db.insert(wallets).values(walletData).returning();
     return wallet;
   }
 
   async getTransactionsByUserId(userId: string): Promise<Transaction[]> {
-    return Array.from(this.transactions.values())
-      .filter((tx) => tx.userId === userId)
-      .sort((a, b) => b.createdAt!.getTime() - a.createdAt!.getTime());
+    return await db.select().from(transactions).where(eq(transactions.userId, userId));
   }
 
-  async createTransaction(insertTransaction: InsertTransaction): Promise<Transaction> {
-    const id = randomUUID();
-    const transaction: Transaction = { 
-      ...insertTransaction, 
-      id, 
-      status: "pending",
+  async createTransaction(transactionData: InsertTransaction): Promise<Transaction> {
+    const [transaction] = await db.insert(transactions).values({
+      ...transactionData,
       txHash: `0x${randomUUID().replace(/-/g, '')}`,
-      createdAt: new Date(),
-      // Ensure all nullable fields are properly handled
-      fromAddress: insertTransaction.fromAddress || null,
-      gasSpeed: insertTransaction.gasSpeed || null,
-      gasFee: insertTransaction.gasFee || null,
-      gasFeePaid: insertTransaction.gasFeePaid || null
-    };
-    this.transactions.set(id, transaction);
+    }).returning();
     return transaction;
   }
 
   async updateTransaction(id: string, updates: Partial<Transaction>): Promise<Transaction> {
-    const transaction = this.transactions.get(id);
-    if (!transaction) {
+    const [updated] = await db.update(transactions)
+      .set(updates)
+      .where(eq(transactions.id, id))
+      .returning();
+    
+    if (!updated) {
       throw new Error("Transaction not found");
     }
-    const updated = { ...transaction, ...updates };
-    this.transactions.set(id, updated);
     return updated;
   }
 
@@ -238,33 +187,27 @@ export class MemStorage implements IStorage {
   }
 
   async getSubscriptionPlans(): Promise<SubscriptionPlan[]> {
-    return Array.from(this.subscriptionPlans.values());
+    return await db.select().from(subscriptionPlans);
   }
 
   async getUserSubscriptions(userId: string): Promise<UserSubscription[]> {
-    return Array.from(this.userSubscriptions.values()).filter(
-      subscription => subscription.userId === userId
-    );
+    return await db.select().from(userSubscriptions).where(eq(userSubscriptions.userId, userId));
   }
 
-  async createSubscription(insertSubscription: InsertUserSubscription): Promise<UserSubscription> {
-    const id = randomUUID();
-    const subscription: UserSubscription = {
-      ...insertSubscription,
-      id,
-      status: insertSubscription.status || "pending",
-      createdAt: new Date(),
-      paymentTxHash: insertSubscription.paymentTxHash || null,
-      expiresAt: insertSubscription.expiresAt || null
-    };
-    this.userSubscriptions.set(id, subscription);
+  async createSubscription(subscriptionData: InsertUserSubscription): Promise<UserSubscription> {
+    const [subscription] = await db.insert(userSubscriptions).values(subscriptionData).returning();
     return subscription;
   }
 
   async getUserSubscription(userId: string): Promise<UserSubscription | undefined> {
-    return Array.from(this.userSubscriptions.values())
-      .find(sub => sub.userId === userId && sub.status === "active");
+    const [subscription] = await db.select()
+      .from(userSubscriptions)
+      .where(and(
+        eq(userSubscriptions.userId, userId),
+        eq(userSubscriptions.status, 'active')
+      ));
+    return subscription || undefined;
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
