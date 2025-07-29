@@ -207,7 +207,12 @@ export class MemStorage implements IStorage {
       id, 
       status: "pending",
       txHash: `0x${randomUUID().replace(/-/g, '')}`,
-      createdAt: new Date() 
+      createdAt: new Date(),
+      // Ensure all nullable fields are properly handled
+      fromAddress: insertTransaction.fromAddress || null,
+      gasSpeed: insertTransaction.gasSpeed || null,
+      gasFee: insertTransaction.gasFee || null,
+      gasFeePaid: insertTransaction.gasFeePaid || null
     };
     this.transactions.set(id, transaction);
     return transaction;
@@ -240,7 +245,10 @@ export class MemStorage implements IStorage {
     const subscription: UserSubscription = {
       ...insertSubscription,
       id,
+      status: insertSubscription.status || "pending",
       createdAt: new Date(),
+      paymentTxHash: insertSubscription.paymentTxHash || null,
+      expiresAt: insertSubscription.expiresAt || null
     };
     this.userSubscriptions.set(id, subscription);
     return subscription;

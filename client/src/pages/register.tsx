@@ -22,13 +22,9 @@ export default function Register({ onRegistrationSuccess, onBackToLogin }: Regis
 
   const registerMutation = useMutation({
     mutationFn: async (data: { username: string; password: string }) => {
-      return await apiRequest('/api/auth/register', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return await apiRequest('/api/auth/register', 'POST', data);
     },
-    onSuccess: (data) => {
+    onSuccess: (data: any) => {
       toast({
         title: "Registration Successful",
         description: "Your account has been created. Please select a subscription plan.",
