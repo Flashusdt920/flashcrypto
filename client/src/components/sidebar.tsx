@@ -1,13 +1,8 @@
-import { Link, useLocation } from 'wouter';
+import { ChartLine, NotebookPen, History, BarChart3, Settings, LogOut, Menu, X } from 'lucide-react';
+import { useLocation } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
-import { 
-  ChartLine, 
-  NotebookPen, 
-  History, 
-  BarChart3, 
-  Settings, 
-  LogOut 
-} from 'lucide-react';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { useState } from 'react';
 
 const navItems = [
   { path: '/', icon: ChartLine, label: 'Dashboard' },
@@ -20,9 +15,85 @@ const navItems = [
 export default function Sidebar() {
   const [location] = useLocation();
   const { logout } = useAuth();
+  const isMobile = useIsMobile();
+  const [isOpen, setIsOpen] = useState(false);
 
+  if (isMobile) {
+    return (
+      <>
+        {/* Mobile Header with Menu Button */}
+        <div className="fixed top-0 left-0 right-0 z-50 lg:hidden glass-card border-b border-gray-700 p-4">
+          <div className="flex items-center justify-between">
+            <div className="text-2xl">🚀</div>
+            <h1 className="text-lg font-bold text-accent">Flash Gateway</h1>
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
+        </div>
+
+        {/* Mobile Overlay */}
+        {isOpen && (
+          <div 
+            className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+            onClick={() => setIsOpen(false)}
+          />
+        )}
+
+        {/* Mobile Sidebar */}
+        <div className={`fixed left-0 top-0 h-full w-64 glass-card border-r border-gray-700 z-50 transform transition-transform duration-300 lg:hidden ${
+          isOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          <div className="p-6 border-b border-gray-700 mt-16">
+            <p className="text-sm text-muted-foreground">Crypto Transactions</p>
+          </div>
+
+          <nav className="p-4 space-y-2">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location === item.path;
+
+              return (
+                <Link
+                  key={item.path}
+                  href={item.path}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <button
+                    className={`sidebar-item flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 w-full text-left ${
+                      isActive 
+                        ? 'bg-accent bg-opacity-20 text-accent' 
+                        : 'text-white hover:text-accent'
+                    }`}
+                  >
+                    <Icon className={`w-5 h-5 ${isActive ? 'text-accent' : 'text-inherit'}`} />
+                    <span>{item.label}</span>
+                  </button>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
+            <button
+              onClick={logout}
+              className="w-full flex items-center justify-center space-x-2 text-red-400 hover:bg-red-900 hover:bg-opacity-20 p-3 rounded-lg transition-all"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Logout</span>
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // Desktop Sidebar
   return (
-    <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-gray-700 z-40">
+    <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-gray-700 hidden lg:block z-40">
       <div className="p-6 border-b border-gray-700">
         <div className="flex items-center space-x-3">
           <div className="text-2xl">🚀</div>
@@ -32,12 +103,12 @@ export default function Sidebar() {
           </div>
         </div>
       </div>
-      
+
       <nav className="p-4 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.path;
-          
+
           return (
             <Link key={item.path} href={item.path}>
               <button
@@ -52,7 +123,7 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      
+
       <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
         <button
           onClick={logout}

@@ -48,9 +48,9 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-primary text-white">
       <Sidebar />
-      <div className="ml-64">
+      <div className="lg:ml-64 ml-0">
         <Header />
-        <main className="p-6">
+        <main className="p-3 sm:p-6">
           <Switch>
             <Route path="/" component={Dashboard} />
             <Route path="/send" component={Send} />
