@@ -22,7 +22,7 @@ export default function Register({ onRegistrationSuccess, onBackToLogin }: Regis
 
   const registerMutation = useMutation({
     mutationFn: async (data: { username: string; password: string }) => {
-      return await apiRequest('/api/auth/register', 'POST', data);
+      return await apiRequest('POST', '/api/auth/register', data);
     },
     onSuccess: (data: any) => {
       toast({
