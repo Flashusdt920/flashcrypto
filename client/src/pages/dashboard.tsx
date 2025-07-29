@@ -16,26 +16,48 @@ export default function Dashboard() {
     enabled: !!user?.id,
   });
 
+  // Calculate available balance based on transactions
+  const calculateBalance = () => {
+    const initialBalance = 5000000; // Starting balance
+    const totalSent = (transactions as any[]).reduce((sum: number, tx: any) => {
+      if (tx.status === 'completed') {
+        return sum + parseFloat(tx.amount || 0);
+      }
+      return sum;
+    }, 0);
+    return initialBalance - totalSent;
+  };
+
+  // Calculate total flash fees paid
+  const calculateFlashFeesPaid = () => {
+    const feePerTransaction = 0.019; // ETH per transaction
+    const completedTransactions = (transactions as any[]).filter((tx: any) => tx.status === 'completed' && tx.gasFeePaid);
+    return (completedTransactions.length * feePerTransaction).toFixed(3);
+  };
+
+  const currentBalance = calculateBalance();
+  const flashFeesPaid = calculateFlashFeesPaid();
+
   const statsCards = [
     {
       icon: '💰',
-      title: 'Total Balance',
-      value: '$5,000,000',
-      change: '+12.5%',
-      positive: true,
+      title: 'Available Balance',
+      value: `$${currentBalance.toLocaleString()}`,
+      change: (transactions as any[]).length > 0 ? '-' + (5000000 - currentBalance).toLocaleString() : '+0',
+      positive: currentBalance > 0,
     },
     {
       icon: '📈',
-      title: 'Active Transactions',
-      value: transactions.length.toString(),
-      change: '+8.2%',
+      title: 'Total Transactions',
+      value: (transactions as any[]).length.toString(),
+      change: (transactions as any[]).filter((tx: any) => tx.status === 'completed').length + ' completed',
       positive: true,
     },
     {
       icon: '⚡',
       title: 'Flash Fees Paid',
-      value: '0.024 ETH',
-      change: '-2.1%',
+      value: `${flashFeesPaid} ETH`,
+      change: `${(transactions as any[]).filter((tx: any) => tx.gasFeePaid).length} payments`,
       positive: false,
     },
     {
@@ -68,8 +90,8 @@ export default function Dashboard() {
               </div>
               <h3 className="text-sm sm:text-lg font-semibold mb-1 leading-tight">{card.title}</h3>
               <p className={`text-lg sm:text-2xl font-bold ${
-                card.title === 'Total Balance' ? 'text-green-500' : 
-                card.title === 'Active Transactions' ? 'text-accent' :
+                card.title === 'Available Balance' ? 'text-green-500' : 
+                card.title === 'Total Transactions' ? 'text-accent' :
                 card.title === 'Flash Fees Paid' ? 'text-yellow-500' : 'text-white'
               }`}>
                 {card.value}
@@ -101,8 +123,8 @@ export default function Dashboard() {
                       </div>
                     ))}
                   </>
-                ) : transactions.length > 0 ? (
-                  transactions.slice(0, 3).map((tx: any) => (
+                ) : (transactions as any[]).length > 0 ? (
+                  (transactions as any[]).slice(0, 3).map((tx: any) => (
                     <div key={tx.id} className="transaction-card flex items-center justify-between p-4 bg-secondary rounded-lg border border-gray-700">
                       <div className="flex items-center space-x-4">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${

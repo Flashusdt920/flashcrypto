@@ -1,10 +1,28 @@
 import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useQuery } from '@tanstack/react-query';
 import { BoltLogo } from './bolt-logo';
 
 export default function Header() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+
+  const { data: transactions = [] } = useQuery({
+    queryKey: ['/api/transactions', user?.id],
+    enabled: !!user?.id,
+  });
+
+  // Calculate available balance based on transactions
+  const calculateBalance = () => {
+    const initialBalance = 5000000; // Starting balance
+    const totalSent = (transactions as any[]).reduce((sum: number, tx: any) => {
+      if (tx.status === 'completed') {
+        return sum + parseFloat(tx.amount || 0);
+      }
+      return sum;
+    }, 0);
+    return initialBalance - totalSent;
+  };
 
   return (
     <header className={`glass-card border-b border-gray-700 p-4 ${isMobile ? 'mt-16' : ''}`}>
@@ -25,7 +43,9 @@ export default function Header() {
             <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-24 sm:max-w-none">
               {isMobile ? user?.username : `Welcome, ${user?.username}`}
             </p>
-            <p className="text-sm sm:text-lg font-bold text-green-500 balance-glow">$5,000,000.00</p>
+            <p className="text-sm sm:text-lg font-bold text-green-500 balance-glow">
+              ${calculateBalance().toLocaleString()}.00
+            </p>
           </div>
         </div>
       </div>
