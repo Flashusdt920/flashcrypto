@@ -309,28 +309,28 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
           <p className="text-gray-300 text-sm sm:text-base">Welcome {user.username}! Select a subscription plan to access the platform</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 mb-12">
           {typedPlans.map((plan) => (
             <Card 
               key={plan.id} 
-              className={`bg-black bg-opacity-50 border shadow-2xl hover:shadow-purple-500/20 transition-all ${
-                plan.name === 'Pro' ? 'border-purple-500 scale-105' : 'border-gray-600'
+              className={`flex-1 bg-black bg-opacity-50 border shadow-2xl hover:shadow-purple-500/20 transition-all ${
+                plan.name === 'Pro' ? 'border-purple-500 transform scale-105 lg:scale-110' : 'border-gray-600'
               }`}
             >
-              <CardHeader className="text-center">
+              <CardHeader className="text-center p-4 sm:p-6">
                 {plan.name === 'Pro' && (
                   <div className="bg-purple-500 text-white text-xs font-bold py-1 px-3 rounded-full mb-2 inline-block">
-                    POPULAR
+                    MOST POPULAR
                   </div>
                 )}
-                <CardTitle className="text-2xl font-bold text-white">{plan.name}</CardTitle>
-                <div className="text-3xl font-bold text-purple-400">${plan.price}</div>
-                <p className="text-gray-400">USDT Payment</p>
+                <CardTitle className="text-xl sm:text-2xl font-bold text-white">{plan.name}</CardTitle>
+                <div className="text-2xl sm:text-3xl font-bold text-purple-400">${plan.price}</div>
+                <p className="text-gray-400 text-sm">USDT Payment</p>
               </CardHeader>
-              <CardContent>
-                <ul className="space-y-3 mb-6">
+              <CardContent className="p-4 sm:p-6">
+                <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
                   {plan.features.map((feature: string, index: number) => (
-                    <li key={index} className="flex items-center text-gray-300">
+                    <li key={index} className="flex items-center text-gray-300 text-sm sm:text-base">
                       <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
                       {feature}
                     </li>
@@ -338,7 +338,7 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
                 </ul>
                 <Button
                   onClick={() => handlePlanSelect(plan)}
-                  className={`w-full ${
+                  className={`w-full text-sm sm:text-base ${
                     plan.name === 'Pro' 
                       ? 'bg-purple-600 hover:bg-purple-700' 
                       : 'bg-gray-700 hover:bg-gray-600'
