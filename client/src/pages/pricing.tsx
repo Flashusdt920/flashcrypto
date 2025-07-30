@@ -69,6 +69,60 @@ const testimonials = [
     text: "Outstanding platform with excellent ROI. The flash fee system is transparent and the multi-network support has saved me countless hours.",
     rating: 5,
     plan: "Full"
+  },
+  {
+    id: 7,
+    name: "Roberto Silva",
+    role: "Cryptocurrency Analyst",
+    avatar: "https://images.unsplash.com/photo-1566492031773-4f4e44671d66?w=64&h=64&fit=crop&crop=face",
+    text: "After testing multiple flash platforms, Bolt stands out for its reliability and speed. The 0.019 ETH flash fee is completely worth it for the quality of service.",
+    rating: 5,
+    plan: "Pro"
+  },
+  {
+    id: 8,
+    name: "Emma Foster",
+    role: "Digital Asset Manager",
+    avatar: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=64&h=64&fit=crop&crop=face",
+    text: "The multi-network compatibility is incredible. I can handle BTC, ETH, USDT, and BNB all from one platform. Customer service responds within minutes!",
+    rating: 5,
+    plan: "Full"
+  },
+  {
+    id: 9,
+    name: "Alexander Kim",
+    role: "Fintech Entrepreneur",
+    avatar: "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=64&h=64&fit=crop&crop=face",
+    text: "I've integrated Bolt into my business operations. The uptime is exceptional and the transaction processing is lightning fast. Highly professional platform.",
+    rating: 5,
+    plan: "Full"
+  },
+  {
+    id: 10,
+    name: "Rachel Martinez",
+    role: "Investment Consultant",
+    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=64&h=64&fit=crop&crop=face",
+    text: "The security features give me complete confidence. I've processed millions through this platform and never had a single issue. Worth every dollar!",
+    rating: 5,
+    plan: "Pro"
+  },
+  {
+    id: 11,
+    name: "Marcus Johnson",
+    role: "Hedge Fund Manager",
+    avatar: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=64&h=64&fit=crop&crop=face",
+    text: "Bolt Crypto Flasher has become essential to our trading strategy. The flash transaction capabilities and network support are unmatched in the industry.",
+    rating: 5,
+    plan: "Full"
+  },
+  {
+    id: 12,
+    name: "Sophia Williams",
+    role: "Crypto Trading Specialist",
+    avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?w=64&h=64&fit=crop&crop=face",
+    text: "The interface is intuitive and the transaction speeds are incredible. I switched from three different platforms to just using Bolt for everything.",
+    rating: 5,
+    plan: "Basic"
   }
 ];
 
