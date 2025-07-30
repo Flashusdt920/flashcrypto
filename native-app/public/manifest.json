@@ -1,0 +1,17 @@
+{
+  "name": "Bolt Crypto Flasher",
+  "short_name": "Bolt Crypto",
+  "description": "Professional cryptocurrency flash transaction platform",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1a1a",
+  "theme_color": "#FFD700",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path d='M256 48L208 80L80 240h120L160 464l48-32l128-160H216l40-224z' fill='%23FFD700'/></svg>",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}
