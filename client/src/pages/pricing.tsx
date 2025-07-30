@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Star, Quote } from 'lucide-react';
 import QRCode from 'qrcode';
 
 interface PricingProps {
@@ -14,11 +14,70 @@ interface PricingProps {
   onSubscriptionComplete: () => Promise<boolean>;
 }
 
+// Testimonial data
+const testimonials = [
+  {
+    id: 1,
+    name: "Michael Rodriguez",
+    role: "Professional Trader",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=64&h=64&fit=crop&crop=face",
+    text: "Bolt Crypto Flasher has revolutionized my trading operations. The flash transaction system is incredibly reliable and the multi-chain support is exactly what I needed.",
+    rating: 5,
+    plan: "Full"
+  },
+  {
+    id: 2,
+    name: "Sarah Chen",
+    role: "Crypto Investor",
+    avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=64&h=64&fit=crop&crop=face",
+    text: "The professional interface and instant processing make this platform outstanding. I've processed over $500k in transactions without any issues.",
+    rating: 5,
+    plan: "Pro"
+  },
+  {
+    id: 3,
+    name: "David Thompson",
+    role: "DeFi Specialist",
+    avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=64&h=64&fit=crop&crop=face",
+    text: "Best flash transaction platform I've used. The Tron integration is seamless and the customer support is exceptional. Highly recommended!",
+    rating: 5,
+    plan: "Full"
+  },
+  {
+    id: 4,
+    name: "Anna Petrov",
+    role: "Blockchain Developer",
+    avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=64&h=64&fit=crop&crop=face",
+    text: "The technical implementation is flawless. Clean interface, fast transactions, and excellent security measures. Worth every penny.",
+    rating: 5,
+    plan: "Pro"
+  },
+  {
+    id: 5,
+    name: "James Wilson",
+    role: "Financial Advisor",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=64&h=64&fit=crop&crop=face",
+    text: "I recommend Bolt Crypto Flasher to all my clients. The platform is professional, secure, and delivers exactly what it promises.",
+    rating: 5,
+    plan: "Basic"
+  },
+  {
+    id: 6,
+    name: "Lisa Zhang",
+    role: "Portfolio Manager",
+    avatar: "https://images.unsplash.com/photo-1489424731084-a5d8b219a5bb?w=64&h=64&fit=crop&crop=face",
+    text: "Outstanding platform with excellent ROI. The flash fee system is transparent and the multi-network support has saved me countless hours.",
+    rating: 5,
+    plan: "Full"
+  }
+];
+
 export default function Pricing({ user, onSubscriptionComplete }: PricingProps) {
   const [selectedPlan, setSelectedPlan] = useState<any>(null);
   const [paymentTxHash, setPaymentTxHash] = useState('');
   const [qrCodeUrl, setQrCodeUrl] = useState<string>('');
   const [showPayment, setShowPayment] = useState(false);
+  const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
@@ -41,6 +100,14 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
     })
     .then(url => setQrCodeUrl(url))
     .catch(err => console.error('QR code generation failed:', err));
+  }, []);
+
+  // Auto-rotate testimonials
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTestimonial((prev) => (prev + 1) % testimonials.length);
+    }, 4000);
+    return () => clearInterval(interval);
   }, []);
 
   // Create subscription mutation
@@ -184,7 +251,7 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
           <p className="text-gray-300 text-sm sm:text-base">Welcome {user.username}! Select a subscription plan to access the platform</p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
           {plans.map((plan: any) => (
             <Card 
               key={plan.id} 
@@ -224,6 +291,112 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Testimonials Section */}
+        <div className="mt-16">
+          <div className="text-center mb-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2">What Our Users Say</h2>
+            <p className="text-gray-300">Join thousands of satisfied professionals worldwide</p>
+          </div>
+
+          {/* Stats Bar */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            <div className="text-center bg-black bg-opacity-30 rounded-lg p-4 border border-gray-700">
+              <div className="text-2xl font-bold text-purple-400">5,000+</div>
+              <div className="text-sm text-gray-300">Active Users</div>
+            </div>
+            <div className="text-center bg-black bg-opacity-30 rounded-lg p-4 border border-gray-700">
+              <div className="text-2xl font-bold text-green-400">$2.5M+</div>
+              <div className="text-sm text-gray-300">Processed</div>
+            </div>
+            <div className="text-center bg-black bg-opacity-30 rounded-lg p-4 border border-gray-700">
+              <div className="text-2xl font-bold text-blue-400">99.9%</div>
+              <div className="text-sm text-gray-300">Uptime</div>
+            </div>
+            <div className="text-center bg-black bg-opacity-30 rounded-lg p-4 border border-gray-700">
+              <div className="text-2xl font-bold text-yellow-400">4.9/5</div>
+              <div className="text-sm text-gray-300">Rating</div>
+            </div>
+          </div>
+
+          {/* Animated Testimonial Carousel */}
+          <div className="relative">
+            <div className="overflow-hidden rounded-xl bg-black bg-opacity-40 border border-gray-600 p-6 sm:p-8">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentTestimonial * 100}%)` }}
+              >
+                {testimonials.map((testimonial, index) => (
+                  <div key={testimonial.id} className="w-full flex-shrink-0 px-4">
+                    <div className="max-w-4xl mx-auto">
+                      <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
+                        <div className="flex-shrink-0">
+                          <img
+                            src={testimonial.avatar}
+                            alt={testimonial.name}
+                            className="w-16 h-16 sm:w-20 sm:h-20 rounded-full border-2 border-purple-500"
+                            onError={(e) => {
+                              const target = e.target as HTMLImageElement;
+                              target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(testimonial.name)}&background=7c3aed&color=fff&size=80`;
+                            }}
+                          />
+                        </div>
+                        <div className="flex-1 text-center md:text-left">
+                          <div className="flex justify-center md:justify-start mb-2">
+                            {[...Array(testimonial.rating)].map((_, i) => (
+                              <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
+                            ))}
+                          </div>
+                          <Quote className="w-8 h-8 text-purple-400 mb-3 mx-auto md:mx-0" />
+                          <blockquote className="text-lg sm:text-xl text-gray-200 mb-4 italic">
+                            "{testimonial.text}"
+                          </blockquote>
+                          <div className="space-y-1">
+                            <div className="font-semibold text-white text-lg">{testimonial.name}</div>
+                            <div className="text-purple-400 text-sm">{testimonial.role}</div>
+                            <div className="inline-block bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded-full">
+                              {testimonial.plan} Plan User
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Testimonial Navigation Dots */}
+            <div className="flex justify-center mt-6 space-x-2">
+              {testimonials.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentTestimonial(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                    index === currentTestimonial 
+                      ? 'bg-purple-500 scale-125' 
+                      : 'bg-gray-600 hover:bg-gray-500'
+                  }`}
+                />
+              ))}
+            </div>
+          </div>
+
+          {/* Trust Badges */}
+          <div className="mt-8 text-center">
+            <div className="flex flex-wrap justify-center items-center gap-6 opacity-60">
+              <div className="text-sm text-gray-400">Trusted by professionals worldwide</div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-400">24/7 Support</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-400">SSL Secured</span>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
