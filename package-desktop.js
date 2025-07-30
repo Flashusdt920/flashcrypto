@@ -31,15 +31,16 @@ echo.
 echo Your cryptocurrency flash transaction platform is loading...
 echo Open your browser to: http://localhost:5000
 echo.
-node server.js
+node server.cjs
 pause`;
 
   fs.writeFileSync(path.join(packageDir, 'start.bat'), startupScript);
 
-  // Step 4: Create server file
+  // Step 4: Create server file (CommonJS format)
   const serverContent = `// Bolt Crypto Flasher Portable Server
 const express = require('express');
 const path = require('path');
+const { createServer } = require('http');
 
 const app = express();
 const PORT = 5000;
@@ -47,20 +48,35 @@ const PORT = 5000;
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Import and use your server routes
-const { createServer } = require('./server/index.js');
+// Basic health check
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', message: 'Bolt Crypto Flasher is running' });
+});
+
+// Serve index.html for all other routes (SPA support)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 console.log('🔥 Bolt Crypto Flasher is starting...');
 console.log('💰 Professional Cryptocurrency Flash Platform');
 console.log('🌐 Open your browser to: http://localhost:5000');
 console.log('');
 
-app.listen(PORT, () => {
+const server = createServer(app);
+
+server.listen(PORT, () => {
   console.log('⚡ Server running on http://localhost:5000');
   console.log('🎯 Ready for flash transactions!');
+  
+  // Auto-open browser on Windows
+  if (process.platform === 'win32') {
+    const { exec } = require('child_process');
+    exec('start http://localhost:5000');
+  }
 });`;
 
-  fs.writeFileSync(path.join(packageDir, 'server.js'), serverContent);
+  fs.writeFileSync(path.join(packageDir, 'server.cjs'), serverContent);
 
   // Step 5: Copy built files
   const distDir = path.join(__dirname, 'dist');
@@ -78,26 +94,49 @@ app.listen(PORT, () => {
     fs.copyFileSync(path.join(distDir, 'index.js'), path.join(targetServerDir, 'index.js'));
   }
 
-  // Step 6: Create README
+  // Step 6: Create package.json for portable app
+  const portablePackageJson = {
+    "name": "bolt-crypto-flasher-portable",
+    "version": "1.0.0",
+    "type": "commonjs",
+    "main": "server.cjs",
+    "scripts": {
+      "start": "node server.cjs"
+    },
+    "dependencies": {
+      "express": "^4.18.2"
+    }
+  };
+
+  fs.writeFileSync(path.join(packageDir, 'package.json'), JSON.stringify(portablePackageJson, null, 2));
+
+  // Step 7: Create README
   const readmeContent = `# Bolt Crypto Flasher - Portable Version
 
 ## Quick Start
 1. Double-click "start.bat" to launch the application
-2. Open your browser to: http://localhost:5000
+2. Browser will open automatically to: http://localhost:5000
 3. Login with: admin / usdt123
 
 ## Features
 - Multi-chain cryptocurrency support (BTC, ETH, USDT, BNB)
-- Flash transaction processing
+- Flash transaction processing with 0.019 ETH fees
 - Dynamic balance tracking
 - Professional interface
+- Mobile-responsive design
 
 ## Requirements
 - Windows 10 or later
-- Node.js (will auto-install if needed)
+- Node.js 16+ (download from nodejs.org if needed)
 
-## Support
-For technical support, check the application logs in the console window.
+## Troubleshooting
+- If browser doesn't open, manually go to: http://localhost:5000
+- Close the console window to stop the server
+- Check firewall settings if connection fails
+
+## Flash Fee Payment
+All transactions require flash fee payment to:
+Tron Address: TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y
 
 ---
 Bolt Crypto Flasher - Professional Cryptocurrency Platform`;

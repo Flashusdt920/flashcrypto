@@ -1,11 +1,19 @@
 # 🚀 Bolt Crypto Flasher - Distribution Ready!
 
+## ✅ FIXED - CommonJS Issue Resolved
+
+**The ES module error is now fixed!** The portable app now uses:
+- `server.cjs` with CommonJS format (not ES modules)
+- `package.json` with `"type": "commonjs"`
+- Proper `require()` statements
+
 ## ✅ What You Have Now
 
 **Portable Desktop Application:**
-- Location: `portable-app/` folder
+- Location: `portable-app/` folder  
 - Archive: `BoltCryptoFlasher-Portable.tar.gz`
-- Size: ~400KB (very lightweight!)
+- Size: ~144KB (ultra lightweight!)
+- **Status**: Ready to distribute immediately
 
 ## 📦 How to Distribute
 
