@@ -5,6 +5,7 @@ This is a production-ready web application for cryptocurrency flash transactions
 ## User Preferences
 
 Preferred communication style: Simple, everyday language.
+Distribution requirement: Always apply changes to all three distribution versions (web app, .exe file, and native desktop app).
 
 ## System Architecture
 
@@ -130,13 +131,19 @@ Preferred communication style: Simple, everyday language.
 - Database: Production PostgreSQL via DATABASE_URL environment variable
 - Script: `npm run build` then `npm start`
 
-### Web Application Distribution
-- Optimized for web hosting and global distribution
-- No installation required - users access via browser
-- Mobile-responsive design works on all devices
-- Production-ready with SEO optimization
-- Deploy to Replit, Vercel, Netlify, or self-hosted VPS
-- Automatic updates when redeployed
+### Multi-Format Distribution Strategy
+The application supports three distribution formats that must be kept in sync:
+
+1. **Web Application**: Live web version accessible via browser
+2. **Standalone .exe**: 39MB executable file (BoltCryptoFlasher.exe) 
+3. **Native Desktop App**: 158MB packaged application (BoltCryptoFlasher-Native.tar.gz)
+4. **Portable Package**: 144KB web server package (BoltCryptoFlasher-Portable.tar.gz)
+
+**Important**: All code changes must be propagated to all distribution versions using:
+```bash
+node rebuild-all-versions.js
+```
+This automated script rebuilds all four distribution formats and keeps them synchronized.
 
 ### Environment Configuration
 - `DATABASE_URL`: PostgreSQL connection string (required)
