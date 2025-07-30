@@ -142,6 +142,14 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
     queryKey: ['/api/subscription-plans'],
   });
 
+  // Type-safe plans with proper typing
+  const typedPlans = plans as Array<{
+    id: string;
+    name: string;
+    price: string;
+    features: string[];
+  }>;
+
   // Generate QR code for USDT address
   useEffect(() => {
     QRCode.toDataURL(usdtAddress, {
@@ -167,11 +175,7 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
   // Create subscription mutation
   const createSubscription = useMutation({
     mutationFn: async (data: { userId: string; planId: string; paymentTxHash: string }) => {
-      return await apiRequest('/api/subscriptions', {
-        method: 'POST',
-        body: JSON.stringify(data),
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return await apiRequest('POST', '/api/subscriptions', data);
     },
     onSuccess: async () => {
       toast({
@@ -306,7 +310,7 @@ export default function Pricing({ user, onSubscriptionComplete }: PricingProps) 
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
-          {plans.map((plan: any) => (
+          {typedPlans.map((plan) => (
             <Card 
               key={plan.id} 
               className={`bg-black bg-opacity-50 border shadow-2xl hover:shadow-purple-500/20 transition-all ${
