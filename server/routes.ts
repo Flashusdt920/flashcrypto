@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { blockchainService } from "./blockchain";
 import { insertTransactionSchema } from "@shared/schema";
 import { z } from "zod";
 
@@ -171,6 +172,114 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/gas-receiver", (req, res) => {
     const address = storage.getGasReceiverAddress();
     res.json({ address });
+  });
+
+  // Blockchain integration endpoints
+  app.post("/api/blockchain/create-wallet", async (req, res) => {
+    try {
+      const { network } = req.body;
+      const wallet = await blockchainService.createWallet(network);
+      res.json(wallet);
+    } catch (error) {
+      console.error("Error creating wallet:", error);
+      res.status(500).json({ message: "Failed to create wallet" });
+    }
+  });
+
+  app.get("/api/blockchain/balance/:address/:network", async (req, res) => {
+    try {
+      const { address, network } = req.params;
+      const balance = await blockchainService.getBalance(address, network);
+      res.json({ balance });
+    } catch (error) {
+      console.error("Error getting balance:", error);
+      res.status(500).json({ message: "Failed to get balance" });
+    }
+  });
+
+  app.post("/api/blockchain/send", async (req, res) => {
+    try {
+      const { fromPrivateKey, toAddress, amount, network, gasPrice } = req.body;
+      const result = await blockchainService.sendTransaction(
+        fromPrivateKey, 
+        toAddress, 
+        amount, 
+        network, 
+        gasPrice
+      );
+      res.json(result);
+    } catch (error) {
+      console.error("Error sending transaction:", error);
+      res.status(500).json({ message: "Failed to send transaction" });
+    }
+  });
+
+  app.get("/api/blockchain/transaction/:hash/:network", async (req, res) => {
+    try {
+      const { hash, network } = req.params;
+      const status = await blockchainService.getTransactionStatus(hash, network);
+      res.json(status);
+    } catch (error) {
+      console.error("Error getting transaction status:", error);
+      res.status(500).json({ message: "Failed to get transaction status" });
+    }
+  });
+
+  // Market data endpoints
+  app.get("/api/market/prices", async (req, res) => {
+    try {
+      const symbols = ['BTC', 'ETH', 'BNB', 'TRX', 'SOL', 'USDT'];
+      const prices = await blockchainService.getMultiplePrices(symbols);
+      res.json(prices);
+    } catch (error) {
+      console.error("Error fetching market prices:", error);
+      res.status(500).json({ message: "Failed to fetch market prices" });
+    }
+  });
+
+  app.get("/api/market/price/:symbol", async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const price = await blockchainService.getCurrentPrice(symbol);
+      if (!price) {
+        return res.status(404).json({ message: "Price not found" });
+      }
+      res.json(price);
+    } catch (error) {
+      console.error("Error fetching price:", error);
+      res.status(500).json({ message: "Failed to fetch price" });
+    }
+  });
+
+  app.get("/api/market/history/:symbol", async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const { days = '7' } = req.query;
+      const data = await blockchainService.getHistoricalData(symbol, parseInt(days as string));
+      
+      // Format data for charts
+      const chartData = data.map(point => ({
+        timestamp: point.timestamp,
+        price: point.price,
+        date: new Date(point.timestamp).toLocaleDateString()
+      }));
+      
+      res.json(chartData);
+    } catch (error) {
+      console.error("Error fetching historical data:", error);
+      res.status(500).json({ message: "Failed to fetch historical data" });
+    }
+  });
+
+  // Network configurations
+  app.get("/api/networks", async (req, res) => {
+    try {
+      const networks = await storage.getNetworkConfigs();
+      res.json(networks);
+    } catch (error) {
+      console.error("Error fetching networks:", error);
+      res.status(500).json({ message: "Failed to fetch network configurations" });
+    }
   });
 
 

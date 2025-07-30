@@ -1,10 +1,11 @@
 import { 
-  users, wallets, transactions, subscriptionPlans, userSubscriptions,
+  users, wallets, transactions, subscriptionPlans, userSubscriptions, marketData, networkConfigs,
   type User, type InsertUser,
   type Wallet, type InsertWallet,
   type Transaction, type InsertTransaction,
   type SubscriptionPlan, type InsertSubscriptionPlan,
-  type UserSubscription, type InsertUserSubscription
+  type UserSubscription, type InsertUserSubscription,
+  type MarketData, type NetworkConfig
 } from "@shared/schema";
 import { db } from './db';
 import { eq, and } from 'drizzle-orm';
@@ -34,6 +35,15 @@ export interface IStorage {
   createSubscription(subscription: InsertUserSubscription): Promise<UserSubscription>;
   getUserSubscription(userId: string): Promise<UserSubscription | undefined>;
   getUserSubscriptions(userId: string): Promise<UserSubscription[]>;
+
+  // Market data operations
+  saveMarketData(data: Omit<MarketData, 'id' | 'timestamp'>): Promise<MarketData>;
+  getMarketData(symbol: string, limit?: number): Promise<MarketData[]>;
+  getLatestMarketData(symbols: string[]): Promise<MarketData[]>;
+
+  // Network configuration operations
+  getNetworkConfigs(): Promise<NetworkConfig[]>;
+  updateWalletBalance(walletId: string, balance: string): Promise<void>;
 }
 
 
@@ -67,19 +77,55 @@ export class DatabaseStorage implements IStorage {
         {
           name: "Basic",
           price: "550",
-          features: ["Basic crypto transactions", "Standard support", "Single wallet"],
+          features: ["BTC Flash", "ETH Flash", "Basic Support"],
         },
         {
           name: "Pro", 
           price: "950",
-          features: ["Advanced trading tools", "Priority support", "Multiple wallets", "Analytics dashboard"],
+          features: ["All Basic Features", "USDT Flash", "BNB Flash", "Priority Support"],
         },
         {
           name: "Full",
-          price: "3000", 
-          features: ["All features", "24/7 dedicated support", "Unlimited wallets", "Advanced analytics", "API access"],
+          price: "3000",
+          features: ["All Networks", "Premium Support", "Custom Flash Options", "API Access"],
         }
       ]).returning();
+
+      // Initialize network configurations
+      await db.insert(networkConfigs).values([
+        {
+          network: "ETH",
+          name: "Ethereum",
+          rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
+          chainId: "1",
+          blockExplorer: "https://etherscan.io",
+          nativeCurrency: "ETH"
+        },
+        {
+          network: "BSC",
+          name: "BNB Smart Chain", 
+          rpcUrl: "https://bsc-dataseed1.binance.org",
+          chainId: "56",
+          blockExplorer: "https://bscscan.com",
+          nativeCurrency: "BNB"
+        },
+        {
+          network: "TRX",
+          name: "TRON",
+          rpcUrl: "https://api.trongrid.io",
+          chainId: "mainnet",
+          blockExplorer: "https://tronscan.org",
+          nativeCurrency: "TRX"
+        },
+        {
+          network: "BTC",
+          name: "Bitcoin",
+          rpcUrl: "https://blockstream.info/api",
+          chainId: "mainnet", 
+          blockExplorer: "https://blockstream.info",
+          nativeCurrency: "BTC"
+        }
+      ]).onConflictDoNothing().returning();
 
       // Create admin subscriptions
       if (adminUser[0] && henryUser[0] && plans[2]) {
@@ -207,6 +253,48 @@ export class DatabaseStorage implements IStorage {
         eq(userSubscriptions.status, 'active')
       ));
     return subscription || undefined;
+  }
+
+  // Market data operations
+  async saveMarketData(data: Omit<MarketData, 'id' | 'timestamp'>): Promise<MarketData> {
+    const [marketDataRecord] = await db.insert(marketData).values(data).returning();
+    return marketDataRecord;
+  }
+
+  async getMarketData(symbol: string, limit: number = 100): Promise<MarketData[]> {
+    return await db.select()
+      .from(marketData)
+      .where(eq(marketData.symbol, symbol))
+      .orderBy(marketData.timestamp)
+      .limit(limit);
+  }
+
+  async getLatestMarketData(symbols: string[]): Promise<MarketData[]> {
+    const results = await Promise.all(
+      symbols.map(async (symbol) => {
+        const [latest] = await db.select()
+          .from(marketData)
+          .where(eq(marketData.symbol, symbol))
+          .orderBy(marketData.timestamp)
+          .limit(1);
+        return latest;
+      })
+    );
+    return results.filter(Boolean);
+  }
+
+  // Network configuration operations
+  async getNetworkConfigs(): Promise<NetworkConfig[]> {
+    return await db.select().from(networkConfigs).where(eq(networkConfigs.isActive, true));
+  }
+
+  async updateWalletBalance(walletId: string, balance: string): Promise<void> {
+    await db.update(wallets)
+      .set({ 
+        balance, 
+        lastSyncAt: new Date() 
+      })
+      .where(eq(wallets.id, walletId));
   }
 }
 

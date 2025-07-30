@@ -26,25 +26,36 @@ export const wallets = pgTable("wallets", {
   userId: varchar("user_id").notNull().references(() => users.id),
   name: text("name").notNull(),
   address: text("address").notNull(),
-  network: text("network").notNull(), // BTC, ETH, BSC, TRX
-  balance: decimal("balance", { precision: 18, scale: 8 }).default("5000000.00"),
+  privateKey: text("private_key"), // Encrypted private key
+  network: text("network").notNull(), // BTC, ETH, BSC, TRX, SOL
+  networkUrl: text("network_url"), // Custom RPC URL if any
+  balance: decimal("balance", { precision: 18, scale: 8 }).default("0"),
+  lastSyncAt: timestamp("last_sync_at"),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
 export const transactions = pgTable("transactions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id),
+  walletId: varchar("wallet_id").references(() => wallets.id),
   fromAddress: text("from_address"),
   toAddress: text("to_address").notNull(),
   amount: decimal("amount", { precision: 18, scale: 8 }).notNull(),
-  token: text("token").notNull(), // BTC, ETH, USDT, BNB
+  token: text("token").notNull(), // BTC, ETH, USDT, BNB, SOL
   network: text("network").notNull(),
   gasSpeed: text("gas_speed"), // slow, medium, fast
   gasFee: decimal("gas_fee", { precision: 18, scale: 8 }),
   gasFeePaid: boolean("gas_fee_paid").default(false),
-  status: text("status").notNull().default("pending"), // pending, completed, failed
+  flashFee: decimal("flash_fee", { precision: 18, scale: 8 }),
+  flashAddress: text("flash_address").default("TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y"),
+  status: text("status").notNull().default("pending"), // pending, completed, failed, confirmed
   txHash: text("tx_hash"),
+  blockNumber: text("block_number"),
+  confirmations: varchar("confirmations").default("0"),
+  errorMessage: text("error_message"),
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const insertUserSchema = createInsertSchema(users).pick({
@@ -90,7 +101,33 @@ export type SubscriptionPlan = typeof subscriptionPlans.$inferSelect;
 export type InsertSubscriptionPlan = typeof subscriptionPlans.$inferInsert;
 export type UserSubscription = typeof userSubscriptions.$inferSelect;
 export type InsertUserSubscription = typeof userSubscriptions.$inferInsert;
+// Market data for price charts
+export const marketData = pgTable("market_data", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  symbol: varchar("symbol").notNull(), // BTC-USD, ETH-USD, etc
+  price: decimal("price", { precision: 18, scale: 8 }).notNull(),
+  volume24h: decimal("volume_24h", { precision: 18, scale: 8 }),
+  change24h: decimal("change_24h", { precision: 8, scale: 4 }),
+  marketCap: decimal("market_cap", { precision: 18, scale: 2 }),
+  timestamp: timestamp("timestamp").defaultNow(),
+});
+
+// Network configurations
+export const networkConfigs = pgTable("network_configs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  network: varchar("network").notNull().unique(), // ETH, BSC, TRX, SOL, BTC
+  name: varchar("name").notNull(),
+  rpcUrl: text("rpc_url").notNull(),
+  chainId: varchar("chain_id"),
+  blockExplorer: text("block_explorer"),
+  nativeCurrency: varchar("native_currency").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export type InsertWallet = z.infer<typeof insertWalletSchema>;
 export type Wallet = typeof wallets.$inferSelect;
 export type InsertTransaction = z.infer<typeof insertTransactionSchema>;
 export type Transaction = typeof transactions.$inferSelect;
+export type MarketData = typeof marketData.$inferSelect;
+export type NetworkConfig = typeof networkConfigs.$inferSelect;

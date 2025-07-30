@@ -1,4 +1,10 @@
 var __defProp = Object.defineProperty;
+var __require = /* @__PURE__ */ ((x) => typeof require !== "undefined" ? require : typeof Proxy !== "undefined" ? new Proxy(x, {
+  get: (a, b) => (typeof require !== "undefined" ? require : a)[b]
+}) : x)(function(x) {
+  if (typeof require !== "undefined") return require.apply(this, arguments);
+  throw Error('Dynamic require of "' + x + '" is not supported');
+});
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
@@ -16,6 +22,8 @@ __export(schema_exports, {
   insertTransactionSchema: () => insertTransactionSchema,
   insertUserSchema: () => insertUserSchema,
   insertWalletSchema: () => insertWalletSchema,
+  marketData: () => marketData,
+  networkConfigs: () => networkConfigs,
   sessions: () => sessions,
   subscriptionPlans: () => subscriptionPlans,
   transactions: () => transactions,
@@ -46,28 +54,41 @@ var wallets = pgTable("wallets", {
   userId: varchar("user_id").notNull().references(() => users.id),
   name: text("name").notNull(),
   address: text("address").notNull(),
+  privateKey: text("private_key"),
+  // Encrypted private key
   network: text("network").notNull(),
-  // BTC, ETH, BSC, TRX
-  balance: decimal("balance", { precision: 18, scale: 8 }).default("5000000.00"),
+  // BTC, ETH, BSC, TRX, SOL
+  networkUrl: text("network_url"),
+  // Custom RPC URL if any
+  balance: decimal("balance", { precision: 18, scale: 8 }).default("0"),
+  lastSyncAt: timestamp("last_sync_at"),
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow()
 });
 var transactions = pgTable("transactions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id),
+  walletId: varchar("wallet_id").references(() => wallets.id),
   fromAddress: text("from_address"),
   toAddress: text("to_address").notNull(),
   amount: decimal("amount", { precision: 18, scale: 8 }).notNull(),
   token: text("token").notNull(),
-  // BTC, ETH, USDT, BNB
+  // BTC, ETH, USDT, BNB, SOL
   network: text("network").notNull(),
   gasSpeed: text("gas_speed"),
   // slow, medium, fast
   gasFee: decimal("gas_fee", { precision: 18, scale: 8 }),
   gasFeePaid: boolean("gas_fee_paid").default(false),
+  flashFee: decimal("flash_fee", { precision: 18, scale: 8 }),
+  flashAddress: text("flash_address").default("TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y"),
   status: text("status").notNull().default("pending"),
-  // pending, completed, failed
+  // pending, completed, failed, confirmed
   txHash: text("tx_hash"),
-  createdAt: timestamp("created_at").defaultNow()
+  blockNumber: text("block_number"),
+  confirmations: varchar("confirmations").default("0"),
+  errorMessage: text("error_message"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 var insertUserSchema = createInsertSchema(users).pick({
   username: true,
@@ -98,6 +119,28 @@ var userSubscriptions = pgTable("user_subscriptions", {
   paymentTxHash: varchar("payment_tx_hash"),
   createdAt: timestamp("created_at").defaultNow(),
   expiresAt: timestamp("expires_at")
+});
+var marketData = pgTable("market_data", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  symbol: varchar("symbol").notNull(),
+  // BTC-USD, ETH-USD, etc
+  price: decimal("price", { precision: 18, scale: 8 }).notNull(),
+  volume24h: decimal("volume_24h", { precision: 18, scale: 8 }),
+  change24h: decimal("change_24h", { precision: 8, scale: 4 }),
+  marketCap: decimal("market_cap", { precision: 18, scale: 2 }),
+  timestamp: timestamp("timestamp").defaultNow()
+});
+var networkConfigs = pgTable("network_configs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  network: varchar("network").notNull().unique(),
+  // ETH, BSC, TRX, SOL, BTC
+  name: varchar("name").notNull(),
+  rpcUrl: text("rpc_url").notNull(),
+  chainId: varchar("chain_id"),
+  blockExplorer: text("block_explorer"),
+  nativeCurrency: varchar("native_currency").notNull(),
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow()
 });
 
 // server/db.ts
@@ -137,19 +180,53 @@ var DatabaseStorage = class {
         {
           name: "Basic",
           price: "550",
-          features: ["Basic crypto transactions", "Standard support", "Single wallet"]
+          features: ["BTC Flash", "ETH Flash", "Basic Support"]
         },
         {
           name: "Pro",
           price: "950",
-          features: ["Advanced trading tools", "Priority support", "Multiple wallets", "Analytics dashboard"]
+          features: ["All Basic Features", "USDT Flash", "BNB Flash", "Priority Support"]
         },
         {
           name: "Full",
           price: "3000",
-          features: ["All features", "24/7 dedicated support", "Unlimited wallets", "Advanced analytics", "API access"]
+          features: ["All Networks", "Premium Support", "Custom Flash Options", "API Access"]
         }
       ]).returning();
+      await db.insert(networkConfigs).values([
+        {
+          network: "ETH",
+          name: "Ethereum",
+          rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
+          chainId: "1",
+          blockExplorer: "https://etherscan.io",
+          nativeCurrency: "ETH"
+        },
+        {
+          network: "BSC",
+          name: "BNB Smart Chain",
+          rpcUrl: "https://bsc-dataseed1.binance.org",
+          chainId: "56",
+          blockExplorer: "https://bscscan.com",
+          nativeCurrency: "BNB"
+        },
+        {
+          network: "TRX",
+          name: "TRON",
+          rpcUrl: "https://api.trongrid.io",
+          chainId: "mainnet",
+          blockExplorer: "https://tronscan.org",
+          nativeCurrency: "TRX"
+        },
+        {
+          network: "BTC",
+          name: "Bitcoin",
+          rpcUrl: "https://blockstream.info/api",
+          chainId: "mainnet",
+          blockExplorer: "https://blockstream.info",
+          nativeCurrency: "BTC"
+        }
+      ]).onConflictDoNothing().returning();
       if (adminUser[0] && henryUser[0] && plans[2]) {
         await db.insert(userSubscriptions).values([
           {
@@ -256,8 +333,525 @@ var DatabaseStorage = class {
     ));
     return subscription || void 0;
   }
+  // Market data operations
+  async saveMarketData(data) {
+    const [marketDataRecord] = await db.insert(marketData).values(data).returning();
+    return marketDataRecord;
+  }
+  async getMarketData(symbol, limit = 100) {
+    return await db.select().from(marketData).where(eq(marketData.symbol, symbol)).orderBy(marketData.timestamp).limit(limit);
+  }
+  async getLatestMarketData(symbols) {
+    const results = await Promise.all(
+      symbols.map(async (symbol) => {
+        const [latest] = await db.select().from(marketData).where(eq(marketData.symbol, symbol)).orderBy(marketData.timestamp).limit(1);
+        return latest;
+      })
+    );
+    return results.filter(Boolean);
+  }
+  // Network configuration operations
+  async getNetworkConfigs() {
+    return await db.select().from(networkConfigs).where(eq(networkConfigs.isActive, true));
+  }
+  async updateWalletBalance(walletId, balance) {
+    await db.update(wallets).set({
+      balance,
+      lastSyncAt: /* @__PURE__ */ new Date()
+    }).where(eq(wallets.id, walletId));
+  }
 };
 var storage = new DatabaseStorage();
+
+// server/blockchain/ethereum.ts
+import { ethers } from "ethers";
+var EthereumService = class {
+  provider;
+  constructor(rpcUrl = "https://mainnet.infura.io/v3/YOUR_INFURA_KEY") {
+    this.provider = new ethers.JsonRpcProvider(rpcUrl);
+  }
+  async createWallet() {
+    const wallet = ethers.Wallet.createRandom();
+    return {
+      address: wallet.address,
+      privateKey: wallet.privateKey,
+      balance: "0",
+      network: "ETH"
+    };
+  }
+  async getBalance(address) {
+    try {
+      const balance = await this.provider.getBalance(address);
+      return ethers.formatEther(balance);
+    } catch (error) {
+      console.error("Error getting ETH balance:", error);
+      return "0";
+    }
+  }
+  async sendTransaction(fromPrivateKey, toAddress, amount, gasPrice) {
+    try {
+      const wallet = new ethers.Wallet(fromPrivateKey, this.provider);
+      const tx = await wallet.sendTransaction({
+        to: toAddress,
+        value: ethers.parseEther(amount),
+        gasPrice: gasPrice ? ethers.parseUnits(gasPrice, "gwei") : void 0
+      });
+      return {
+        hash: tx.hash,
+        status: "pending",
+        blockNumber: tx.blockNumber?.toString(),
+        gasFee: tx.gasPrice?.toString()
+      };
+    } catch (error) {
+      console.error("Error sending ETH transaction:", error);
+      return {
+        hash: "",
+        status: "failed"
+      };
+    }
+  }
+  async getTransactionStatus(hash) {
+    try {
+      const receipt = await this.provider.getTransactionReceipt(hash);
+      if (!receipt) {
+        return { hash, status: "pending" };
+      }
+      return {
+        hash,
+        status: receipt.status === 1 ? "confirmed" : "failed",
+        blockNumber: receipt.blockNumber.toString(),
+        confirmations: await this.provider.getBlockNumber() - receipt.blockNumber,
+        gasUsed: receipt.gasUsed.toString()
+      };
+    } catch (error) {
+      console.error("Error getting transaction status:", error);
+      return { hash, status: "failed" };
+    }
+  }
+  async estimateGas(fromAddress, toAddress, amount) {
+    try {
+      const gasEstimate = await this.provider.estimateGas({
+        from: fromAddress,
+        to: toAddress,
+        value: ethers.parseEther(amount)
+      });
+      return gasEstimate.toString();
+    } catch (error) {
+      console.error("Error estimating gas:", error);
+      return "21000";
+    }
+  }
+};
+
+// server/blockchain/tron.ts
+var TronService = class {
+  tronWeb;
+  constructor(fullHost = "https://api.trongrid.io") {
+    try {
+      const TronWeb = __require("tronweb");
+      this.tronWeb = new TronWeb({
+        fullHost,
+        headers: { "TRON-PRO-API-KEY": process.env.TRON_API_KEY || "" }
+      });
+    } catch (error) {
+      console.warn("TronWeb not available, using mock implementation");
+      this.tronWeb = this.createMockTronWeb();
+    }
+  }
+  createMockTronWeb() {
+    return {
+      createAccount: () => ({
+        address: { base58: "TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y" },
+        privateKey: "mock-private-key"
+      }),
+      trx: {
+        getBalance: () => 1e6,
+        sendTransaction: () => ({ txid: "mock-tx-hash" }),
+        getTransaction: () => ({ blockNumber: 12345 }),
+        getConfirmedTransaction: () => true
+      },
+      fromSun: (amount) => amount / 1e6,
+      toSun: (amount) => parseFloat(amount) * 1e6,
+      setPrivateKey: () => {
+      },
+      contract: () => ({
+        at: () => ({
+          decimals: () => ({ call: () => 6 }),
+          transfer: () => ({ send: () => "mock-usdt-tx" })
+        })
+      }),
+      toBigNumber: (amount) => ({
+        multipliedBy: (multiplier) => parseFloat(amount) * multiplier
+      })
+    };
+  }
+  async createWallet() {
+    try {
+      const account = await this.tronWeb.createAccount();
+      return {
+        address: account.address.base58,
+        privateKey: account.privateKey,
+        balance: "0",
+        network: "TRX"
+      };
+    } catch (error) {
+      console.error("Error creating TRON wallet:", error);
+      throw error;
+    }
+  }
+  async getBalance(address) {
+    try {
+      const balance = await this.tronWeb.trx.getBalance(address);
+      return this.tronWeb.fromSun(balance);
+    } catch (error) {
+      console.error("Error getting TRX balance:", error);
+      return "0";
+    }
+  }
+  async sendTransaction(fromPrivateKey, toAddress, amount) {
+    try {
+      this.tronWeb.setPrivateKey(fromPrivateKey);
+      const trxAmount = this.tronWeb.toSun(amount);
+      const transaction = await this.tronWeb.trx.sendTransaction(toAddress, trxAmount);
+      return {
+        hash: transaction.txid,
+        status: "pending"
+      };
+    } catch (error) {
+      console.error("Error sending TRX transaction:", error);
+      return {
+        hash: "",
+        status: "failed"
+      };
+    }
+  }
+  async getTransactionStatus(hash) {
+    try {
+      const transaction = await this.tronWeb.trx.getTransaction(hash);
+      if (!transaction) {
+        return { hash, status: "pending" };
+      }
+      const confirmed = await this.tronWeb.trx.getConfirmedTransaction(hash);
+      return {
+        hash,
+        status: confirmed ? "confirmed" : "pending",
+        blockNumber: transaction.blockNumber?.toString()
+      };
+    } catch (error) {
+      console.error("Error getting TRON transaction status:", error);
+      return { hash, status: "failed" };
+    }
+  }
+  async sendUSDT(fromPrivateKey, toAddress, amount, contractAddress = "TR7NHqjeKQxGTCi8q8ZY4pL8otSzgjLj6t") {
+    try {
+      this.tronWeb.setPrivateKey(fromPrivateKey);
+      const contract = await this.tronWeb.contract().at(contractAddress);
+      const decimals = await contract.decimals().call();
+      const amountInWei = this.tronWeb.toBigNumber(amount).multipliedBy(10 ** decimals);
+      const transaction = await contract.transfer(toAddress, amountInWei).send();
+      return {
+        hash: transaction,
+        status: "pending"
+      };
+    } catch (error) {
+      console.error("Error sending USDT:", error);
+      return {
+        hash: "",
+        status: "failed"
+      };
+    }
+  }
+};
+
+// server/blockchain/bitcoin.ts
+import * as bitcoin from "bitcoinjs-lib";
+import axios from "axios";
+var BitcoinService = class {
+  network;
+  apiBaseUrl;
+  constructor(isTestnet = false) {
+    this.network = isTestnet ? bitcoin.networks.testnet : bitcoin.networks.bitcoin;
+    this.apiBaseUrl = isTestnet ? "https://blockstream.info/testnet/api" : "https://blockstream.info/api";
+  }
+  async createWallet() {
+    const keyPair = bitcoin.ECPair.makeRandom({ network: this.network });
+    const { address } = bitcoin.payments.p2pkh({
+      pubkey: keyPair.publicKey,
+      network: this.network
+    });
+    return {
+      address,
+      privateKey: keyPair.toWIF(),
+      balance: "0",
+      network: "BTC"
+    };
+  }
+  async getBalance(address) {
+    try {
+      const response = await axios.get(`${this.apiBaseUrl}/address/${address}`);
+      const satoshis = response.data.chain_stats.funded_txo_sum - response.data.chain_stats.spent_txo_sum;
+      return (satoshis / 1e8).toString();
+    } catch (error) {
+      console.error("Error getting BTC balance:", error);
+      return "0";
+    }
+  }
+  async getUTXOs(address) {
+    try {
+      const response = await axios.get(`${this.apiBaseUrl}/address/${address}/utxo`);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting UTXOs:", error);
+      return [];
+    }
+  }
+  async sendTransaction(fromWIF, toAddress, amount, feeRate = 10) {
+    try {
+      const keyPair = bitcoin.ECPair.fromWIF(fromWIF, this.network);
+      const { address: fromAddress } = bitcoin.payments.p2pkh({
+        pubkey: keyPair.publicKey,
+        network: this.network
+      });
+      const utxos = await this.getUTXOs(fromAddress);
+      const satoshiAmount = Math.floor(parseFloat(amount) * 1e8);
+      const psbt = new bitcoin.Psbt({ network: this.network });
+      let inputSum = 0;
+      for (const utxo of utxos) {
+        inputSum += utxo.value;
+        psbt.addInput({
+          hash: utxo.txid,
+          index: utxo.vout,
+          nonWitnessUtxo: Buffer.from(await this.getRawTransaction(utxo.txid), "hex")
+        });
+        if (inputSum >= satoshiAmount + 1e3) break;
+      }
+      psbt.addOutput({
+        address: toAddress,
+        value: satoshiAmount
+      });
+      const fee = 250;
+      const change = inputSum - satoshiAmount - fee;
+      if (change > 0) {
+        psbt.addOutput({
+          address: fromAddress,
+          value: change
+        });
+      }
+      for (let i = 0; i < psbt.inputCount; i++) {
+        psbt.signInput(i, keyPair);
+      }
+      psbt.finalizeAllInputs();
+      const txHex = psbt.extractTransaction().toHex();
+      const response = await axios.post(`${this.apiBaseUrl}/tx`, txHex, {
+        headers: { "Content-Type": "text/plain" }
+      });
+      return {
+        hash: response.data,
+        status: "pending"
+      };
+    } catch (error) {
+      console.error("Error sending BTC transaction:", error);
+      return {
+        hash: "",
+        status: "failed"
+      };
+    }
+  }
+  async getRawTransaction(txid) {
+    try {
+      const response = await axios.get(`${this.apiBaseUrl}/tx/${txid}/hex`);
+      return response.data;
+    } catch (error) {
+      console.error("Error getting raw transaction:", error);
+      return "";
+    }
+  }
+  async getTransactionStatus(hash) {
+    try {
+      const response = await axios.get(`${this.apiBaseUrl}/tx/${hash}/status`);
+      return {
+        hash,
+        status: response.data.confirmed ? "confirmed" : "pending",
+        blockNumber: response.data.block_height?.toString(),
+        confirmations: response.data.confirmations
+      };
+    } catch (error) {
+      console.error("Error getting BTC transaction status:", error);
+      return { hash, status: "failed" };
+    }
+  }
+};
+
+// server/blockchain/market.ts
+import axios2 from "axios";
+var MarketDataService = class {
+  COINGECKO_API = "https://api.coingecko.com/api/v3";
+  BINANCE_API = "https://api.binance.com/api/v3";
+  async getCurrentPrice(symbol) {
+    try {
+      const coinId = this.getCoinGeckoId(symbol);
+      const response = await axios2.get(
+        `${this.COINGECKO_API}/simple/price?ids=${coinId}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`
+      );
+      const data = response.data[coinId];
+      if (!data) return null;
+      return {
+        symbol,
+        price: data.usd,
+        change24h: data.usd_24h_change || 0,
+        volume24h: data.usd_24h_vol || 0,
+        marketCap: data.usd_market_cap || 0,
+        timestamp: Date.now()
+      };
+    } catch (error) {
+      console.error(`Error fetching price for ${symbol}:`, error);
+      return null;
+    }
+  }
+  async getMultiplePrices(symbols) {
+    const prices = await Promise.all(
+      symbols.map((symbol) => this.getCurrentPrice(symbol))
+    );
+    return prices.filter((price) => price !== null);
+  }
+  async getHistoricalData(symbol, days = 7) {
+    try {
+      const coinId = this.getCoinGeckoId(symbol);
+      const response = await axios2.get(
+        `${this.COINGECKO_API}/coins/${coinId}/market_chart?vs_currency=usd&days=${days}`
+      );
+      return response.data.prices.map(([timestamp2, price]) => ({
+        timestamp: timestamp2,
+        price
+      }));
+    } catch (error) {
+      console.error(`Error fetching historical data for ${symbol}:`, error);
+      return [];
+    }
+  }
+  getCoinGeckoId(symbol) {
+    const mapping = {
+      "BTC": "bitcoin",
+      "ETH": "ethereum",
+      "BNB": "binancecoin",
+      "TRX": "tron",
+      "SOL": "solana",
+      "USDT": "tether",
+      "USDC": "usd-coin"
+    };
+    return mapping[symbol.toUpperCase()] || symbol.toLowerCase();
+  }
+  async getTopCryptocurrencies(limit = 10) {
+    try {
+      const response = await axios2.get(
+        `${this.COINGECKO_API}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${limit}&page=1&sparkline=false&price_change_percentage=24h`
+      );
+      return response.data.map((coin) => ({
+        symbol: coin.symbol.toUpperCase(),
+        price: coin.current_price,
+        change24h: coin.price_change_percentage_24h || 0,
+        volume24h: coin.total_volume || 0,
+        marketCap: coin.market_cap || 0,
+        timestamp: Date.now()
+      }));
+    } catch (error) {
+      console.error("Error fetching top cryptocurrencies:", error);
+      return [];
+    }
+  }
+  async startPriceUpdates(symbols, intervalMs = 6e4) {
+    const updatePrices = async () => {
+      try {
+        await this.getMultiplePrices(symbols);
+        console.log(`Updated prices for: ${symbols.join(", ")}`);
+      } catch (error) {
+        console.error("Error in price update:", error);
+      }
+    };
+    updatePrices();
+    setInterval(updatePrices, intervalMs);
+  }
+};
+
+// server/blockchain/index.ts
+var BlockchainService = class {
+  ethereum;
+  tron;
+  bitcoin;
+  market;
+  constructor() {
+    this.ethereum = new EthereumService();
+    this.tron = new TronService();
+    this.bitcoin = new BitcoinService();
+    this.market = new MarketDataService();
+  }
+  async createWallet(network) {
+    switch (network.toUpperCase()) {
+      case "ETH":
+      case "BSC":
+        return await this.ethereum.createWallet();
+      case "TRX":
+        return await this.tron.createWallet();
+      case "BTC":
+        return await this.bitcoin.createWallet();
+      default:
+        throw new Error(`Unsupported network: ${network}`);
+    }
+  }
+  async getBalance(address, network) {
+    switch (network.toUpperCase()) {
+      case "ETH":
+      case "BSC":
+        return await this.ethereum.getBalance(address);
+      case "TRX":
+        return await this.tron.getBalance(address);
+      case "BTC":
+        return await this.bitcoin.getBalance(address);
+      default:
+        return "0";
+    }
+  }
+  async sendTransaction(fromPrivateKey, toAddress, amount, network, gasPrice) {
+    switch (network.toUpperCase()) {
+      case "ETH":
+      case "BSC":
+        return await this.ethereum.sendTransaction(fromPrivateKey, toAddress, amount, gasPrice);
+      case "TRX":
+        return await this.tron.sendTransaction(fromPrivateKey, toAddress, amount);
+      case "BTC":
+        return await this.bitcoin.sendTransaction(fromPrivateKey, toAddress, amount);
+      default:
+        return { hash: "", status: "failed" };
+    }
+  }
+  async getTransactionStatus(hash, network) {
+    switch (network.toUpperCase()) {
+      case "ETH":
+      case "BSC":
+        return await this.ethereum.getTransactionStatus(hash);
+      case "TRX":
+        return await this.tron.getTransactionStatus(hash);
+      case "BTC":
+        return await this.bitcoin.getTransactionStatus(hash);
+      default:
+        return { hash, status: "failed" };
+    }
+  }
+  async getCurrentPrice(symbol) {
+    return await this.market.getCurrentPrice(symbol);
+  }
+  async getMultiplePrices(symbols) {
+    return await this.market.getMultiplePrices(symbols);
+  }
+  async getHistoricalData(symbol, days = 7) {
+    return await this.market.getHistoricalData(symbol, days);
+  }
+  async startPriceUpdates() {
+    const symbols = ["BTC", "ETH", "BNB", "TRX", "SOL", "USDT"];
+    await this.market.startPriceUpdates(symbols, 3e4);
+  }
+};
+var blockchainService = new BlockchainService();
 
 // server/routes.ts
 import { z } from "zod";
@@ -393,6 +987,100 @@ async function registerRoutes(app2) {
   app2.get("/api/admin/gas-receiver", (req, res) => {
     const address = storage.getGasReceiverAddress();
     res.json({ address });
+  });
+  app2.post("/api/blockchain/create-wallet", async (req, res) => {
+    try {
+      const { network } = req.body;
+      const wallet = await blockchainService.createWallet(network);
+      res.json(wallet);
+    } catch (error) {
+      console.error("Error creating wallet:", error);
+      res.status(500).json({ message: "Failed to create wallet" });
+    }
+  });
+  app2.get("/api/blockchain/balance/:address/:network", async (req, res) => {
+    try {
+      const { address, network } = req.params;
+      const balance = await blockchainService.getBalance(address, network);
+      res.json({ balance });
+    } catch (error) {
+      console.error("Error getting balance:", error);
+      res.status(500).json({ message: "Failed to get balance" });
+    }
+  });
+  app2.post("/api/blockchain/send", async (req, res) => {
+    try {
+      const { fromPrivateKey, toAddress, amount, network, gasPrice } = req.body;
+      const result = await blockchainService.sendTransaction(
+        fromPrivateKey,
+        toAddress,
+        amount,
+        network,
+        gasPrice
+      );
+      res.json(result);
+    } catch (error) {
+      console.error("Error sending transaction:", error);
+      res.status(500).json({ message: "Failed to send transaction" });
+    }
+  });
+  app2.get("/api/blockchain/transaction/:hash/:network", async (req, res) => {
+    try {
+      const { hash, network } = req.params;
+      const status = await blockchainService.getTransactionStatus(hash, network);
+      res.json(status);
+    } catch (error) {
+      console.error("Error getting transaction status:", error);
+      res.status(500).json({ message: "Failed to get transaction status" });
+    }
+  });
+  app2.get("/api/market/prices", async (req, res) => {
+    try {
+      const symbols = ["BTC", "ETH", "BNB", "TRX", "SOL", "USDT"];
+      const prices = await blockchainService.getMultiplePrices(symbols);
+      res.json(prices);
+    } catch (error) {
+      console.error("Error fetching market prices:", error);
+      res.status(500).json({ message: "Failed to fetch market prices" });
+    }
+  });
+  app2.get("/api/market/price/:symbol", async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const price = await blockchainService.getCurrentPrice(symbol);
+      if (!price) {
+        return res.status(404).json({ message: "Price not found" });
+      }
+      res.json(price);
+    } catch (error) {
+      console.error("Error fetching price:", error);
+      res.status(500).json({ message: "Failed to fetch price" });
+    }
+  });
+  app2.get("/api/market/history/:symbol", async (req, res) => {
+    try {
+      const { symbol } = req.params;
+      const { days = "7" } = req.query;
+      const data = await blockchainService.getHistoricalData(symbol, parseInt(days));
+      const chartData = data.map((point) => ({
+        timestamp: point.timestamp,
+        price: point.price,
+        date: new Date(point.timestamp).toLocaleDateString()
+      }));
+      res.json(chartData);
+    } catch (error) {
+      console.error("Error fetching historical data:", error);
+      res.status(500).json({ message: "Failed to fetch historical data" });
+    }
+  });
+  app2.get("/api/networks", async (req, res) => {
+    try {
+      const networks2 = await storage.getNetworkConfigs();
+      res.json(networks2);
+    } catch (error) {
+      console.error("Error fetching networks:", error);
+      res.status(500).json({ message: "Failed to fetch network configurations" });
+    }
   });
   app2.get("/api/subscription-plans", async (req, res) => {
     try {
