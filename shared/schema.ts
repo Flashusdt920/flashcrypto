@@ -17,8 +17,14 @@ export const sessions = pgTable(
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
+  email: text("email").unique(),
   password: text("password").notNull(),
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  isActive: boolean("is_active").default(true),
+  role: text("role").default("user"), // user, admin
   createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const wallets = pgTable("wallets", {
@@ -60,8 +66,20 @@ export const transactions = pgTable("transactions", {
 
 export const insertUserSchema = createInsertSchema(users).pick({
   username: true,
+  email: true,
   password: true,
+  firstName: true,
+  lastName: true,
 });
+
+export const updateUserSchema = createInsertSchema(users).pick({
+  username: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  isActive: true,
+  role: true,
+}).partial();
 
 export const insertWalletSchema = createInsertSchema(wallets).omit({
   id: true,
@@ -75,6 +93,7 @@ export const insertTransactionSchema = createInsertSchema(transactions).omit({
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
+export type UpdateUser = z.infer<typeof updateUserSchema>;
 export type User = typeof users.$inferSelect;
 
 // Subscription plans

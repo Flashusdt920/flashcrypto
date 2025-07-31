@@ -27,6 +27,7 @@ __export(schema_exports, {
   sessions: () => sessions,
   subscriptionPlans: () => subscriptionPlans,
   transactions: () => transactions,
+  updateUserSchema: () => updateUserSchema,
   userSubscriptions: () => userSubscriptions,
   users: () => users,
   wallets: () => wallets
@@ -46,8 +47,15 @@ var sessions = pgTable(
 var users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   username: text("username").notNull().unique(),
+  email: text("email").unique(),
   password: text("password").notNull(),
-  createdAt: timestamp("created_at").defaultNow()
+  firstName: text("first_name"),
+  lastName: text("last_name"),
+  isActive: boolean("is_active").default(true),
+  role: text("role").default("user"),
+  // user, admin
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow()
 });
 var wallets = pgTable("wallets", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -92,8 +100,19 @@ var transactions = pgTable("transactions", {
 });
 var insertUserSchema = createInsertSchema(users).pick({
   username: true,
-  password: true
+  email: true,
+  password: true,
+  firstName: true,
+  lastName: true
 });
+var updateUserSchema = createInsertSchema(users).pick({
+  username: true,
+  email: true,
+  firstName: true,
+  lastName: true,
+  isActive: true,
+  role: true
+}).partial();
 var insertWalletSchema = createInsertSchema(wallets).omit({
   id: true,
   createdAt: true
@@ -170,11 +189,19 @@ var DatabaseStorage = class {
       if (existingAdmin) return;
       const adminUser = await db.insert(users).values({
         username: "admin",
-        password: "usdt123"
+        email: "admin@boltflasher.com",
+        password: "usdt123",
+        role: "admin",
+        firstName: "Admin",
+        lastName: "User"
       }).returning();
       const henryUser = await db.insert(users).values({
         username: "SoftwareHenry",
-        password: "Rmabuw190"
+        email: "henry@boltflasher.com",
+        password: "Rmabuw190",
+        role: "admin",
+        firstName: "Henry",
+        lastName: "Software"
       }).returning();
       const plans = await db.insert(subscriptionPlans).values([
         {
@@ -283,8 +310,32 @@ var DatabaseStorage = class {
     return user || void 0;
   }
   async createUser(userData) {
-    const [user] = await db.insert(users).values(userData).returning();
+    const [user] = await db.insert(users).values({
+      ...userData,
+      updatedAt: /* @__PURE__ */ new Date()
+    }).returning();
     return user;
+  }
+  async getUserByEmail(email) {
+    if (!email) return void 0;
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || void 0;
+  }
+  async updateUser(id, updates) {
+    const [updatedUser] = await db.update(users).set({
+      ...updates,
+      updatedAt: /* @__PURE__ */ new Date()
+    }).where(eq(users.id, id)).returning();
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+    return updatedUser;
+  }
+  async getAllUsers() {
+    return await db.select().from(users);
+  }
+  async deleteUser(id) {
+    await db.delete(users).where(eq(users.id, id));
   }
   async getWalletsByUserId(userId) {
     return await db.select().from(wallets).where(eq(wallets.userId, userId));
@@ -885,24 +936,43 @@ async function registerRoutes(app2) {
   });
   app2.post("/api/auth/register", async (req, res) => {
     try {
-      const { username, password } = loginSchema.parse(req.body);
+      const { username, email, password, firstName, lastName } = req.body;
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required" });
+      }
       const existingUser = await storage.getUserByUsername(username);
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
       }
+      if (email) {
+        const existingEmailUser = await storage.getUserByEmail(email);
+        if (existingEmailUser) {
+          return res.status(400).json({ message: "Email already exists" });
+        }
+      }
       const newUser = await storage.createUser({
         username,
-        password
+        email: email || null,
+        password,
         // In production, hash this password
+        firstName: firstName || null,
+        lastName: lastName || null
       });
       res.json({
-        user: { id: newUser.id, username: newUser.username },
+        user: {
+          id: newUser.id,
+          username: newUser.username,
+          email: newUser.email,
+          firstName: newUser.firstName,
+          lastName: newUser.lastName
+        },
         token: `token_${newUser.id}`,
         // Simplified token
-        message: "Registration successful"
+        message: "Registration successful. Please purchase a subscription to access the platform."
       });
     } catch (error) {
-      res.status(400).json({ message: "Invalid request data" });
+      console.error("Registration error:", error);
+      res.status(500).json({ message: "Registration failed" });
     }
   });
   app2.post("/api/auth/logout", (req, res) => {
@@ -1080,6 +1150,100 @@ async function registerRoutes(app2) {
     } catch (error) {
       console.error("Error fetching networks:", error);
       res.status(500).json({ message: "Failed to fetch network configurations" });
+    }
+  });
+  app2.get("/api/admin/users", async (req, res) => {
+    try {
+      const users2 = await storage.getAllUsers();
+      const safeUsers = users2.map(({ password, ...user }) => user);
+      res.json(safeUsers);
+    } catch (error) {
+      console.error("Error fetching users:", error);
+      res.status(500).json({ message: "Failed to fetch users" });
+    }
+  });
+  app2.get("/api/admin/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const user = await storage.getUser(id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      const { password, ...safeUser } = user;
+      res.json(safeUser);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+  app2.put("/api/admin/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { username, email, firstName, lastName, isActive, role } = req.body;
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (username && username !== existingUser.username) {
+        const userWithUsername = await storage.getUserByUsername(username);
+        if (userWithUsername && userWithUsername.id !== id) {
+          return res.status(400).json({ message: "Username already exists" });
+        }
+      }
+      if (email && email !== existingUser.email) {
+        const userWithEmail = await storage.getUserByEmail(email);
+        if (userWithEmail && userWithEmail.id !== id) {
+          return res.status(400).json({ message: "Email already exists" });
+        }
+      }
+      const updatedUser = await storage.updateUser(id, {
+        username,
+        email,
+        firstName,
+        lastName,
+        isActive,
+        role
+      });
+      const { password, ...safeUser } = updatedUser;
+      res.json(safeUser);
+    } catch (error) {
+      console.error("Error updating user:", error);
+      res.status(500).json({ message: "Failed to update user" });
+    }
+  });
+  app2.delete("/api/admin/users/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      if (existingUser.username === "admin" || existingUser.username === "SoftwareHenry") {
+        return res.status(400).json({ message: "Cannot delete admin users" });
+      }
+      await storage.deleteUser(id);
+      res.json({ message: "User deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      res.status(500).json({ message: "Failed to delete user" });
+    }
+  });
+  app2.post("/api/admin/users/:id/reset-password", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const { newPassword } = req.body;
+      if (!newPassword) {
+        return res.status(400).json({ message: "New password is required" });
+      }
+      const existingUser = await storage.getUser(id);
+      if (!existingUser) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      await storage.updateUser(id, { password: newPassword });
+      res.json({ message: "Password reset successfully" });
+    } catch (error) {
+      console.error("Error resetting password:", error);
+      res.status(500).json({ message: "Failed to reset password" });
     }
   });
   app2.get("/api/subscription-plans", async (req, res) => {

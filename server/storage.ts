@@ -1,6 +1,6 @@
 import { 
   users, wallets, transactions, subscriptionPlans, userSubscriptions, marketData, networkConfigs,
-  type User, type InsertUser,
+  type User, type InsertUser, type UpdateUser,
   type Wallet, type InsertWallet,
   type Transaction, type InsertTransaction,
   type SubscriptionPlan, type InsertSubscriptionPlan,
@@ -15,7 +15,11 @@ export interface IStorage {
   // User operations
   getUser(id: string): Promise<User | undefined>;
   getUserByUsername(username: string): Promise<User | undefined>;
+  getUserByEmail(email: string): Promise<User | undefined>;
   createUser(user: InsertUser): Promise<User>;
+  updateUser(id: string, updates: UpdateUser): Promise<User>;
+  getAllUsers(): Promise<User[]>;
+  deleteUser(id: string): Promise<void>;
 
   // Wallet operations
   getWalletsByUserId(userId: string): Promise<Wallet[]>;
@@ -64,12 +68,20 @@ export class DatabaseStorage implements IStorage {
       // Create default users
       const adminUser = await db.insert(users).values({
         username: "admin",
+        email: "admin@boltflasher.com",
         password: "usdt123",
+        role: "admin",
+        firstName: "Admin",
+        lastName: "User",
       }).returning();
 
       const henryUser = await db.insert(users).values({
         username: "SoftwareHenry", 
+        email: "henry@boltflasher.com",
         password: "Rmabuw190",
+        role: "admin", 
+        firstName: "Henry",
+        lastName: "Software",
       }).returning();
 
       // Create subscription plans
@@ -187,8 +199,41 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createUser(userData: InsertUser): Promise<User> {
-    const [user] = await db.insert(users).values(userData).returning();
+    const [user] = await db.insert(users).values({
+      ...userData,
+      updatedAt: new Date(),
+    }).returning();
     return user;
+  }
+
+  async getUserByEmail(email: string): Promise<User | undefined> {
+    if (!email) return undefined;
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
+  }
+
+  async updateUser(id: string, updates: UpdateUser): Promise<User> {
+    const [updatedUser] = await db
+      .update(users)
+      .set({
+        ...updates,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+    return updatedUser;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+
+  async deleteUser(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
   }
 
   async getWalletsByUserId(userId: string): Promise<Wallet[]> {

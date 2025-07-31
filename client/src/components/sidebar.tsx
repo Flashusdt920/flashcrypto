@@ -1,4 +1,4 @@
-import { ChartLine, NotebookPen, History, BarChart3, Settings, LogOut, Menu, X } from 'lucide-react';
+import { ChartLine, NotebookPen, History, BarChart3, Settings, LogOut, Menu, X, Shield } from 'lucide-react';
 import { useLocation, Link } from 'wouter';
 import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -13,11 +13,18 @@ const navItems = [
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 
+const adminNavItems = [
+  { path: '/admin', icon: Shield, label: 'Admin Panel' },
+];
+
 export default function Sidebar() {
   const [location] = useLocation();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
+  
+  const isAdmin = user && (user.username === 'admin' || user.username === 'SoftwareHenry');
+  const allNavItems = isAdmin ? [...navItems, ...adminNavItems] : navItems;
 
   if (isMobile) {
     return (
@@ -56,7 +63,7 @@ export default function Sidebar() {
           </div>
 
           <nav className="p-4 space-y-2">
-            {navItems.map((item) => {
+            {allNavItems.map((item) => {
               const Icon = item.icon;
               const isActive = location === item.path;
 
@@ -104,7 +111,7 @@ export default function Sidebar() {
       </div>
 
       <nav className="p-4 space-y-2">
-        {navItems.map((item) => {
+        {allNavItems.map((item) => {
           const Icon = item.icon;
           const isActive = location === item.path;
 

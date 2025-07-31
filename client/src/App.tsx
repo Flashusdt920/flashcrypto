@@ -11,6 +11,7 @@ import Send from "./pages/send";
 import History from "./pages/history";
 import Charts from "./pages/charts";
 import Settings from "./pages/settings";
+import AdminPanel from "./pages/admin";
 import Sidebar from "./components/sidebar";
 import Header from "./components/header";
 import NotFound from "./pages/not-found";
@@ -66,6 +67,7 @@ function AppContent() {
             <Route path="/history" component={History} />
             <Route path="/charts" component={Charts} />
             <Route path="/settings" component={Settings} />
+            <Route path="/admin" component={AdminPanel} />
             <Route component={NotFound} />
           </Switch>
         </main>
