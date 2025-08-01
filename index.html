@@ -5,7 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bolt Crypto Flasher - Professional Flash Transaction Gateway</title>
     <meta name="description" content="Professional cryptocurrency flash transaction platform supporting BTC, ETH, USDT, BNB with advanced flash fee management and real-time balance tracking.">
+    <meta name="keywords" content="cryptocurrency, flash transactions, BTC, ETH, USDT, BNB, crypto platform, blockchain, digital assets">
+    <meta name="author" content="Bolt Crypto Flasher">
     <meta name="theme-color" content="#1a1a1a">
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bolt-flasher.vercel.app/">
+    <meta property="og:title" content="Bolt Crypto Flasher - Professional Flash Transaction Gateway">
+    <meta property="og:description" content="Professional cryptocurrency flash transaction platform supporting BTC, ETH, USDT, BNB with advanced flash fee management and real-time balance tracking.">
+    <meta property="og:image" content="https://bolt-flasher.vercel.app/og-image.png">
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://bolt-flasher.vercel.app/">
+    <meta property="twitter:title" content="Bolt Crypto Flasher - Professional Flash Transaction Gateway">
+    <meta property="twitter:description" content="Professional cryptocurrency flash transaction platform supporting BTC, ETH, USDT, BNB with advanced flash fee management and real-time balance tracking.">
+    <meta property="twitter:image" content="https://bolt-flasher.vercel.app/og-image.png">
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://bolt-flasher.vercel.app/">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Bolt Crypto Flasher",
+      "description": "Professional cryptocurrency flash transaction platform",
+      "url": "https://bolt-flasher.vercel.app/",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web Browser",
+      "offers": {
+        "@type": "Offer",
+        "price": "550",
+        "priceCurrency": "USD",
+        "description": "Basic Plan - BTC Flash, ETH Flash, Basic Support"
+      }
+    }
+    </script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { 
@@ -156,30 +194,54 @@
     </div>
 
     <script>
-        function login() {
+        async function login() {
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const status = document.getElementById('status');
             
+            if (!username || !password) {
+                status.className = 'status error';
+                status.textContent = 'Please enter both username and password';
+                return;
+            }
+            
             status.className = 'status info';
             status.textContent = 'Connecting to platform...';
             
-            setTimeout(() => {
-                if (username === 'admin' && password === 'usdt123') {
+            try {
+                // Make API call to authenticate
+                const response = await fetch('/api/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
                     status.className = 'status success';
-                    status.textContent = '✅ Login successful! Welcome to Bolt Crypto Flasher';
+                    status.textContent = `Welcome ${data.user.username}! Access granted to Bolt Crypto Flasher`;
+                    
+                    // Store authentication data
+                    localStorage.setItem('boltUser', JSON.stringify(data.user));
+                    localStorage.setItem('boltToken', data.token);
                     
                     setTimeout(() => {
-                        status.textContent = '🚀 Platform ready! Full features available on Replit';
-                        setTimeout(() => {
-                            window.open('https://replit.com/@YourUsername/bolt-crypto-flasher', '_blank');
-                        }, 2000);
-                    }, 1500);
+                        status.textContent = 'Redirecting to full platform dashboard...';
+                        // Redirect to the full React application
+                        window.location.href = '/dashboard';
+                    }, 2000);
                 } else {
                     status.className = 'status error';
-                    status.textContent = 'Invalid credentials. Use admin/usdt123';
+                    status.textContent = data.message || 'Authentication failed';
                 }
-            }, 1000);
+            } catch (error) {
+                console.error('Login error:', error);
+                status.className = 'status error';
+                status.textContent = 'Connection error. Please try again.';
+            }
         }
         
         // Allow Enter key to submit
@@ -189,10 +251,14 @@
             }
         });
         
-        // Add loading animation
+        // Add loading animation and enhanced UX
         document.addEventListener('DOMContentLoaded', function() {
             const logo = document.querySelector('.logo');
+            const container = document.querySelector('.container');
+            
+            // Add animations
             logo.style.animation = 'pulse 2s infinite';
+            container.style.animation = 'fadeIn 1s ease-in';
             
             const style = document.createElement('style');
             style.textContent = `
@@ -201,8 +267,18 @@
                     50% { transform: scale(1.05); }
                     100% { transform: scale(1); }
                 }
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: translateY(20px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                .btn:active {
+                    transform: translateY(0);
+                }
             `;
             document.head.appendChild(style);
+            
+            // Auto-focus username field
+            document.getElementById('username').focus();
         });
     </script>
 </body>
