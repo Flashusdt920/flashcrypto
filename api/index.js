@@ -33,7 +33,7 @@ module.exports = (req, res) => {
       res.status(200).send(html);
     } else {
       res.status(200).json({ 
-        message: 'Bolt Crypto Flasher Loading...', 
+        message: 'Bolt Crypto Flasher Loading... (Cache Cleared)', 
         path: req.url,
         cwd: process.cwd(),
         files: fs.readdirSync(process.cwd())
