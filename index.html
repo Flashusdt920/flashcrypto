@@ -164,16 +164,16 @@
             status.className = 'status info';
             status.textContent = 'Connecting to platform...';
             
-            // Simulate login (in production this would be a real API call)
             setTimeout(() => {
                 if (username === 'admin' && password === 'usdt123') {
                     status.className = 'status success';
-                    status.textContent = 'Login successful! Welcome to Bolt Crypto Flasher';
+                    status.textContent = '✅ Login successful! Welcome to Bolt Crypto Flasher';
                     
                     setTimeout(() => {
-                        status.textContent = 'Redirecting to dashboard...';
-                        // In production, redirect to actual dashboard
-                        window.location.href = '/dashboard';
+                        status.textContent = '🚀 Platform ready! Full features available on Replit';
+                        setTimeout(() => {
+                            window.open('https://replit.com/@YourUsername/bolt-crypto-flasher', '_blank');
+                        }, 2000);
                     }, 1500);
                 } else {
                     status.className = 'status error';
@@ -187,6 +187,22 @@
             if (e.key === 'Enter') {
                 login();
             }
+        });
+        
+        // Add loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const logo = document.querySelector('.logo');
+            logo.style.animation = 'pulse 2s infinite';
+            
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes pulse {
+                    0% { transform: scale(1); }
+                    50% { transform: scale(1.05); }
+                    100% { transform: scale(1); }
+                }
+            `;
+            document.head.appendChild(style);
         });
     </script>
 </body>
