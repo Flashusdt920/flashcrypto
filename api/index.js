@@ -1,14 +1,6 @@
 // Vercel serverless function for Bolt Crypto Flasher
-const express = require('express');
-
-const app = express();
-
-// Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-// CORS middleware
-app.use((req, res, next) => {
+export default function handler(req, res) {
+  // Set CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
@@ -17,34 +9,35 @@ app.use((req, res, next) => {
     res.status(200).end();
     return;
   }
-  next();
-});
 
-// In-memory user storage for demo
-const users = [
-  {
-    id: 'admin-001',
-    username: 'admin',
-    email: 'admin@boltflasher.com',
-    firstName: 'Admin',
-    lastName: 'User',
-    role: 'admin',
-    isActive: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'henry-001',
-    username: 'SoftwareHenry',
-    email: 'henry@boltflasher.com',
-    firstName: 'Software',
-    lastName: 'Henry',
-    role: 'admin',
-    isActive: true,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  }
-];
+  // In-memory user storage for demo
+  const users = [
+    {
+      id: 'admin-001',
+      username: 'admin',
+      email: 'admin@boltflasher.com',
+      firstName: 'Admin',
+      lastName: 'User',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    },
+    {
+      id: 'henry-001',
+      username: 'SoftwareHenry',
+      email: 'henry@boltflasher.com',
+      firstName: 'Software',
+      lastName: 'Henry',
+      role: 'admin',
+      isActive: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }
+  ];
+
+  const { method, url } = req;
+  const urlPath = url.split('?')[0];
 
 // Authentication endpoints
 app.post('/api/auth/login', (req, res) => {
