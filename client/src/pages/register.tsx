@@ -15,13 +15,16 @@ interface RegisterProps {
 export default function Register({ onRegistrationSuccess, onBackToLogin }: RegisterProps) {
   const [formData, setFormData] = useState({
     username: '',
+    email: '',
+    firstName: '',
+    lastName: '',
     password: '',
     confirmPassword: '',
   });
   const { toast } = useToast();
 
   const registerMutation = useMutation({
-    mutationFn: async (data: { username: string; password: string }) => {
+    mutationFn: async (data: { username: string; email: string; firstName: string; lastName: string; password: string }) => {
       return await apiRequest('POST', '/api/auth/register', data);
     },
     onSuccess: (response: any) => {
@@ -64,6 +67,9 @@ export default function Register({ onRegistrationSuccess, onBackToLogin }: Regis
 
     registerMutation.mutate({
       username: formData.username,
+      email: formData.email,
+      firstName: formData.firstName,
+      lastName: formData.lastName,
       password: formData.password,
     });
   };
@@ -73,38 +79,76 @@ export default function Register({ onRegistrationSuccess, onBackToLogin }: Regis
       <Card className="w-full max-w-md bg-black bg-opacity-50 border border-purple-500 shadow-2xl">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-white">Create Account</CardTitle>
-          <p className="text-gray-300">Join our crypto trading platform</p>
+          <p className="text-gray-300">Join Bolt Crypto Flasher platform</p>
+          <p className="text-sm text-purple-300">* Required fields</p>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="username" className="text-white">Username</Label>
+              <Label htmlFor="username" className="text-white">Username *</Label>
               <Input
                 id="username"
                 type="text"
                 value={formData.username}
                 onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                 className="bg-gray-800 border-gray-600 text-white focus:border-purple-500"
-                placeholder="Enter your username"
+                placeholder="Choose a unique username"
                 required
               />
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-white">Email Address</Label>
+              <Input
+                id="email"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="bg-gray-800 border-gray-600 text-white focus:border-purple-500"
+                placeholder="your.email@example.com"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="text-white">First Name</Label>
+                <Input
+                  id="firstName"
+                  type="text"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className="bg-gray-800 border-gray-600 text-white focus:border-purple-500"
+                  placeholder="First name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-white">Last Name</Label>
+                <Input
+                  id="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  className="bg-gray-800 border-gray-600 text-white focus:border-purple-500"
+                  placeholder="Last name"
+                />
+              </div>
+            </div>
             
             <div className="space-y-2">
-              <Label htmlFor="password" className="text-white">Password</Label>
+              <Label htmlFor="password" className="text-white">Password *</Label>
               <Input
                 id="password"
                 type="password"
                 value={formData.password}
                 onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="bg-gray-800 border-gray-600 text-white focus:border-purple-500"
-                placeholder="Enter your password"
+                placeholder="Create a secure password"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-white">Confirm Password</Label>
+              <Label htmlFor="confirmPassword" className="text-white">Confirm Password *</Label>
               <Input
                 id="confirmPassword"
                 type="password"
