@@ -89,12 +89,18 @@ export const insertWalletSchema = createInsertSchema(wallets).omit({
 export const insertTransactionSchema = createInsertSchema(transactions).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
   txHash: true,
 });
 
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type UpdateUser = z.infer<typeof updateUserSchema>;
 export type User = typeof users.$inferSelect;
+
+// Gas payment schema
+export const gasPaymentSchema = z.object({
+  confirmed: z.boolean()
+});
 
 // Subscription plans
 export const subscriptionPlans = pgTable("subscription_plans", {

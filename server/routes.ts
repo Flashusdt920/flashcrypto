@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { blockchainService } from "./blockchain";
-import { insertTransactionSchema } from "@shared/schema";
+import { insertTransactionSchema, gasPaymentSchema as gasSchema } from "@shared/schema";
 import { z } from "zod";
 import { registerSEORoutes } from "./seo-routes";
 
@@ -11,10 +11,7 @@ const loginSchema = z.object({
   password: z.string().min(1),
 });
 
-const gasPaymentSchema = z.object({
-  transactionId: z.string(),
-  confirmed: z.boolean(),
-});
+// Using gas payment schema from shared/schema.ts
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Authentication
@@ -143,7 +140,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.patch("/api/transactions/:id/gas-payment", async (req, res) => {
     try {
-      const { confirmed } = gasPaymentSchema.parse(req.body);
+      const { confirmed } = gasSchema.parse(req.body);
       const transaction = await storage.updateTransaction(req.params.id, {
         gasFeePaid: confirmed
       });

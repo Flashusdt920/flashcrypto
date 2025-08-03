@@ -120,6 +120,7 @@ var insertWalletSchema = createInsertSchema(wallets).omit({
 var insertTransactionSchema = createInsertSchema(transactions).omit({
   id: true,
   createdAt: true,
+  updatedAt: true,
   txHash: true
 });
 var subscriptionPlans = pgTable("subscription_plans", {
@@ -906,6 +907,154 @@ var blockchainService = new BlockchainService();
 
 // server/routes.ts
 import { z } from "zod";
+
+// server/seo-routes.ts
+function registerSEORoutes(app2) {
+  app2.get("/sitemap.xml", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const now = (/* @__PURE__ */ new Date()).toISOString();
+    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" 
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <url>
+    <loc>${baseUrl}/</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+    <image:image>
+      <image:loc>${baseUrl}/og-image.png</image:loc>
+      <image:title>Bolt Crypto Flasher - Professional Flash Transaction Platform</image:title>
+    </image:image>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/dashboard</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/send</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/pricing</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/history</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/charts</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>
+
+  <url>
+    <loc>${baseUrl}/settings</loc>
+    <lastmod>${now}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
+</urlset>`;
+    res.header("Content-Type", "application/xml");
+    res.send(sitemap);
+  });
+  app2.get("/robots.txt", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const robots = `User-agent: *
+Allow: /
+
+# Disallow admin areas for security
+Disallow: /admin
+Disallow: /api/
+
+# Allow important pages
+Allow: /dashboard
+Allow: /send
+Allow: /pricing
+Allow: /history
+Allow: /charts
+Allow: /settings
+
+# Sitemap location
+Sitemap: ${baseUrl}/sitemap.xml
+
+# Crawl delay to be respectful
+Crawl-delay: 1`;
+    res.header("Content-Type", "text/plain");
+    res.send(robots);
+  });
+  app2.get("/api/structured-data/homepage", (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    const structuredData = {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "Bolt Crypto Flasher",
+      "description": "Professional cryptocurrency flash transaction platform supporting Bitcoin, USDT, Ethereum, and BNB across multiple networks",
+      "url": baseUrl,
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Web Browser, Windows, macOS, Linux",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Basic Plan",
+          "price": "550",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro Plan",
+          "price": "950",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "name": "Full Plan",
+          "price": "3000",
+          "priceCurrency": "USD"
+        }
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "127",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "creator": {
+        "@type": "Organization",
+        "name": "Bolt Crypto Flasher",
+        "url": baseUrl
+      },
+      "featureList": [
+        "Multi-network cryptocurrency support",
+        "Flash transaction processing",
+        "Real-time transaction tracking",
+        "Advanced admin panel",
+        "Professional user management",
+        "Secure payment processing"
+      ]
+    };
+    res.json(structuredData);
+  });
+}
+
+// server/routes.ts
 var loginSchema = z.object({
   username: z.string().min(1),
   password: z.string().min(1)
@@ -1298,6 +1447,10 @@ async function registerRoutes(app2) {
       res.status(500).json({ message: "Failed to get subscription" });
     }
   });
+  app2.use("/api/*", (req, res) => {
+    res.status(404).json({ message: `API endpoint not found: ${req.originalUrl}` });
+  });
+  registerSEORoutes(app2);
   const httpServer = createServer(app2);
   return httpServer;
 }
@@ -1446,7 +1599,7 @@ app.use((req, res, next) => {
     res.status(status).json({ message });
     throw err;
   });
-  if (app.get("env") === "development") {
+  if (process.env.NODE_ENV === "development") {
     await setupVite(app, server);
   } else {
     serveStatic(app);
@@ -1459,4 +1612,7 @@ app.use((req, res, next) => {
   }, () => {
     log(`serving on port ${port}`);
   });
+  if (process.env.VERCEL) {
+    global.app = app;
+  }
 })();
