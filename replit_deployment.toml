@@ -1,0 +1,7 @@
+[deployment]
+deploymentTarget = "cloudrun"
+build = "npm run build"
+run = "npm start"
+
+[env]
+NODE_ENV = "production"
