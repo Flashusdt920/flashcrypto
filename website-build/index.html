@@ -53,8 +53,16 @@
     <link rel="stylesheet" crossorigin href="/assets/index-D9vR-jTn.css">
   </head>
   <body>
+    <!-- Load API server before React app -->
+    <script src="/api-server.js"></script>
     <div id="root"></div>
-    <!-- This is a replit script which adds a banner on the top of the page when opened in development mode outside the replit environment -->
-    <script type="text/javascript" src="https://replit.com/public/js/replit-dev-banner.js"></script>
+    <script>
+      // Verify API server loaded correctly
+      if (typeof window.apiHandler !== 'undefined') {
+        console.log('🚀 Static Website: API Server Loaded Successfully');
+      } else {
+        console.error('❌ Static Website: API Server Failed to Load');
+      }
+    </script>
   </body>
 </html>
