@@ -19,6 +19,7 @@ import { createServer } from "http";
 // shared/schema.ts
 var schema_exports = {};
 __export(schema_exports, {
+  gasPaymentSchema: () => gasPaymentSchema,
   insertTransactionSchema: () => insertTransactionSchema,
   insertUserSchema: () => insertUserSchema,
   insertWalletSchema: () => insertWalletSchema,
@@ -35,6 +36,7 @@ __export(schema_exports, {
 import { sql } from "drizzle-orm";
 import { pgTable, text, varchar, timestamp, decimal, boolean, jsonb, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
+import { z } from "zod";
 var sessions = pgTable(
   "sessions",
   {
@@ -122,6 +124,9 @@ var insertTransactionSchema = createInsertSchema(transactions).omit({
   createdAt: true,
   updatedAt: true,
   txHash: true
+});
+var gasPaymentSchema = z.object({
+  confirmed: z.boolean()
 });
 var subscriptionPlans = pgTable("subscription_plans", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -906,7 +911,7 @@ var BlockchainService = class {
 var blockchainService = new BlockchainService();
 
 // server/routes.ts
-import { z } from "zod";
+import { z as z2 } from "zod";
 
 // server/seo-routes.ts
 function registerSEORoutes(app2) {
@@ -1055,13 +1060,9 @@ Crawl-delay: 1`;
 }
 
 // server/routes.ts
-var loginSchema = z.object({
-  username: z.string().min(1),
-  password: z.string().min(1)
-});
-var gasPaymentSchema = z.object({
-  transactionId: z.string(),
-  confirmed: z.boolean()
+var loginSchema = z2.object({
+  username: z2.string().min(1),
+  password: z2.string().min(1)
 });
 async function registerRoutes(app2) {
   app2.post("/api/auth/login", async (req, res) => {
