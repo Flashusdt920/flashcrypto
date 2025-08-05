@@ -182,10 +182,11 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
     },
     onSuccess: async () => {
       toast({
-        title: "Subscription Activated",
-        description: "Your subscription has been activated successfully!",
+        title: "Payment Submitted",
+        description: "Your payment has been submitted and is pending approval. You'll be notified once it's approved.",
       });
-      await onSubscriptionComplete();
+      setShowPayment(false);
+      setPaymentTxHash("");
     },
     onError: (error: any) => {
       toast({

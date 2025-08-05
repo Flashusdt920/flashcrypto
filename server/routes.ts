@@ -431,7 +431,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoints for subscription approval
+  app.get("/api/admin/subscriptions/pending", async (req, res) => {
+    try {
+      const pendingSubscriptions = await storage.getPendingSubscriptions();
+      res.json(pendingSubscriptions);
+    } catch (error) {
+      console.error("Error fetching pending subscriptions:", error);
+      res.status(500).json({ message: "Failed to fetch pending subscriptions" });
+    }
+  });
 
+  app.post("/api/admin/subscriptions/:id/approve", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const subscription = await storage.updateSubscriptionStatus(id, "active");
+      res.json({ message: "Subscription approved successfully", subscription });
+    } catch (error) {
+      console.error("Error approving subscription:", error);
+      res.status(500).json({ message: "Failed to approve subscription" });
+    }
+  });
+
+  app.post("/api/admin/subscriptions/:id/reject", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const subscription = await storage.updateSubscriptionStatus(id, "rejected");
+      res.json({ message: "Subscription rejected successfully", subscription });
+    } catch (error) {
+      console.error("Error rejecting subscription:", error);
+      res.status(500).json({ message: "Failed to reject subscription" });
+    }
+  });
 
   // Subscription plans
   app.get("/api/subscription-plans", async (req, res) => {
@@ -443,7 +474,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create subscription
+  // Create subscription (pending approval)
   app.post("/api/subscriptions", async (req, res) => {
     try {
       const { userId, planId, paymentTxHash } = req.body;
@@ -456,7 +487,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         userId,
         planId,
         paymentTxHash,
-        status: "active",
+        status: "pending", // Changed to pending - requires admin approval
         expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000) // 1 year
       });
 

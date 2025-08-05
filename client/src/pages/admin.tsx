@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Edit, Trash2, UserPlus, Key } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Edit, Trash2, UserPlus, Key, Check, X, Clock } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 interface User {
@@ -22,13 +23,32 @@ interface User {
   updatedAt: string;
 }
 
+interface PendingSubscription {
+  id: string;
+  userId: string;
+  planId: string;
+  status: string;
+  paymentTxHash: string;
+  createdAt: string;
+  user?: {
+    username: string;
+    email?: string;
+  };
+  plan?: {
+    name: string;
+    price: string;
+  };
+}
+
 export default function AdminPanel() {
   const [users, setUsers] = useState<User[]>([]);
+  const [pendingSubscriptions, setPendingSubscriptions] = useState<PendingSubscription[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState('');
+  const [activeTab, setActiveTab] = useState('users');
   const { toast } = useToast();
 
   const [editForm, setEditForm] = useState({
@@ -42,6 +62,7 @@ export default function AdminPanel() {
 
   useEffect(() => {
     fetchUsers();
+    fetchPendingSubscriptions();
   }, []);
 
   const fetchUsers = async () => {
@@ -60,6 +81,92 @@ export default function AdminPanel() {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchPendingSubscriptions = async () => {
+    try {
+      const response = await fetch('/api/admin/subscriptions/pending');
+      if (response.ok) {
+        const subscriptions = await response.json();
+        // Fetch user and plan details for each subscription
+        const enrichedSubscriptions = await Promise.all(
+          subscriptions.map(async (sub: any) => {
+            const [userRes, plansRes] = await Promise.all([
+              fetch(`/api/admin/users/${sub.userId}`),
+              fetch('/api/subscription-plans')
+            ]);
+            
+            const userData = userRes.ok ? await userRes.json() : null;
+            const plans = plansRes.ok ? await plansRes.json() : [];
+            const plan = plans.find((p: any) => p.id === sub.planId);
+            
+            return {
+              ...sub,
+              user: userData ? { username: userData.username, email: userData.email } : null,
+              plan: plan || null
+            };
+          })
+        );
+        setPendingSubscriptions(enrichedSubscriptions);
+      }
+    } catch (error) {
+      console.error('Error fetching pending subscriptions:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch pending subscriptions",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleApproveSubscription = async (subscriptionId: string) => {
+    try {
+      const response = await fetch(`/api/admin/subscriptions/${subscriptionId}/approve`, {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Subscription approved successfully",
+        });
+        fetchPendingSubscriptions();
+      } else {
+        throw new Error('Failed to approve subscription');
+      }
+    } catch (error) {
+      console.error('Error approving subscription:', error);
+      toast({
+        title: "Error",
+        description: "Failed to approve subscription",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleRejectSubscription = async (subscriptionId: string) => {
+    try {
+      const response = await fetch(`/api/admin/subscriptions/${subscriptionId}/reject`, {
+        method: 'POST',
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Success",
+          description: "Subscription rejected successfully",
+        });
+        fetchPendingSubscriptions();
+      } else {
+        throw new Error('Failed to reject subscription');
+      }
+    } catch (error) {
+      console.error('Error rejecting subscription:', error);
+      toast({
+        title: "Error",
+        description: "Failed to reject subscription",
+        variant: "destructive",
+      });
     }
   };
 
@@ -216,23 +323,36 @@ export default function AdminPanel() {
             <h1 className="text-3xl font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 bg-clip-text text-transparent">
               Admin Panel
             </h1>
-            <p className="text-muted-foreground mt-2">Manage user accounts and permissions</p>
+            <p className="text-muted-foreground mt-2">Manage user accounts and subscription approvals</p>
           </div>
         </div>
 
-        <Card className="glass-card border-gray-700">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <UserPlus className="w-5 h-5" />
-              User Management
-            </CardTitle>
-            <CardDescription>
-              View and manage all user accounts in the system
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
-              <Table>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <TabsList className="grid w-full grid-cols-2 bg-gray-800">
+            <TabsTrigger value="users" className="data-[state=active]:bg-gray-700">
+              Users {users.length > 0 && `(${users.length})`}
+            </TabsTrigger>
+            <TabsTrigger value="subscriptions" className="data-[state=active]:bg-gray-700">
+              Pending Subscriptions {pendingSubscriptions.length > 0 && (
+                <Badge className="ml-2 bg-orange-500 text-white">{pendingSubscriptions.length}</Badge>
+              )}
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="users">
+            <Card className="glass-card border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white flex items-center gap-2">
+                  <UserPlus className="w-5 h-5" />
+                  User Management
+                </CardTitle>
+                <CardDescription>
+                  View and manage all user accounts in the system
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
                 <TableHeader>
                   <TableRow className="border-gray-700">
                     <TableHead className="text-gray-300">Username</TableHead>
@@ -312,8 +432,93 @@ export default function AdminPanel() {
             </div>
           </CardContent>
         </Card>
+      </TabsContent>
 
-        {/* Edit User Dialog */}
+      <TabsContent value="subscriptions">
+        <Card className="glass-card border-gray-700">
+          <CardHeader>
+            <CardTitle className="text-white flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              Pending Subscription Approvals
+            </CardTitle>
+            <CardDescription>
+              Review and approve user subscription payments
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {pendingSubscriptions.length === 0 ? (
+              <div className="text-center py-8 text-gray-400">
+                No pending subscriptions for approval
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="border-gray-700">
+                      <TableHead className="text-gray-300">User</TableHead>
+                      <TableHead className="text-gray-300">Email</TableHead>
+                      <TableHead className="text-gray-300">Plan</TableHead>
+                      <TableHead className="text-gray-300">Price</TableHead>
+                      <TableHead className="text-gray-300">Transaction Hash</TableHead>
+                      <TableHead className="text-gray-300">Date</TableHead>
+                      <TableHead className="text-gray-300">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {pendingSubscriptions.map((subscription) => (
+                      <TableRow key={subscription.id} className="border-gray-700">
+                        <TableCell className="text-white font-medium">
+                          {subscription.user?.username || 'Unknown'}
+                        </TableCell>
+                        <TableCell className="text-gray-300">
+                          {subscription.user?.email || 'N/A'}
+                        </TableCell>
+                        <TableCell className="text-white">
+                          {subscription.plan?.name || 'Unknown Plan'}
+                        </TableCell>
+                        <TableCell className="text-green-400 font-medium">
+                          ${subscription.plan?.price || '0'} USDT
+                        </TableCell>
+                        <TableCell className="text-gray-300">
+                          <span className="font-mono text-xs truncate max-w-xs block">
+                            {subscription.paymentTxHash}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-gray-300">
+                          {new Date(subscription.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleApproveSubscription(subscription.id)}
+                              className="text-green-400 hover:text-green-300"
+                            >
+                              <Check className="w-4 h-4" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleRejectSubscription(subscription.id)}
+                              className="text-red-400 hover:text-red-300"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </TabsContent>
+    </Tabs>
+
+    {/* Edit User Dialog */}
         <Dialog open={editDialogOpen} onOpenChange={setEditDialogOpen}>
           <DialogContent className="glass-card border-gray-700 text-white">
             <DialogHeader>

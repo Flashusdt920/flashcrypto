@@ -39,6 +39,8 @@ export interface IStorage {
   createSubscription(subscription: InsertUserSubscription): Promise<UserSubscription>;
   getUserSubscription(userId: string): Promise<UserSubscription | undefined>;
   getUserSubscriptions(userId: string): Promise<UserSubscription[]>;
+  getPendingSubscriptions(): Promise<UserSubscription[]>;
+  updateSubscriptionStatus(id: string, status: string): Promise<UserSubscription>;
 
   // Market data operations
   saveMarketData(data: Omit<MarketData, 'id' | 'timestamp'>): Promise<MarketData>;
@@ -298,6 +300,25 @@ export class DatabaseStorage implements IStorage {
         eq(userSubscriptions.status, 'active')
       ));
     return subscription || undefined;
+  }
+
+  async getPendingSubscriptions(): Promise<UserSubscription[]> {
+    return await db.select()
+      .from(userSubscriptions)
+      .where(eq(userSubscriptions.status, 'pending'))
+      .orderBy(userSubscriptions.createdAt);
+  }
+
+  async updateSubscriptionStatus(id: string, status: string): Promise<UserSubscription> {
+    const [updated] = await db.update(userSubscriptions)
+      .set({ status })
+      .where(eq(userSubscriptions.id, id))
+      .returning();
+    
+    if (!updated) {
+      throw new Error("Subscription not found");
+    }
+    return updated;
   }
 
   // Market data operations

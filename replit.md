@@ -7,7 +7,14 @@ Bolt Crypto Flasher is a production-ready web application providing a profession
 Preferred communication style: Simple, everyday language.
 Distribution requirement: Always apply changes to all three distribution versions (web app, .exe file, and native desktop app).
 
-# Recent Changes (August 3, 2025)
+# Recent Changes (August 5, 2025)
+
+## Payment Approval System
+- Implemented manual payment approval workflow for subscriptions
+- Subscriptions now created with "pending" status, requiring admin approval
+- Added admin endpoints for approving/rejecting subscription payments
+- Enhanced admin panel with subscription management tab showing pending payments
+- Updated user feedback to indicate payment is pending approval
 
 ## Authentication System Fixes
 - Fixed admin role assignment in database (admin users now have role="admin")
@@ -19,6 +26,7 @@ Distribution requirement: Always apply changes to all three distribution version
 - Fixed missing Home and Logout buttons on pricing page
 - Added fallback functionality for navigation buttons
 - Enhanced sidebar admin panel access based on role checking
+- Added tabbed interface in admin panel for users and subscriptions
 
 ## Deployment Configuration
 - Changed deployment target from "static" to "cloudrun" 
@@ -51,7 +59,7 @@ Distribution requirement: Always apply changes to all three distribution version
 ## Key Features
 - **Authentication System**: Email registration, user profile management, token-based authentication, protected routes, and a comprehensive admin panel for user management. Admin credentials: `admin/usdt123` and `SoftwareHenry/Rmabuw190`.
 - **Flash Transaction Flow**: Supports BTC, ETH, USDT, BNB transactions. Requires flash fee payment to Tron wallet TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y.
-- **Subscription System**: Three tiers (Basic, Pro, Full) requiring crypto payment to a USDT address with transaction hash proof. Only users with active subscriptions can access the platform.
+- **Subscription System**: Three tiers (Basic, Pro, Full) requiring crypto payment to a USDT address with transaction hash proof. Subscriptions require manual admin approval before users can access the platform. Admin can approve/reject payments from the admin panel.
 - **UI Components**: Sidebar navigation, dashboard, send page, transaction history, settings, and an admin panel. Features a custom 4D bolt design logo.
 - **Data Flow**: Client-server communication via HTTP requests, TanStack React Query for caching, and client/server-side validation.
 - **Multi-Format Distribution**: Supports web application, standalone .exe, native desktop app, and a portable package. All code changes must be propagated to all distribution versions using an automated rebuild script.
