@@ -8,7 +8,7 @@ import {
   type MarketData, type NetworkConfig
 } from "@shared/schema";
 import { db } from './db';
-import { eq, and } from 'drizzle-orm';
+import { eq, and, sql } from 'drizzle-orm';
 import { randomUUID } from "crypto";
 
 export interface IStorage {
@@ -196,7 +196,9 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByUsername(username: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.username, username));
+    const [user] = await db.select().from(users).where(
+      sql`LOWER(${users.username}) = LOWER(${username})`
+    );
     return user || undefined;
   }
 

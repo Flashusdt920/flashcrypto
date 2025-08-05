@@ -19,7 +19,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { username, password } = loginSchema.parse(req.body);
 
-      const user = await storage.getUserByUsername(username);
+      const user = await storage.getUserByUsername(username.toLowerCase());
       if (!user) {
         return res.status(401).json({ message: "Invalid credentials" });
       }
@@ -54,8 +54,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Username and password are required" });
       }
 
-      // Check if user already exists by username
-      const existingUser = await storage.getUserByUsername(username);
+      // Check if user already exists by username (case-insensitive)
+      const existingUser = await storage.getUserByUsername(username.toLowerCase());
       if (existingUser) {
         return res.status(400).json({ message: "Username already exists" });
       }
@@ -68,9 +68,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      // Create new user with email support
+      // Create new user with email support (username stored in lowercase)
       const newUser = await storage.createUser({
-        username,
+        username: username.toLowerCase(),
         email: email || null,
         password, // In production, hash this password
         firstName: firstName || null,
