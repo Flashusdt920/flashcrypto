@@ -3,6 +3,9 @@ import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import SEOHead from '@/components/SEOHead';
+import VideoTestimonials from '@/components/VideoTestimonials';
+import CountryFlags from '@/components/CountryFlags';
+import { SecurityAuditBadge } from '@/components/SecurityAudit';
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -197,6 +200,18 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* New Enhanced Features Section */}
+      <div className="mt-8 space-y-6">
+        {/* Security Audit Badge */}
+        <SecurityAuditBadge />
+        
+        {/* Video Testimonials */}
+        <VideoTestimonials />
+        
+        {/* Global Presence */}
+        <CountryFlags />
       </div>
       </div>
     </>

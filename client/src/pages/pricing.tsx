@@ -9,6 +9,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Copy, Check, Star, Quote, LogOut, Home } from 'lucide-react';
 import QRCode from 'qrcode';
+import PromoCode from '@/components/PromoCode';
 
 interface PricingProps {
   user: any;
@@ -267,6 +268,16 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
                 </div>
               )}
             </div>
+
+            {/* Promo Code Section */}
+            <PromoCode 
+              onApply={(discount) => {
+                toast({
+                  title: "Promo Code Applied!",
+                  description: `You saved ${discount}% on your subscription`,
+                });
+              }}
+            />
 
             <div className="space-y-2">
               <Label htmlFor="txHash" className="text-white">Transaction Hash</Label>

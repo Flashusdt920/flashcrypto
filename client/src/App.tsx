@@ -22,8 +22,18 @@ import Terms from './pages/terms';
 import Privacy from './pages/privacy';
 import FAQ from './pages/faq';
 import RefundPolicy from './pages/refund';
+import AMLKYCPolicy from './pages/aml-kyc';
+import DMCANotice from './pages/dmca';
+import Blog from './pages/blog';
+import KnowledgeBase from './pages/knowledge-base';
+import APIDocs from './pages/api-docs';
+import CookieConsent from './components/CookieConsent';
+import AgeVerification from './components/AgeVerification';
+import ExitIntentPopup from './components/ExitIntentPopup';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 
 function AppContent() {
+  useKeyboardShortcuts();
   const { isAuthenticated, isLoading, hasActiveSubscription, user, checkSubscription, logout } = useAuth();
 
   if (isLoading) {
@@ -44,6 +54,11 @@ function AppContent() {
         <Route path="/privacy" component={Privacy} />
         <Route path="/faq" component={FAQ} />
         <Route path="/refund" component={RefundPolicy} />
+        <Route path="/aml-kyc" component={AMLKYCPolicy} />
+        <Route path="/dmca" component={DMCANotice} />
+        <Route path="/blog" component={Blog} />
+        <Route path="/knowledge-base" component={KnowledgeBase} />
+        <Route path="/api-docs" component={APIDocs} />
         <Route>
           <div className="relative">
             <Login />
@@ -83,6 +98,11 @@ function AppContent() {
             <Route path="/charts" component={Charts} />
             <Route path="/settings" component={Settings} />
             <Route path="/admin" component={AdminPanel} />
+            <Route path="/blog" component={Blog} />
+            <Route path="/knowledge-base" component={KnowledgeBase} />
+            <Route path="/api-docs" component={APIDocs} />
+            <Route path="/aml-kyc" component={AMLKYCPolicy} />
+            <Route path="/dmca" component={DMCANotice} />
             <Route component={NotFound} />
           </Switch>
         </main>
@@ -117,6 +137,9 @@ function App() {
         <TooltipProvider>
           <GoogleAnalytics />
           <Toaster />
+          <AgeVerification />
+          <CookieConsent />
+          <ExitIntentPopup />
           <AppContent />
         </TooltipProvider>
       </AuthProvider>

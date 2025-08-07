@@ -11,6 +11,8 @@ import { useToast } from '@/hooks/use-toast';
 import { apiRequest } from '@/lib/queryClient';
 import { Copy, QrCode, ExternalLink } from 'lucide-react';
 import QRCode from 'qrcode';
+import TransactionCalculator from '@/components/TransactionCalculator';
+import TransactionScheduler from '@/components/TransactionScheduler';
 
 interface GasPaymentSectionProps {
   gasFeePaid: boolean;
@@ -470,6 +472,15 @@ export default function Send() {
           </div>
         </div>
       )}
+
+      {/* New Enhanced Features Section */}
+      <div className="mt-8 space-y-6">
+        {/* Transaction Calculator */}
+        <TransactionCalculator />
+        
+        {/* Transaction Scheduler */}
+        <TransactionScheduler />
+      </div>
     </div>
   );
 }
