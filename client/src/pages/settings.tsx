@@ -110,7 +110,7 @@ export default function Settings() {
 
         {/* General Tab */}
         <TabsContent value="general" className="space-y-6">
-          <EmailVerificationBanner email={user?.email} />
+          <EmailVerificationBanner email={user?.email} userId={user?.id} />
           
           <Card className="bg-black/50 border-purple-500/20">
             <CardContent className="p-6">
@@ -155,9 +155,9 @@ export default function Settings() {
 
         {/* Security Tab */}
         <TabsContent value="security" className="space-y-6">
-          <TwoFactorSetup />
-          <AntiPhishingSetup />
-          <IPWhitelist />
+          <TwoFactorSetup userId={user?.id} />
+          <AntiPhishingSetup userId={user?.id} />
+          <IPWhitelist userId={user?.id} />
           
           <Card className="bg-black/50 border-purple-500/20">
             <CardContent className="p-6">

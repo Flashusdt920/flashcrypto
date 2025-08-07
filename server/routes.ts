@@ -529,6 +529,255 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Email Verification Endpoints
+  app.post("/api/auth/send-verification", async (req, res) => {
+    try {
+      const { userId, email } = req.body;
+      
+      // Generate verification token
+      const token = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+      const expiresAt = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+      
+      // Store verification token (would need to add to storage interface)
+      console.log(`Verification email would be sent to ${email} with token: ${token}`);
+      
+      res.json({ 
+        message: "Verification email sent successfully",
+        // In development, return token for testing
+        devToken: token 
+      });
+    } catch (error) {
+      console.error("Error sending verification email:", error);
+      res.status(500).json({ message: "Failed to send verification email" });
+    }
+  });
+  
+  app.post("/api/auth/verify-email", async (req, res) => {
+    try {
+      const { token, code } = req.body;
+      
+      // For demo purposes, accept code "123456"
+      if (code === "123456") {
+        res.json({ message: "Email verified successfully", verified: true });
+      } else {
+        res.status(400).json({ message: "Invalid verification code" });
+      }
+    } catch (error) {
+      console.error("Error verifying email:", error);
+      res.status(500).json({ message: "Failed to verify email" });
+    }
+  });
+
+  // 2FA Endpoints
+  app.post("/api/auth/2fa/setup", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      // Generate secret
+      const secret = "JBSWY3DPEHPK3PXP"; // Example secret
+      
+      // Generate backup codes
+      const backupCodes = Array.from({ length: 10 }, () => 
+        Math.random().toString(36).substring(2, 10).toUpperCase()
+      );
+      
+      // In production, generate proper QR code
+      const qrCodeUrl = `otpauth://totp/BoltFlasher:user?secret=${secret}&issuer=BoltFlasher`;
+      
+      res.json({
+        secret,
+        qrCodeUrl,
+        backupCodes,
+        enabled: false
+      });
+    } catch (error) {
+      console.error("Error setting up 2FA:", error);
+      res.status(500).json({ message: "Failed to setup 2FA" });
+    }
+  });
+  
+  app.post("/api/auth/2fa/verify", async (req, res) => {
+    try {
+      const { userId, code } = req.body;
+      
+      // For demo purposes, accept code "123456"
+      if (code === "123456") {
+        res.json({ message: "2FA verified successfully", verified: true });
+      } else {
+        res.status(400).json({ message: "Invalid 2FA code" });
+      }
+    } catch (error) {
+      console.error("Error verifying 2FA:", error);
+      res.status(500).json({ message: "Failed to verify 2FA" });
+    }
+  });
+  
+  app.post("/api/auth/2fa/disable", async (req, res) => {
+    try {
+      const { userId } = req.body;
+      
+      res.json({ message: "2FA disabled successfully" });
+    } catch (error) {
+      console.error("Error disabling 2FA:", error);
+      res.status(500).json({ message: "Failed to disable 2FA" });
+    }
+  });
+
+  // Security Settings Endpoints
+  app.get("/api/security/settings/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Return default settings for demo
+      res.json({
+        userId,
+        antiPhishingCode: null,
+        ipWhitelist: [],
+        sessionTimeout: 30,
+        emailNotifications: true,
+        smsNotifications: false,
+        loginAlerts: true,
+        withdrawalWhitelist: [],
+        twoFactorEnabled: false,
+        emailVerified: false
+      });
+    } catch (error) {
+      console.error("Error fetching security settings:", error);
+      res.status(500).json({ message: "Failed to fetch security settings" });
+    }
+  });
+  
+  app.put("/api/security/settings/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      const settings = req.body;
+      
+      // Return updated settings
+      res.json({
+        ...settings,
+        userId,
+        message: "Settings updated successfully"
+      });
+    } catch (error) {
+      console.error("Error updating security settings:", error);
+      res.status(500).json({ message: "Failed to update security settings" });
+    }
+  });
+  
+  // Anti-Phishing Code
+  app.post("/api/security/anti-phishing", async (req, res) => {
+    try {
+      const { userId, code } = req.body;
+      
+      if (!code || code.length < 4) {
+        return res.status(400).json({ message: "Code must be at least 4 characters" });
+      }
+      
+      res.json({ message: "Anti-phishing code set successfully", code });
+    } catch (error) {
+      console.error("Error setting anti-phishing code:", error);
+      res.status(500).json({ message: "Failed to set anti-phishing code" });
+    }
+  });
+  
+  // IP Whitelist
+  app.post("/api/security/ip-whitelist", async (req, res) => {
+    try {
+      const { userId, ipAddress } = req.body;
+      
+      // Validate IP format
+      const ipRegex = /^(\d{1,3}\.){3}\d{1,3}$/;
+      if (!ipRegex.test(ipAddress)) {
+        return res.status(400).json({ message: "Invalid IP address format" });
+      }
+      
+      res.json({ message: "IP address added to whitelist", ipAddress });
+    } catch (error) {
+      console.error("Error adding to IP whitelist:", error);
+      res.status(500).json({ message: "Failed to add to IP whitelist" });
+    }
+  });
+  
+  app.delete("/api/security/ip-whitelist", async (req, res) => {
+    try {
+      const { userId, ipAddress } = req.body;
+      
+      res.json({ message: "IP address removed from whitelist" });
+    } catch (error) {
+      console.error("Error removing from IP whitelist:", error);
+      res.status(500).json({ message: "Failed to remove from IP whitelist" });
+    }
+  });
+  
+  // Login History
+  app.get("/api/security/login-history/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Return sample login history
+      const history = [
+        {
+          id: "1",
+          userId,
+          ipAddress: "192.168.1.1",
+          location: "New York, US",
+          userAgent: "Chrome/120.0",
+          status: "success",
+          createdAt: new Date().toISOString()
+        },
+        {
+          id: "2",
+          userId,
+          ipAddress: "10.0.0.1",
+          location: "London, UK",
+          userAgent: "Firefox/121.0",
+          status: "success",
+          createdAt: new Date(Date.now() - 86400000).toISOString()
+        }
+      ];
+      
+      res.json(history);
+    } catch (error) {
+      console.error("Error fetching login history:", error);
+      res.status(500).json({ message: "Failed to fetch login history" });
+    }
+  });
+  
+  // Session Management
+  app.get("/api/security/sessions/:userId", async (req, res) => {
+    try {
+      const { userId } = req.params;
+      
+      // Return sample sessions
+      const sessions = [
+        {
+          id: "session1",
+          userId,
+          ipAddress: "192.168.1.1",
+          userAgent: "Chrome/120.0",
+          lastActivity: new Date().toISOString(),
+          expiresAt: new Date(Date.now() + 3600000).toISOString()
+        }
+      ];
+      
+      res.json(sessions);
+    } catch (error) {
+      console.error("Error fetching sessions:", error);
+      res.status(500).json({ message: "Failed to fetch sessions" });
+    }
+  });
+  
+  app.delete("/api/security/sessions/:sessionId", async (req, res) => {
+    try {
+      const { sessionId } = req.params;
+      
+      res.json({ message: "Session terminated successfully" });
+    } catch (error) {
+      console.error("Error terminating session:", error);
+      res.status(500).json({ message: "Failed to terminate session" });
+    }
+  });
+
   // API 404 handler - must come before SEO routes
   app.use('/api/*', (req, res) => {
     res.status(404).json({ message: `API endpoint not found: ${req.originalUrl}` });

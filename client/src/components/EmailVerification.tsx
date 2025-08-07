@@ -6,35 +6,76 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { motion } from 'framer-motion';
+import { apiRequest } from '@/lib/queryClient';
 
-export function EmailVerificationBanner({ email }: { email?: string }) {
+export function EmailVerificationBanner({ email, userId }: { email?: string; userId?: string }) {
   const [isVerified, setIsVerified] = useState(false);
   const [verificationCode, setVerificationCode] = useState('');
   const [showVerification, setShowVerification] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSendVerification = () => {
-    setShowVerification(true);
-    toast({
-      title: "Verification Email Sent",
-      description: `Check your email ${email || 'inbox'} for the verification code`,
-    });
+  const handleSendVerification = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest('POST', '/api/auth/send-verification', {
+        userId: userId || 'current',
+        email: email || ''
+      });
+      
+      setShowVerification(true);
+      toast({
+        title: "Verification Email Sent",
+        description: `Check your email ${email || 'inbox'} for the verification code`,
+      });
+      
+      // In development, show the token for testing
+      if (response.devToken) {
+        console.log('Dev verification token:', response.devToken);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send verification email",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleVerify = () => {
-    if (verificationCode.length === 6) {
-      setIsVerified(true);
-      setShowVerification(false);
-      toast({
-        title: "Email Verified",
-        description: "Your email has been successfully verified",
-      });
-    } else {
+  const handleVerify = async () => {
+    if (verificationCode.length !== 6) {
       toast({
         title: "Invalid Code",
         description: "Please enter the 6-digit code from your email",
         variant: "destructive",
       });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const response = await apiRequest('POST', '/api/auth/verify-email', {
+        code: verificationCode
+      });
+      
+      if (response.verified) {
+        setIsVerified(true);
+        setShowVerification(false);
+        toast({
+          title: "Email Verified",
+          description: "Your email has been successfully verified",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Verification Failed",
+        description: "Invalid verification code. Try code: 123456",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -80,17 +121,19 @@ export function EmailVerificationBanner({ email }: { email?: string }) {
               <div className="flex gap-2">
                 <Input
                   type="text"
-                  placeholder="Enter 6-digit code"
+                  placeholder="Enter 6-digit code (123456)"
                   value={verificationCode}
                   onChange={(e) => setVerificationCode(e.target.value)}
                   maxLength={6}
                   className="bg-gray-800 border-gray-600 text-white font-mono"
+                  disabled={isLoading}
                 />
                 <Button
                   onClick={handleVerify}
                   className="bg-purple-600 hover:bg-purple-700"
+                  disabled={isLoading}
                 >
-                  Verify
+                  {isLoading ? 'Verifying...' : 'Verify'}
                 </Button>
               </div>
               <button

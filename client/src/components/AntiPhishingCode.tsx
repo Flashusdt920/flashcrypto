@@ -5,16 +5,18 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
+import { apiRequest } from '@/lib/queryClient';
 
-export function AntiPhishingSetup() {
+export function AntiPhishingSetup({ userId }: { userId?: string }) {
   const [code, setCode] = useState('');
   const [confirmCode, setConfirmCode] = useState('');
   const [isEnabled, setIsEnabled] = useState(false);
   const [showCode, setShowCode] = useState(false);
   const [savedCode, setSavedCode] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleSetupCode = () => {
+  const handleSetupCode = async () => {
     if (code.length < 4 || code.length > 20) {
       toast({
         title: "Invalid Code",
@@ -33,14 +35,30 @@ export function AntiPhishingSetup() {
       return;
     }
 
-    setSavedCode(code);
-    setIsEnabled(true);
-    setCode('');
-    setConfirmCode('');
-    toast({
-      title: "Anti-Phishing Code Set",
-      description: "Your anti-phishing code has been successfully configured",
-    });
+    setIsLoading(true);
+    try {
+      const response = await apiRequest('POST', '/api/security/anti-phishing', {
+        userId: userId || 'current',
+        code: code
+      });
+      
+      setSavedCode(code);
+      setIsEnabled(true);
+      setCode('');
+      setConfirmCode('');
+      toast({
+        title: "Anti-Phishing Code Set",
+        description: "Your anti-phishing code has been successfully configured",
+      });
+    } catch (error) {
+      toast({
+        title: "Setup Failed",
+        description: "Failed to set anti-phishing code",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDisable = () => {

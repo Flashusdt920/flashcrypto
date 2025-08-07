@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Shield, Smartphone, Key, Copy, CheckCircle, XCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -6,41 +6,71 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
 import { motion, AnimatePresence } from 'framer-motion';
+import { apiRequest } from '@/lib/queryClient';
 
-export function TwoFactorSetup() {
+export function TwoFactorSetup({ userId }: { userId?: string }) {
   const [isEnabled, setIsEnabled] = useState(false);
-  const [setupStep, setSetupStep] = useState(1);
-  const [secretKey] = useState('BOLT-' + Math.random().toString(36).substring(2, 15).toUpperCase());
+  const [setupStep, setSetupStep] = useState(0);
+  const [secretKey, setSecretKey] = useState('');
   const [verificationCode, setVerificationCode] = useState('');
-  const [backupCodes] = useState([
-    'BACKUP-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-    'BACKUP-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-    'BACKUP-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-    'BACKUP-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-    'BACKUP-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-    'BACKUP-' + Math.random().toString(36).substring(2, 10).toUpperCase(),
-  ]);
+  const [backupCodes, setBackupCodes] = useState<string[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleEnable2FA = () => {
-    setSetupStep(1);
+  const handleEnable2FA = async () => {
+    setIsLoading(true);
+    try {
+      const response = await apiRequest('POST', '/api/auth/2fa/setup', {
+        userId: userId || 'current'
+      });
+      
+      setSecretKey(response.secret);
+      setBackupCodes(response.backupCodes);
+      setSetupStep(1);
+    } catch (error) {
+      toast({
+        title: "Setup Failed",
+        description: "Failed to initialize 2FA setup",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleVerifyCode = () => {
-    // Simulate verification
-    if (verificationCode.length === 6) {
-      setIsEnabled(true);
-      setSetupStep(3);
-      toast({
-        title: "2FA Enabled",
-        description: "Two-factor authentication has been successfully enabled",
-      });
-    } else {
+  const handleVerifyCode = async () => {
+    if (verificationCode.length !== 6) {
       toast({
         title: "Invalid Code",
         description: "Please enter a valid 6-digit code",
         variant: "destructive",
       });
+      return;
+    }
+    
+    setIsLoading(true);
+    try {
+      const response = await apiRequest('POST', '/api/auth/2fa/verify', {
+        userId: userId || 'current',
+        code: verificationCode
+      });
+      
+      if (response.verified) {
+        setIsEnabled(true);
+        setSetupStep(3);
+        toast({
+          title: "2FA Enabled",
+          description: "Two-factor authentication has been successfully enabled",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Verification Failed",
+        description: "Invalid code. Try: 123456",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 

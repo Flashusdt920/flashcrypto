@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { useToast } from '@/hooks/use-toast';
 import { Badge } from '@/components/ui/badge';
+import { apiRequest } from '@/lib/queryClient';
 
 interface WhitelistedIP {
   id: string;
@@ -17,7 +18,7 @@ interface WhitelistedIP {
   isCurrent?: boolean;
 }
 
-export function IPWhitelist() {
+export function IPWhitelist({ userId }: { userId?: string }) {
   const [isEnabled, setIsEnabled] = useState(false);
   const [newIP, setNewIP] = useState('');
   const [newLabel, setNewLabel] = useState('');
@@ -51,7 +52,7 @@ export function IPWhitelist() {
     });
   };
 
-  const handleAddIP = () => {
+  const handleAddIP = async () => {
     if (!validateIP(newIP)) {
       toast({
         title: "Invalid IP Address",
@@ -70,29 +71,58 @@ export function IPWhitelist() {
       return;
     }
 
-    const newWhitelistedIP: WhitelistedIP = {
-      id: Date.now().toString(),
-      address: newIP,
-      label: newLabel,
-      addedAt: new Date(),
-    };
+    try {
+      await apiRequest('POST', '/api/security/ip-whitelist', {
+        userId: userId || 'current',
+        ipAddress: newIP
+      });
 
-    setWhitelistedIPs([...whitelistedIPs, newWhitelistedIP]);
-    setNewIP('');
-    setNewLabel('');
-    
-    toast({
-      title: "IP Address Added",
-      description: `${newIP} has been added to your whitelist`,
-    });
+      const newWhitelistedIP: WhitelistedIP = {
+        id: Date.now().toString(),
+        address: newIP,
+        label: newLabel,
+        addedAt: new Date(),
+      };
+
+      setWhitelistedIPs([...whitelistedIPs, newWhitelistedIP]);
+      setNewIP('');
+      setNewLabel('');
+      
+      toast({
+        title: "IP Address Added",
+        description: `${newIP} has been added to your whitelist`,
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to Add IP",
+        description: "Could not add IP address to whitelist",
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleRemoveIP = (id: string) => {
-    setWhitelistedIPs(whitelistedIPs.filter(ip => ip.id !== id));
-    toast({
-      title: "IP Address Removed",
-      description: "The IP address has been removed from your whitelist",
-    });
+  const handleRemoveIP = async (id: string) => {
+    const ip = whitelistedIPs.find(ip => ip.id === id);
+    if (!ip) return;
+    
+    try {
+      await apiRequest('DELETE', '/api/security/ip-whitelist', {
+        userId: userId || 'current',
+        ipAddress: ip.address
+      });
+      
+      setWhitelistedIPs(whitelistedIPs.filter(ip => ip.id !== id));
+      toast({
+        title: "IP Address Removed",
+        description: "The IP address has been removed from your whitelist",
+      });
+    } catch (error) {
+      toast({
+        title: "Failed to Remove IP",
+        description: "Could not remove IP address from whitelist",
+        variant: "destructive",
+      });
+    }
   };
 
   const toggleWhitelist = (enabled: boolean) => {
