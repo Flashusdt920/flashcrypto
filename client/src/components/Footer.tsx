@@ -76,13 +76,13 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="mailto:support@boltflasher.live" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2">
+                <a href="mailto:DS3183452@gmail.com" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2">
                   <Mail className="w-4 h-4" />
                   Email Support
                 </a>
               </li>
               <li>
-                <a href="https://t.me/boltflasher" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2">
+                <a href="https://t.me/PRIMASOFTWARES" target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-purple-400 transition-colors flex items-center gap-2">
                   <MessageCircle className="w-4 h-4" />
                   Telegram Support
                 </a>
@@ -94,8 +94,8 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-4">Contact Us</h3>
             <div className="space-y-2 text-gray-400 text-sm">
-              <p>Email: support@boltflasher.live</p>
-              <p>Telegram: @boltflasher</p>
+              <p>Email: DS3183452@gmail.com</p>
+              <p>Telegram: PRIMASOFTWARES</p>
               <p>Response Time: 24/7 Support</p>
             </div>
             <div className="mt-4">
