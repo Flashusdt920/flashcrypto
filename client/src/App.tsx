@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./hooks/use-auth";
 import Login from "./pages/login";
+import Homepage from "./pages/homepage";
 import Dashboard from "./pages/dashboard";
 import Send from "./pages/send";
 import History from "./pages/history";
@@ -50,6 +51,9 @@ function AppContent() {
   if (!isAuthenticated) {
     return (
       <Switch>
+        <Route path="/" component={Homepage} />
+        <Route path="/login" component={Login} />
+        <Route path="/register" component={Login} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/faq" component={FAQ} />
@@ -61,7 +65,7 @@ function AppContent() {
         <Route path="/api-docs" component={APIDocs} />
         <Route>
           <div className="relative">
-            <Login />
+            <Homepage />
             <TelegramSupport />
           </div>
         </Route>

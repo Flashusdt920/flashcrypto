@@ -5,9 +5,10 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Home } from 'lucide-react';
 import Register from './register';
 import { BoltTextLogo } from '@/components/bolt-logo';
+import { Link } from 'wouter';
 import { LiveStats, SocialProofPopup, LiveTransactionFeed } from '@/components/TrustSignals';
 import Footer from '@/components/Footer';
 import LiveChat from '@/components/LiveChat';
@@ -115,6 +116,12 @@ export default function Login() {
           {/* Center - Login Form */}
           <Card className="w-full max-w-md bg-black bg-opacity-50 border border-purple-500 shadow-2xl">
             <CardHeader className="text-center p-4 sm:p-6">
+              <Link href="/">
+                <Button variant="ghost" size="sm" className="absolute top-4 left-4 text-gray-400 hover:text-white">
+                  <Home className="h-4 w-4 mr-2" />
+                  Home
+                </Button>
+              </Link>
               <div className="flex justify-center mb-3 sm:mb-4">
                 <BoltTextLogo />
               </div>
