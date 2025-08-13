@@ -1,12 +1,14 @@
 {
-  "name": "Bolt Crypto Flasher",
-  "short_name": "Bolt Crypto",
-  "description": "Professional cryptocurrency flash transaction platform",
+  "name": "Bolt Crypto Flasher - Flash USDT BTC ETH Software 2025",
+  "short_name": "Flash Crypto",
+  "description": "Flash USDT software, flash BTC tool, flash ETH sender. Professional flash crypto platform for instant USDT TRC20 ERC20 BEP20, Bitcoin, Ethereum transactions. Best crypto flasher tool 2025.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#FFD700",
   "orientation": "portrait-primary",
+  "categories": ["finance", "cryptocurrency", "tools", "productivity"],
+  "lang": "en-US",
   "icons": [
     {
       "src": "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'><path d='M256 48L208 80L80 240h120L160 464l48-32l128-160H216l40-224z' fill='%23FFD700'/></svg>",

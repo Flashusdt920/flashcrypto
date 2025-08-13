@@ -16,9 +16,9 @@ interface SEOProps {
 }
 
 const defaultSEO = {
-  title: 'Bolt Crypto Flasher - Flash USDT Bitcoin Ethereum Transaction Platform',
-  description: 'Professional cryptocurrency flash transaction platform for Bitcoin, USDT, Ethereum, and BNB. Send crypto across multiple networks with advanced gas fee management.',
-  keywords: 'bolt flasher, crypto flash software, flash btc, flash usdt, cryptocurrency gateway, bitcoin transaction, ethereum transfer',
+  title: 'Flash USDT Software 2025 | Flash BTC Tool | Flash Crypto Platform - Bolt Flasher',
+  description: 'Flash USDT software, flash BTC tool, flash ETH sender 2025. Professional flash crypto platform for instant USDT TRC20 ERC20 BEP20, Bitcoin, Ethereum transactions. Best crypto flasher, USDT generator, temporary crypto sender. Download premium flash cryptocurrency software.',
+  keywords: 'flash usdt, flash usdt software, flash btc, flash btc tool, flash eth, flash ethereum, flash crypto, crypto flasher, usdt flasher, btc flasher, eth flasher, flash usdt 2025, flash bitcoin 2025, usdt generator, btc generator, fake usdt, fake btc, temporary crypto, flash loan, flash mint, flash swap, usdt trc20, usdt erc20, usdt bep20, flash transaction, flash transfer, instant crypto, bolt flasher, bolt crypto flasher, crypto flash software, cryptocurrency flasher, flash crypto tool, blockchain flash, flash wallet, crypto flash payment',
   image: 'https://boltflasher.live/og-image.png',
   type: 'website' as const
 };
