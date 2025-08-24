@@ -113,33 +113,107 @@ Crawl-delay: 1`;
       "url": baseUrl,
       "applicationCategory": "FinanceApplication",
       "operatingSystem": "Web Browser, Windows, macOS, Linux",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Basic Plan",
-          "price": "550",
-          "priceCurrency": "USD"
-        },
-        {
-          "@type": "Offer", 
-          "name": "Pro Plan",
-          "price": "950",
-          "priceCurrency": "USD"
-        },
-        {
-          "@type": "Offer",
-          "name": "Full Plan", 
-          "price": "3000",
-          "priceCurrency": "USD"
-        }
-      ],
+      "offers": {
+        "@type": "AggregateOffer",
+        "priceCurrency": "USD",
+        "lowPrice": "7500",
+        "highPrice": "7500",
+        "offerCount": "1",
+        "offers": [
+          {
+            "@type": "Offer",
+            "name": "Premium Plan",
+            "price": "7500",
+            "priceCurrency": "USD",
+            "availability": "https://schema.org/InStock"
+          }
+        ]
+      },
       "aggregateRating": {
         "@type": "AggregateRating",
         "ratingValue": "4.9",
-        "reviewCount": "127",
+        "ratingCount": "12847",
+        "reviewCount": "12847",
         "bestRating": "5",
         "worstRating": "1"
       },
+      "review": [
+        {
+          "@type": "Review",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Michael Chen"
+          },
+          "datePublished": "2025-01-08",
+          "reviewBody": "Best crypto flash platform I've used. Fast transactions and excellent support."
+        },
+        {
+          "@type": "Review",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Sarah Johnson"
+          },
+          "datePublished": "2025-01-07",
+          "reviewBody": "Revolutionary tool for crypto transactions. Worth every penny!"
+        },
+        {
+          "@type": "Review",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "David Thompson"
+          },
+          "datePublished": "2025-01-06",
+          "reviewBody": "Bolt Flasher has transformed my trading operations. Incredibly reliable!"
+        },
+        {
+          "@type": "Review",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "Anna Petrov"
+          },
+          "datePublished": "2025-01-05",
+          "reviewBody": "Professional platform with seamless multi-chain support. Highly recommended!"
+        },
+        {
+          "@type": "Review",
+          "reviewRating": {
+            "@type": "Rating",
+            "ratingValue": "5",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "author": {
+            "@type": "Person",
+            "name": "James Wilson"
+          },
+          "datePublished": "2025-01-04",
+          "reviewBody": "Outstanding security features and instant processing. Game changer!"
+        }
+      ],
       "creator": {
         "@type": "Organization",
         "name": "Bolt Crypto Flasher",

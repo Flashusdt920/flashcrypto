@@ -778,13 +778,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // API 404 handler - must come before SEO routes
+  // Register SEO routes for better search engine optimization
+  registerSEORoutes(app);
+
+  // API 404 handler - must come after all API routes
   app.use('/api/*', (req, res) => {
     res.status(404).json({ message: `API endpoint not found: ${req.originalUrl}` });
   });
-
-  // Register SEO routes for better search engine optimization
-  registerSEORoutes(app);
 
   const httpServer = createServer(app);
   return httpServer;
