@@ -1,0 +1,104 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <!-- Gradient for 3D depth effect -->
+    <linearGradient id="goldGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD700;stop-opacity:1" />
+      <stop offset="30%" style="stop-color:#FFED4E;stop-opacity:1" />
+      <stop offset="60%" style="stop-color:#FFA500;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FF8C00;stop-opacity:1" />
+    </linearGradient>
+    
+    <!-- Shadow gradient -->
+    <linearGradient id="shadowGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.1" />
+    </linearGradient>
+    
+    <!-- Glow effect -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    
+    <!-- 3D perspective shadow -->
+    <filter id="dropshadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="3"/>
+      <feOffset dx="3" dy="3" result="offsetblur"/>
+      <feComponentTransfer>
+        <feFuncA type="linear" slope="0.5"/>
+      </feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+  
+  <!-- Background circle with gradient -->
+  <circle cx="100" cy="100" r="90" fill="url(#shadowGradient)" opacity="0.2"/>
+  
+  <!-- 3D layers for depth effect -->
+  <!-- Back layer (shadow) -->
+  <g transform="translate(5, 5)">
+    <path d="M 90 40 L 70 80 L 95 80 L 75 140 L 85 135 L 110 80 L 85 80 L 105 40 Z" 
+          fill="#000000" 
+          opacity="0.2"/>
+  </g>
+  
+  <!-- Middle layer (depth) -->
+  <g transform="translate(3, 3)">
+    <path d="M 90 40 L 70 80 L 95 80 L 75 140 L 85 135 L 110 80 L 85 80 L 105 40 Z" 
+          fill="#FF8C00" 
+          opacity="0.4"/>
+  </g>
+  
+  <!-- Main bolt shape with gradient -->
+  <path d="M 90 40 L 70 80 L 95 80 L 75 140 L 85 135 L 110 80 L 85 80 L 105 40 Z" 
+        fill="url(#goldGradient)" 
+        filter="url(#glow)"
+        stroke="#FFD700" 
+        stroke-width="1" 
+        stroke-linejoin="round"/>
+  
+  <!-- Highlight for 3D effect -->
+  <path d="M 90 40 L 88 45 L 78 65 L 92 65 L 90 70 L 95 65 L 85 45 Z" 
+        fill="#FFFFFF" 
+        opacity="0.5"/>
+  
+  <!-- Additional glow lines for 4D effect -->
+  <g opacity="0.6">
+    <line x1="60" y1="50" x2="65" y2="55" stroke="#FFD700" stroke-width="2" stroke-linecap="round" filter="url(#glow)"/>
+    <line x1="120" y1="70" x2="125" y2="75" stroke="#FFD700" stroke-width="2" stroke-linecap="round" filter="url(#glow)"/>
+    <line x1="65" y1="130" x2="60" y2="135" stroke="#FFD700" stroke-width="2" stroke-linecap="round" filter="url(#glow)"/>
+    <line x1="115" y1="90" x2="120" y2="85" stroke="#FFD700" stroke-width="2" stroke-linecap="round" filter="url(#glow)"/>
+  </g>
+  
+  <!-- Animated pulse effect for 4D dimension -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#FFD700" stroke-width="0.5" opacity="0">
+    <animate attributeName="r" 
+             values="85;95;85" 
+             dur="2s" 
+             repeatCount="indefinite"/>
+    <animate attributeName="opacity" 
+             values="0;0.6;0" 
+             dur="2s" 
+             repeatCount="indefinite"/>
+  </circle>
+  
+  <!-- Second pulse -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#FFA500" stroke-width="0.5" opacity="0">
+    <animate attributeName="r" 
+             values="85;95;85" 
+             dur="2s" 
+             begin="1s"
+             repeatCount="indefinite"/>
+    <animate attributeName="opacity" 
+             values="0;0.4;0" 
+             dur="2s" 
+             begin="1s"
+             repeatCount="indefinite"/>
+  </circle>
+</svg>
