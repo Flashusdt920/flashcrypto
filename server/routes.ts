@@ -121,7 +121,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/transactions", async (req, res) => {
     try {
       // Extract transaction data from request body
-      const { userId, toAddress, amount, token, network, gasSpeed, gasFee, gasFeePaid, status } = req.body;
+      const { userId, toAddress, amount, token, network, gasSpeed, gasFee, gasFeePaid } = req.body;
 
       // Validate gas fee payment for all networks
       if (!gasFeePaid) {
@@ -138,44 +138,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // Create transaction object
-      const transaction = {
-        id: Date.now().toString(),
+      // Create transaction using storage service
+      const transactionData = {
         userId: userId || '1',
         toAddress,
-        amount,
+        amount: amount.toString(),
         token,
         network,
         gasSpeed,
         gasFee,
         gasFeePaid,
-        status: 'completed',
-        hash: '0x' + Math.random().toString(16).substr(2, 64),
-        createdAt: new Date(),
-        updatedAt: new Date()
+        status: 'completed' as const
       };
 
-      // Store transaction (if storage is available)
-      try {
-        if (storage.createTransaction) {
-          const storedTransaction = await storage.createTransaction(transaction);
-          res.json(storedTransaction);
-        } else {
-          res.json(transaction);
-        }
-      } catch (storageError) {
-        // Return success response even if storage fails
-        res.json(transaction);
-      }
+      // Store transaction and update wallet balance
+      const storedTransaction = await storage.createTransaction(transactionData);
+      
+      // Return the stored transaction
+      res.json(storedTransaction);
     } catch (error) {
       console.error("Transaction creation error:", error);
-      // Return a successful response anyway to ensure smooth user experience
-      res.json({ 
-        id: Date.now().toString(),
-        status: 'completed',
-        message: 'Transaction processed successfully',
-        hash: '0x' + Math.random().toString(16).substr(2, 64)
-      });
+      res.status(400).json({ message: "Failed to create transaction" });
     }
   });
 

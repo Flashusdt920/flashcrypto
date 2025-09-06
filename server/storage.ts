@@ -267,10 +267,39 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTransaction(transactionData: InsertTransaction): Promise<Transaction> {
+    // First, create the transaction
     const [transaction] = await db.insert(transactions).values({
       ...transactionData,
       txHash: `0x${randomUUID().replace(/-/g, '')}`,
     }).returning();
+    
+    // Then update the wallet balance if transaction is successful
+    if (transaction && (transaction.status === 'completed' || transaction.status === 'pending')) {
+      try {
+        // Get the user's wallet for the specific network/token
+        const userWallets = await db.select().from(wallets)
+          .where(and(
+            eq(wallets.userId, transaction.userId),
+            eq(wallets.network, transaction.network)
+          ));
+        
+        if (userWallets.length > 0) {
+          const wallet = userWallets[0];
+          const currentBalance = parseFloat(wallet.balance);
+          const transactionAmount = parseFloat(transaction.amount);
+          
+          // Deduct the transaction amount from wallet balance
+          const newBalance = Math.max(0, currentBalance - transactionAmount).toFixed(2);
+          
+          await db.update(wallets)
+            .set({ balance: newBalance })
+            .where(eq(wallets.id, wallet.id));
+        }
+      } catch (error) {
+        console.error('Error updating wallet balance:', error);
+      }
+    }
+    
     return transaction;
   }
 

@@ -164,7 +164,9 @@ export default function Send() {
       return apiRequest('POST', '/api/transactions', transactionData);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['/api/transactions'] });
+      // Invalidate both transactions and wallets to refresh balance
+      queryClient.invalidateQueries({ queryKey: ['/api/transactions', user?.id] });
+      queryClient.invalidateQueries({ queryKey: ['/api/wallets', user?.id] });
       setShowProgress(false);
       
       // Show wallet simulator with incoming funds
