@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
+import { useLocation } from 'wouter';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -26,6 +27,7 @@ export default function Login() {
   const [showRegister, setShowRegister] = useState(false);
   const { login } = useAuth();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,7 +46,10 @@ export default function Login() {
     try {
       const success = await login(username, password);
       
-      if (!success) {
+      if (success) {
+        // Redirect to dashboard after successful login
+        setLocation('/dashboard');
+      } else {
         toast({
           title: "Login Failed",
           description: "Invalid credentials. Please check your username and password.",

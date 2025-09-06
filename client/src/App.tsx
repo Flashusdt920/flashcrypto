@@ -1,5 +1,5 @@
 import React from "react";
-import { Switch, Route } from "wouter";
+import { Route, Switch, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -48,12 +48,11 @@ function AppContent() {
     );
   }
 
+  // Show login page if not authenticated
   if (!isAuthenticated) {
     return (
       <Switch>
-        <Route path="/" component={Homepage} />
         <Route path="/login" component={Login} />
-        <Route path="/register" component={Login} />
         <Route path="/terms" component={Terms} />
         <Route path="/privacy" component={Privacy} />
         <Route path="/faq" component={FAQ} />
@@ -63,12 +62,8 @@ function AppContent() {
         <Route path="/blog" component={Blog} />
         <Route path="/knowledge-base" component={KnowledgeBase} />
         <Route path="/api-docs" component={APIDocs} />
-        <Route>
-          <div className="relative">
-            <Homepage />
-            <TelegramSupport />
-          </div>
-        </Route>
+        <Route path="/" component={Homepage} />
+        <Route component={Login} />
       </Switch>
     );
   }
@@ -96,7 +91,7 @@ function AppContent() {
         <Header />
         <main className="px-2 py-3 sm:p-6 pb-20 lg:pb-6">
           <Switch>
-            <Route path="/" component={Dashboard} />
+            <Route path="/dashboard" component={Dashboard} />
             <Route path="/send" component={Send} />
             <Route path="/history" component={History} />
             <Route path="/charts" component={Charts} />
@@ -107,6 +102,12 @@ function AppContent() {
             <Route path="/api-docs" component={APIDocs} />
             <Route path="/aml-kyc" component={AMLKYCPolicy} />
             <Route path="/dmca" component={DMCANotice} />
+            <Route path="/">
+              <Redirect to="/dashboard" />
+            </Route>
+            <Route path="/login">
+              <Redirect to="/dashboard" />
+            </Route>
             <Route component={NotFound} />
           </Switch>
         </main>
