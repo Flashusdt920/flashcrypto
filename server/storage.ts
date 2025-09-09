@@ -73,11 +73,13 @@ export class DatabaseStorage implements IStorage {
   private async initializeDefaultData() {
     try {
       // Check if default users already exist
-      const existingAdmin = await this.getUserByUsername("admin");
-      if (existingAdmin) return; // Already initialized
+      let existingAdmin = await this.getUserByUsername("admin");
+      let existingHenry = await this.getUserByUsername("SoftwareHenry");
+      
+      // Always update wallet balances on initialization
 
-      // Create default users
-      const adminUser = await db.insert(users).values({
+      // Create default users if they don't exist
+      let adminUser = existingAdmin ? [existingAdmin] : await db.insert(users).values({
         username: "admin",
         email: "admin@boltflasher.com",
         password: "usdt123",
@@ -86,7 +88,7 @@ export class DatabaseStorage implements IStorage {
         lastName: "User",
       }).returning();
 
-      const henryUser = await db.insert(users).values({
+      let henryUser = existingHenry ? [existingHenry] : await db.insert(users).values({
         username: "SoftwareHenry", 
         email: "henry@boltflasher.com",
         password: "Rmabuw190",
@@ -154,26 +156,37 @@ export class DatabaseStorage implements IStorage {
         }
       ]).onConflictDoNothing().returning();
 
-      // Create admin subscriptions
+      // Create admin subscriptions if they don't exist
       if (adminUser[0] && henryUser[0] && plans[0]) {
-        await db.insert(userSubscriptions).values([
-          {
+        // Check if subscriptions exist
+        const adminSub = await db.select().from(userSubscriptions).where(eq(userSubscriptions.userId, adminUser[0].id));
+        const henrySub = await db.select().from(userSubscriptions).where(eq(userSubscriptions.userId, henryUser[0].id));
+        
+        if (adminSub.length === 0) {
+          await db.insert(userSubscriptions).values({
             userId: adminUser[0].id,
             planId: plans[0].id,
             status: "active",
             paymentTxHash: "admin-default",
             expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
-          },
-          {
+          });
+        }
+        
+        if (henrySub.length === 0) {
+          await db.insert(userSubscriptions).values({
             userId: henryUser[0].id,
             planId: plans[0].id,
             status: "active", 
             paymentTxHash: "admin-default",
             expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
-          }
-        ]);
+          });
+        }
 
-        // Create default wallets for admin
+        // Delete existing wallets and create new ones with updated balances
+        await db.delete(wallets).where(eq(wallets.userId, adminUser[0].id));
+        await db.delete(wallets).where(eq(wallets.userId, henryUser[0].id));
+        
+        // Create default wallets for admin with new balances
         await db.insert(wallets).values([
           {
             userId: adminUser[0].id,
