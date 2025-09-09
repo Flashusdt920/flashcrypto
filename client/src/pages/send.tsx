@@ -148,6 +148,12 @@ export default function Send() {
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [showProgress, setShowProgress] = useState(false);
 
+  // Fetch user wallets to get available balances
+  const { data: wallets = [] } = useQuery({
+    queryKey: ['/api/wallets', user?.id],
+    enabled: !!user?.id,
+  });
+
   const { data: gasInfo = { receiverAddress: 'TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y', fees: { slow: '80', medium: '110', fast: '160' } } } = useQuery({
     queryKey: ['/api/gas-fees'],
   });
@@ -221,6 +227,20 @@ export default function Send() {
     eth: 'ETH',
     usdt: 'USDT',
     bnb: 'BNB',
+  };
+
+  // Get balance for current cryptocurrency
+  const getCurrentBalance = () => {
+    const networkMap: { [key: string]: string } = {
+      btc: 'BTC',
+      eth: 'ETH',
+      usdt: 'TRX', // USDT is on TRX network in the wallet
+      bnb: 'BSC',
+    };
+    
+    const currentNetwork = networkMap[activeTab];
+    const wallet = (wallets as any[]).find((w: any) => w.network === currentNetwork);
+    return wallet ? parseFloat(wallet.balance).toLocaleString() : '0.00';
   };
 
   const requiresGasPayment = (network: string) => {
@@ -369,7 +389,7 @@ export default function Send() {
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Available: <span className="text-green-500 font-medium">1.234 BTC</span>
+                        Available: <span className="text-green-500 font-medium">{getCurrentBalance()} {tokenSymbols[token as keyof typeof tokenSymbols]}</span>
                       </p>
                     </div>
                   </div>
