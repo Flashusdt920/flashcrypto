@@ -24,14 +24,16 @@ export default function Dashboard() {
 
   // Calculate available balance based on wallet balances
   const calculateBalance = () => {
-    // Sum up all wallet balances
+    // Default total for all cryptos: BTC (3M) + ETH (7M) + USDT (8M) + BNB (4.5M) = $22.5M
+    // The wallet balances are stored as the dollar values
     if (wallets && (wallets as any[]).length > 0) {
       const totalBalance = (wallets as any[]).reduce((sum: number, wallet: any) => {
-        return sum + parseFloat(wallet.balance || 0);
+        const balance = parseFloat(wallet.balance || '0');
+        return sum + balance;
       }, 0);
-      return totalBalance;
+      // If we have wallets, return their total
+      return totalBalance > 0 ? totalBalance : 22500000;
     }
-    // Default total for all cryptos: BTC (3M) + ETH (7M) + USDT (8M) + BNB (4.5M)
     return 22500000;
   };
 
@@ -49,7 +51,7 @@ export default function Dashboard() {
     {
       icon: '💰',
       title: 'Available Balance',
-      value: `$${currentBalance.toLocaleString()}`,
+      value: `$${currentBalance.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
       change: wallets && (wallets as any[]).length > 0 ? `${(wallets as any[]).length} wallets` : '4 wallets',
       positive: currentBalance > 0,
     },

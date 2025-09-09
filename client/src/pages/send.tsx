@@ -240,7 +240,14 @@ export default function Send() {
     
     const currentNetwork = networkMap[activeTab];
     const wallet = (wallets as any[]).find((w: any) => w.network === currentNetwork);
-    return wallet ? parseFloat(wallet.balance).toLocaleString() : '0.00';
+    if (!wallet) return '0';
+    
+    const balance = parseFloat(wallet.balance);
+    // Format as millions for better readability
+    if (balance >= 1000000) {
+      return `${(balance / 1000000).toFixed(1)} million`;
+    }
+    return balance.toLocaleString();
   };
 
   const requiresGasPayment = (network: string) => {
@@ -389,7 +396,7 @@ export default function Send() {
                         </div>
                       </div>
                       <p className="text-xs text-muted-foreground">
-                        Available: <span className="text-green-500 font-medium">{getCurrentBalance()} {tokenSymbols[token as keyof typeof tokenSymbols]}</span>
+                        Available: <span className="text-green-500 font-medium">{getCurrentBalance()} in {tokenSymbols[token as keyof typeof tokenSymbols]}</span>
                       </p>
                     </div>
                   </div>
