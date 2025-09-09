@@ -75,7 +75,7 @@ function AppContent() {
         <Route path="/knowledge-base" component={KnowledgeBase} />
         <Route path="/api-docs" component={APIDocs} />
         <Route path="/" component={Homepage} />
-        <Route component={Login} />
+        <Route component={NotFound} />
       </Switch>
     );
   }
