@@ -22,16 +22,17 @@ export default function Dashboard() {
     enabled: !!user?.id,
   });
 
-  // Calculate available balance based on transactions
+  // Calculate available balance based on wallet balances
   const calculateBalance = () => {
-    const initialBalance = 5000000; // Starting balance
-    const totalSent = (transactions as any[]).reduce((sum: number, tx: any) => {
-      if (tx.status === 'completed') {
-        return sum + parseFloat(tx.amount || 0);
-      }
-      return sum;
-    }, 0);
-    return initialBalance - totalSent;
+    // Sum up all wallet balances
+    if (wallets && (wallets as any[]).length > 0) {
+      const totalBalance = (wallets as any[]).reduce((sum: number, wallet: any) => {
+        return sum + parseFloat(wallet.balance || 0);
+      }, 0);
+      return totalBalance;
+    }
+    // Default total for all cryptos: BTC (3M) + ETH (7M) + USDT (8M) + BNB (4.5M)
+    return 22500000;
   };
 
   // Calculate total flash fees paid
@@ -49,7 +50,7 @@ export default function Dashboard() {
       icon: '💰',
       title: 'Available Balance',
       value: `$${currentBalance.toLocaleString()}`,
-      change: (transactions as any[]).length > 0 ? '-' + (5000000 - currentBalance).toLocaleString() : '+0',
+      change: wallets && (wallets as any[]).length > 0 ? `${(wallets as any[]).length} wallets` : '4 wallets',
       positive: currentBalance > 0,
     },
     {
