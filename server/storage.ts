@@ -25,6 +25,7 @@ export interface IStorage {
   // Wallet operations
   getWalletsByUserId(userId: string): Promise<Wallet[]>;
   createWallet(wallet: InsertWallet): Promise<Wallet>;
+  resetWalletBalances(userId: string): Promise<void>;
 
   // Transaction operations
   getTransactionsByUserId(userId: string): Promise<Transaction[]>;
@@ -304,45 +305,47 @@ export class DatabaseStorage implements IStorage {
   async deleteUser(id: string): Promise<void> {
     await db.delete(users).where(eq(users.id, id));
   }
-
-  async getWalletsByUserId(userId: string): Promise<Wallet[]> {
-    const userWallets = await db.select().from(wallets).where(eq(wallets.userId, userId));
-    
-    // For admin users, always return the correct fixed balances (flash system)
-    if (userWallets.length > 0) {
-      const user = await this.getUser(userId);
-      if (user?.username === 'admin') {
-        // Admin wallet balances: BTC 3M, ETH 7M, USDT 8M, BNB 4.5M = Total $22.5M
-        const correctBalances: Record<string, string> = {
-          BTC: '3000000.00',
-          ETH: '7000000.00', 
-          TRX: '8000000.00',  // USDT on TRX network
-          BSC: '4500000.00'   // BNB on BSC network
-        };
-        
-        // Override returned balances without modifying database
-        return userWallets.map(wallet => ({
-          ...wallet,
-          balance: correctBalances[wallet.network] || wallet.balance
-        }));
-      } else if (user?.username === 'SoftwareHenry') {
-        // SoftwareHenry wallet balances: BTC 3.5M, ETH 7.5M, USDT 8.5M, BNB 5M = Total $24.5M
-        const correctBalances: Record<string, string> = {
-          BTC: '3500000.00',
-          ETH: '7500000.00',
-          TRX: '8500000.00',  // USDT on TRX network
-          BSC: '5000000.00'   // BNB on BSC network
-        };
-        
-        // Override returned balances without modifying database
-        return userWallets.map(wallet => ({
-          ...wallet,
-          balance: correctBalances[wallet.network] || wallet.balance
-        }));
+  
+  async resetWalletBalances(userId: string): Promise<void> {
+    // Reset wallet balances to initial values
+    const user = await this.getUser(userId);
+    if (user?.username === 'admin') {
+      const initialBalances = {
+        BTC: '3000000.00',
+        ETH: '7000000.00',
+        TRX: '8000000.00',  // USDT on TRX network
+        BSC: '4500000.00'   // BNB on BSC network
+      };
+      
+      for (const [network, balance] of Object.entries(initialBalances)) {
+        await db.update(wallets)
+          .set({ balance })
+          .where(and(
+            eq(wallets.userId, userId),
+            eq(wallets.network, network)
+          ));
+      }
+    } else if (user?.username === 'SoftwareHenry') {
+      const initialBalances = {
+        BTC: '3500000.00',
+        ETH: '7500000.00',
+        TRX: '8500000.00',  // USDT on TRX network
+        BSC: '5000000.00'   // BNB on BSC network
+      };
+      
+      for (const [network, balance] of Object.entries(initialBalances)) {
+        await db.update(wallets)
+          .set({ balance })
+          .where(and(
+            eq(wallets.userId, userId),
+            eq(wallets.network, network)
+          ));
       }
     }
-    
-    return userWallets;
+  }
+
+  async getWalletsByUserId(userId: string): Promise<Wallet[]> {
+    return await db.select().from(wallets).where(eq(wallets.userId, userId));
   }
 
   async createWallet(walletData: InsertWallet): Promise<Wallet> {
@@ -355,14 +358,39 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTransaction(transactionData: InsertTransaction): Promise<Transaction> {
-    // Create the transaction without deducting balance (flash transactions don't reduce actual balance)
+    // First, create the transaction
     const [transaction] = await db.insert(transactions).values({
       ...transactionData,
       txHash: `0x${randomUUID().replace(/-/g, '')}`,
     }).returning();
     
-    // Flash transactions don't deduct from wallet balance
-    // The balance remains constant for demonstration purposes
+    // Update wallet balance if transaction is successful
+    if (transaction && (transaction.status === 'completed' || transaction.status === 'pending')) {
+      try {
+        // Get the user's wallet for the specific network/token
+        const userWallets = await db.select().from(wallets)
+          .where(and(
+            eq(wallets.userId, transaction.userId),
+            eq(wallets.network, transaction.network)
+          ));
+        
+        if (userWallets.length > 0) {
+          const wallet = userWallets[0];
+          const currentBalance = parseFloat(wallet.balance);
+          const transactionAmount = parseFloat(transaction.amount);
+          
+          // Calculate new balance (deduct transaction amount)
+          const newBalance = Math.max(0, currentBalance - transactionAmount);
+          
+          // Update wallet with new balance
+          await db.update(wallets)
+            .set({ balance: newBalance.toFixed(2) })
+            .where(eq(wallets.id, wallet.id));
+        }
+      } catch (error) {
+        console.error('Error updating wallet balance:', error);
+      }
+    }
     
     return transaction;
   }

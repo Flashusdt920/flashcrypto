@@ -107,6 +107,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch wallets" });
     }
   });
+  
+  // Reset wallet balances to initial values
+  app.post("/api/wallets/:userId/reset", async (req, res) => {
+    try {
+      await storage.resetWalletBalances(req.params.userId);
+      const wallets = await storage.getWalletsByUserId(req.params.userId);
+      res.json({ message: "Wallet balances reset successfully", wallets });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to reset wallet balances" });
+    }
+  });
 
   // Transactions
   app.get("/api/transactions/:userId", async (req, res) => {

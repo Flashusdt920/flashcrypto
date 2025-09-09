@@ -1,14 +1,19 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Button } from '@/components/ui/button';
 import SEOHead from '@/components/SEOHead';
 import VideoTestimonials from '@/components/VideoTestimonials';
 import CountryFlags from '@/components/CountryFlags';
 import { SecurityAuditBadge } from '@/components/SecurityAudit';
+import { apiRequest, queryClient } from '@/lib/queryClient';
+import { useToast } from '@/hooks/use-toast';
+import { RefreshCw } from 'lucide-react';
 
 export default function Dashboard() {
   const { user } = useAuth();
+  const { toast } = useToast();
 
   // SEO optimization for dashboard page
 
@@ -17,9 +22,31 @@ export default function Dashboard() {
     enabled: !!user?.id,
   });
 
-  const { data: wallets } = useQuery({
+  const { data: wallets, refetch: refetchWallets } = useQuery({
     queryKey: ['/api/wallets', user?.id],
     enabled: !!user?.id,
+  });
+  
+  // Reset balance mutation
+  const resetBalanceMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest('POST', `/api/wallets/${user?.id}/reset`);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Balance Reset",
+        description: "Your wallet balances have been reset to initial values.",
+      });
+      refetchWallets();
+      queryClient.invalidateQueries({ queryKey: ['/api/wallets'] });
+    },
+    onError: () => {
+      toast({
+        title: "Error",
+        description: "Failed to reset wallet balances.",
+        variant: "destructive",
+      });
+    },
   });
 
   // Calculate available balance based on wallet balances
@@ -94,6 +121,21 @@ export default function Dashboard() {
         ogImage="/dashboard-preview.png"
       />
       <div className="space-y-4 sm:space-y-6">
+        {/* Reset Balance Button for Admin Users */}
+        {(user?.username === 'admin' || user?.username === 'SoftwareHenry') && (
+          <div className="flex justify-end mb-4">
+            <Button
+              variant="outline"
+              onClick={() => resetBalanceMutation.mutate()}
+              disabled={resetBalanceMutation.isPending}
+              className="bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20"
+            >
+              <RefreshCw className={`w-4 h-4 mr-2 ${resetBalanceMutation.isPending ? 'animate-spin' : ''}`} />
+              Reset Wallet Balances
+            </Button>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
         {statsCards.map((card, index) => (
           <Card key={index} className="glass-card border-0 crypto-glow">
