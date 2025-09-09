@@ -72,7 +72,7 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
     <div className="glass-card bg-yellow-500 bg-opacity-10 border border-yellow-500 border-opacity-30 rounded-lg p-4">
       <div className="flex items-start space-x-3">
         <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center mt-1">
-          <span className="text-black text-xs font-bold">!</span>
+          <span className="text-foreground text-xs font-bold">!</span>
         </div>
         <div className="flex-1">
           <h4 className="font-semibold text-yellow-500 mb-2">Flash Fee Payment Required</h4>
@@ -114,14 +114,14 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
           <div className="flex space-x-3">
             <Button
               onClick={onConfirmPayment}
-              className="bg-yellow-500 text-black hover:bg-yellow-600 flex-1"
+              className="bg-yellow-500 text-yellow-950 dark:text-black hover:bg-yellow-600 flex-1"
             >
               I've Sent the Flash Fee
             </Button>
             <Button
               variant="outline"
               onClick={() => setShowQrCode(!showQrCode)}
-              className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black"
+              className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black"
             >
               <QrCode className="w-4 h-4" />
             </Button>
@@ -364,7 +364,7 @@ export default function Send() {
                       <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-3 mb-4">
                         <div className="flex items-start space-x-2">
                           <div className="w-5 h-5 bg-yellow-500 rounded-full flex items-center justify-center mt-0.5">
-                            <span className="text-black text-xs font-bold">!</span>
+                            <span className="text-foreground text-xs font-bold">!</span>
                           </div>
                           <div>
                             <p className="text-yellow-500 font-semibold text-sm">Important Notice</p>

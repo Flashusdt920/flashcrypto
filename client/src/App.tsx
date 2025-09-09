@@ -32,10 +32,22 @@ import CookieConsent from './components/CookieConsent';
 import AgeVerification from './components/AgeVerification';
 import ExitIntentPopup from './components/ExitIntentPopup';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useEffect } from 'react';
 
 function AppContent() {
   useKeyboardShortcuts();
   const { isAuthenticated, isLoading, hasActiveSubscription, user, checkSubscription, logout } = useAuth();
+  
+  // Initialize dark mode by default
+  useEffect(() => {
+    // Check if theme is already set, if not, default to dark
+    if (!localStorage.getItem('theme')) {
+      localStorage.setItem('theme', 'dark');
+      document.documentElement.classList.add('dark');
+    } else if (localStorage.getItem('theme') === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  }, []);
 
   if (isLoading) {
     return (

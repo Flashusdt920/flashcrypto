@@ -165,7 +165,7 @@ export default function Settings() {
               <div className="space-y-4">
                 <Button 
                   onClick={handleChangePassword}
-                  className="w-full bg-yellow-500 text-black hover:bg-yellow-600"
+                  className="w-full bg-yellow-500 text-yellow-950 dark:text-black hover:bg-yellow-600"
                 >
                   Change Password
                 </Button>

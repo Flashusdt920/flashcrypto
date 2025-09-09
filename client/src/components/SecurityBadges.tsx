@@ -56,7 +56,7 @@ export function MoneyBackGuarantee() {
     <div className="bg-gradient-to-r from-yellow-900/30 to-orange-900/30 border border-yellow-500/30 rounded-lg p-4">
       <div className="flex items-center gap-3">
         <div className="w-12 h-12 bg-yellow-500 rounded-full flex items-center justify-center">
-          <span className="text-2xl font-bold text-black">7</span>
+          <span className="text-2xl font-bold text-yellow-950 dark:text-black">7</span>
         </div>
         <div>
           <h3 className="text-yellow-400 font-semibold">7-Day Money Back Guarantee</h3>

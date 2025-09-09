@@ -6,11 +6,16 @@ export function ThemeToggle() {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
 
   useEffect(() => {
-    // Load saved theme
+    // Load saved theme or default to dark
     const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | null;
-    if (savedTheme) {
-      setTheme(savedTheme);
-      document.documentElement.classList.toggle('light', savedTheme === 'light');
+    const initialTheme = savedTheme || 'dark';
+    setTheme(initialTheme);
+    
+    // Apply dark class if dark theme, remove it for light theme
+    if (initialTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
     }
   }, []);
 
@@ -18,7 +23,13 @@ export function ThemeToggle() {
     const newTheme = theme === 'dark' ? 'light' : 'dark';
     setTheme(newTheme);
     localStorage.setItem('theme', newTheme);
-    document.documentElement.classList.toggle('light', newTheme === 'light');
+    
+    // Toggle dark class
+    if (newTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   };
 
   return (
@@ -26,7 +37,7 @@ export function ThemeToggle() {
       variant="ghost"
       size="icon"
       onClick={toggleTheme}
-      className="text-gray-400 hover:text-white"
+      className="text-muted-foreground hover:text-foreground"
       aria-label="Toggle theme"
     >
       {theme === 'dark' ? (

@@ -49,12 +49,12 @@ export default function Homepage() {
                 <Link href="#pricing" className="text-gray-300 hover:text-yellow-500 transition">Pricing</Link>
                 <Link href="#testimonials" className="text-gray-300 hover:text-yellow-500 transition">Reviews</Link>
                 <Link href="/login">
-                  <Button className="bg-yellow-500 hover:bg-yellow-600 text-black font-semibold">
+                  <Button className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950 dark:text-black font-semibold">
                     Login
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
+                  <Button variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black">
                     Get Started
                   </Button>
                 </Link>
@@ -79,12 +79,12 @@ export default function Homepage() {
             </p>
             <div className="flex gap-4 justify-center mb-12">
               <Link href="/register">
-                <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-lg px-8 py-6">
+                <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950 dark:text-black font-bold text-lg px-8 py-6">
                   Start Flashing Crypto <ArrowRight className="ml-2" />
                 </Button>
               </Link>
               <Link href="/pricing">
-                <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black text-lg px-8 py-6">
+                <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black text-lg px-8 py-6">
                   View Pricing
                 </Button>
               </Link>
@@ -259,21 +259,21 @@ export default function Homepage() {
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="bg-yellow-500 text-black rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div className="bg-yellow-500 text-yellow-950 dark:text-black rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 1
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Create Account</h3>
               <p className="text-gray-400">Register and get instant access to the flash crypto platform</p>
             </div>
             <div className="text-center">
-              <div className="bg-yellow-500 text-black rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div className="bg-yellow-500 text-yellow-950 dark:text-black rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 2
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Select Network</h3>
               <p className="text-gray-400">Choose Bitcoin, USDT, Ethereum or any supported network</p>
             </div>
             <div className="text-center">
-              <div className="bg-yellow-500 text-black rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
+              <div className="bg-yellow-500 text-yellow-950 dark:text-black rounded-full w-16 h-16 flex items-center justify-center text-2xl font-bold mx-auto mb-4">
                 3
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Flash Instantly</h3>
@@ -339,7 +339,7 @@ export default function Homepage() {
         {/* Pricing CTA */}
         <section id="pricing" className="container mx-auto px-4 py-20">
           <div className="bg-gradient-to-r from-yellow-600 to-yellow-500 rounded-2xl p-12 text-center">
-            <h2 className="text-4xl font-bold text-black mb-4">Ready to Start Flashing Crypto?</h2>
+            <h2 className="text-4xl font-bold text-white mb-4">Ready to Start Flashing Crypto?</h2>
             <p className="text-gray-900 text-lg mb-8 max-w-2xl mx-auto">
               Join 10,000+ users who trust Bolt Flasher for their crypto flash transactions. 
               Get instant access to all premium features.
@@ -351,7 +351,7 @@ export default function Homepage() {
                 </Button>
               </Link>
               <Link href="/register">
-                <Button size="lg" variant="outline" className="border-black text-black hover:bg-black hover:text-yellow-500 text-lg px-8 py-6">
+                <Button size="lg" variant="outline" className="border-gray-300 dark:border-gray-600 text-gray-800 dark:text-gray-200 hover:bg-gray-800 dark:hover:bg-gray-200 hover:text-yellow-500 dark:hover:text-yellow-600 text-lg px-8 py-6">
                   Create Account
                 </Button>
               </Link>
@@ -398,7 +398,7 @@ export default function Homepage() {
             </div>
             <div className="text-center mt-8">
               <Link href="/faq">
-                <Button variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-black">
+                <Button variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black">
                   View All FAQs <ArrowRight className="ml-2" />
                 </Button>
               </Link>
@@ -415,7 +415,7 @@ export default function Homepage() {
               Don't miss out on the most advanced flash crypto platform. Join thousands of successful users worldwide.
             </p>
             <Link href="/register">
-              <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-black font-bold text-lg px-12 py-6">
+              <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950 dark:text-black font-bold text-lg px-12 py-6">
                 Get Started Now - Flash USDT, BTC, ETH
               </Button>
             </Link>
