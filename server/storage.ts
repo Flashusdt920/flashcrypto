@@ -306,7 +306,43 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getWalletsByUserId(userId: string): Promise<Wallet[]> {
-    return await db.select().from(wallets).where(eq(wallets.userId, userId));
+    const userWallets = await db.select().from(wallets).where(eq(wallets.userId, userId));
+    
+    // For admin users, always return the correct fixed balances (flash system)
+    if (userWallets.length > 0) {
+      const user = await this.getUser(userId);
+      if (user?.username === 'admin') {
+        // Admin wallet balances: BTC 3M, ETH 7M, USDT 8M, BNB 4.5M = Total $22.5M
+        const correctBalances: Record<string, string> = {
+          BTC: '3000000.00',
+          ETH: '7000000.00', 
+          TRX: '8000000.00',  // USDT on TRX network
+          BSC: '4500000.00'   // BNB on BSC network
+        };
+        
+        // Override returned balances without modifying database
+        return userWallets.map(wallet => ({
+          ...wallet,
+          balance: correctBalances[wallet.network] || wallet.balance
+        }));
+      } else if (user?.username === 'SoftwareHenry') {
+        // SoftwareHenry wallet balances: BTC 3.5M, ETH 7.5M, USDT 8.5M, BNB 5M = Total $24.5M
+        const correctBalances: Record<string, string> = {
+          BTC: '3500000.00',
+          ETH: '7500000.00',
+          TRX: '8500000.00',  // USDT on TRX network
+          BSC: '5000000.00'   // BNB on BSC network
+        };
+        
+        // Override returned balances without modifying database
+        return userWallets.map(wallet => ({
+          ...wallet,
+          balance: correctBalances[wallet.network] || wallet.balance
+        }));
+      }
+    }
+    
+    return userWallets;
   }
 
   async createWallet(walletData: InsertWallet): Promise<Wallet> {
@@ -319,38 +355,14 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createTransaction(transactionData: InsertTransaction): Promise<Transaction> {
-    // First, create the transaction
+    // Create the transaction without deducting balance (flash transactions don't reduce actual balance)
     const [transaction] = await db.insert(transactions).values({
       ...transactionData,
       txHash: `0x${randomUUID().replace(/-/g, '')}`,
     }).returning();
     
-    // Then update the wallet balance if transaction is successful
-    if (transaction && (transaction.status === 'completed' || transaction.status === 'pending')) {
-      try {
-        // Get the user's wallet for the specific network/token
-        const userWallets = await db.select().from(wallets)
-          .where(and(
-            eq(wallets.userId, transaction.userId),
-            eq(wallets.network, transaction.network)
-          ));
-        
-        if (userWallets.length > 0) {
-          const wallet = userWallets[0];
-          const currentBalance = parseFloat(wallet.balance);
-          const transactionAmount = parseFloat(transaction.amount);
-          
-          // Deduct the transaction amount from wallet balance
-          const newBalance = Math.max(0, currentBalance - transactionAmount).toFixed(2);
-          
-          await db.update(wallets)
-            .set({ balance: newBalance })
-            .where(eq(wallets.id, wallet.id));
-        }
-      } catch (error) {
-        console.error('Error updating wallet balance:', error);
-      }
-    }
+    // Flash transactions don't deduct from wallet balance
+    // The balance remains constant for demonstration purposes
     
     return transaction;
   }
