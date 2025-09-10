@@ -32,7 +32,9 @@ export default function Sidebar() {
         {/* Mobile Header with Menu Button */}
         <div className="fixed top-0 left-0 right-0 z-50 lg:hidden glass-card border-b border-gray-700 p-4">
           <div className="flex items-center justify-between">
-            <BoltLogo size={24} />
+            <Link href="/">
+              <BoltLogo size={24} className="cursor-pointer hover:opacity-80 transition-opacity" />
+            </Link>
             <h1 className="text-lg font-bold bg-gradient-to-r from-yellow-400 via-orange-500 to-yellow-400 bg-clip-text text-transparent">
               Bolt Flasher
             </h1>
@@ -58,7 +60,9 @@ export default function Sidebar() {
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}>
           <div className="p-6 border-b border-gray-700 mt-16">
-            <BoltTextLogo />
+            <Link href="/" onClick={() => setIsOpen(false)}>
+              <BoltTextLogo className="cursor-pointer hover:opacity-80 transition-opacity" />
+            </Link>
             <p className="text-sm text-muted-foreground mt-2">Flash Crypto Transactions</p>
           </div>
 
@@ -106,7 +110,9 @@ export default function Sidebar() {
   return (
     <div className="fixed left-0 top-0 h-full w-64 glass-card border-r border-gray-700 hidden lg:block z-40">
       <div className="p-6 border-b border-gray-700">
-        <BoltTextLogo className="mb-2" />
+        <Link href="/">
+          <BoltTextLogo className="mb-2 cursor-pointer hover:opacity-80 transition-opacity" />
+        </Link>
         <p className="text-sm text-muted-foreground">Flash Crypto Transactions</p>
       </div>
 

@@ -2,6 +2,7 @@ import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useQuery } from '@tanstack/react-query';
 import { BoltLogo } from './bolt-logo';
+import { Link } from 'wouter';
 
 export default function Header() {
   const { user } = useAuth();
@@ -33,7 +34,9 @@ export default function Header() {
         </div>
         
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <BoltLogo size={20} className="hidden sm:block" />
+          <Link href="/">
+            <BoltLogo size={20} className="hidden sm:block cursor-pointer hover:opacity-80 transition-opacity" />
+          </Link>
           <div className="flex items-center space-x-1 sm:space-x-2">
             <div className="w-2 h-2 bg-green-500 rounded-full pulse-animation"></div>
             <span className="text-xs sm:text-sm text-muted-foreground hidden sm:inline">Online</span>
