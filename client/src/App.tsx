@@ -104,6 +104,7 @@ function AppContent() {
         <main className="px-2 py-3 sm:p-6 pb-20 lg:pb-6">
           <Switch>
             <Route path="/dashboard" component={Dashboard} />
+            <Route path="/home" component={Dashboard} />
             <Route path="/send" component={Send} />
             <Route path="/history" component={History} />
             <Route path="/charts" component={Charts} />
@@ -115,10 +116,10 @@ function AppContent() {
             <Route path="/aml-kyc" component={AMLKYCPolicy} />
             <Route path="/dmca" component={DMCANotice} />
             <Route path="/">
-              <Redirect to="/dashboard" />
+              <Redirect to="/home" />
             </Route>
             <Route path="/login">
-              <Redirect to="/dashboard" />
+              <Redirect to="/home" />
             </Route>
             <Route component={NotFound} />
           </Switch>

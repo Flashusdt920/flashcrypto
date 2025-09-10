@@ -34,7 +34,7 @@ export default function Header() {
         </div>
         
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <Link href="/">
+          <Link href="/home">
             <BoltLogo size={20} className="hidden sm:block cursor-pointer hover:opacity-80 transition-opacity" />
           </Link>
           <div className="flex items-center space-x-1 sm:space-x-2">
