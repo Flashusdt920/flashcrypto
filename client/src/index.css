@@ -133,11 +133,92 @@
     }
   }
 
-  /* Improved touch targets for mobile */
+  /* Comprehensive Mobile Optimizations */
   @media (max-width: 768px) {
-    button, .sidebar-item, .clickable {
+    /* Ensure minimum touch target sizes */
+    button, .sidebar-item, .clickable, [role="button"], a {
       min-height: 44px;
       min-width: 44px;
+      padding: 12px 16px;
+      touch-action: manipulation;
+    }
+    
+    /* Small buttons need special handling */
+    button.h-8, button[size="sm"] {
+      min-height: 36px;
+      padding: 8px 12px;
+    }
+    
+    /* Better spacing for form elements */
+    input, select, textarea, [role="combobox"] {
+      min-height: 48px;
+      font-size: 16px; /* Prevents zoom on iOS */
+      padding: 12px 16px;
+    }
+    
+    /* Improve modal/dialog positioning */
+    [role="dialog"], .fixed.inset-0 {
+      max-height: 90vh;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+    }
+    
+    /* Better scrolling performance */
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+    
+    /* Prevent horizontal scroll */
+    html, body {
+      overflow-x: hidden;
+      width: 100%;
+    }
+    
+    /* Improve button group spacing */
+    .space-x-2 > * + *, .space-x-3 > * + *, .space-x-4 > * + * {
+      margin-left: 0.75rem;
+    }
+    
+    /* Better chart interaction */
+    .recharts-wrapper {
+      touch-action: pan-y;
+      user-select: none;
+    }
+    
+    /* Floating buttons positioning */
+    .fixed.bottom-6.right-6 {
+      bottom: 20px;
+      right: 20px;
+    }
+    
+    /* Cards need padding adjustment */
+    .p-6 {
+      padding: 1rem;
+    }
+    
+    /* Tables should be scrollable */
+    table {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    /* Dropdown menus need z-index boost */
+    [role="menu"], [data-radix-collection-item] {
+      z-index: 60;
+    }
+    
+    /* QR code container */
+    .w-48.h-48 {
+      width: 200px;
+      height: 200px;
+    }
+    
+    /* Toast notifications position */
+    [data-sonner-toaster] {
+      bottom: 100px !important;
     }
   }
 }

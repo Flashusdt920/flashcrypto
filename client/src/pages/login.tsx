@@ -147,7 +147,7 @@ export default function Login() {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    className="bg-gray-800 border-gray-600 text-white focus:border-purple-500 text-base"
+                    className="bg-gray-800 border-gray-600 text-white focus:border-purple-500 text-base min-h-[48px]"
                     placeholder="Enter your username"
                     disabled={isLoading}
                     autoComplete="username"
@@ -165,7 +165,7 @@ export default function Login() {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="bg-gray-800 border-gray-600 text-white focus:border-purple-500 text-base pr-10"
+                      className="bg-gray-800 border-gray-600 text-white focus:border-purple-500 text-base pr-10 min-h-[48px]"
                       placeholder="Enter your password"
                       disabled={isLoading}
                       autoComplete="current-password"
@@ -174,7 +174,7 @@ export default function Login() {
                       type="button"
                       variant="ghost"
                       size="sm"
-                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                      className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent min-w-[44px]"
                       onClick={() => setShowPassword(!showPassword)}
                       disabled={isLoading}
                     >
@@ -190,7 +190,7 @@ export default function Login() {
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-base font-medium"
+                  className="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 text-base font-medium min-h-[48px]"
                 >
                   {isLoading ? (
                     <>
@@ -210,7 +210,7 @@ export default function Login() {
                     type="button"
                     variant="ghost"
                     onClick={() => setShowRegister(true)}
-                    className="w-full text-purple-400 hover:text-purple-300 hover:bg-purple-900/20"
+                    className="w-full text-purple-400 hover:text-purple-300 hover:bg-purple-900/20 min-h-[44px]"
                   >
                     Create New Account
                   </Button>

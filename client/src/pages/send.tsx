@@ -86,7 +86,7 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
                   variant="ghost"
                   size="sm"
                   onClick={() => setShowQrCode(!showQrCode)}
-                  className="text-xs h-8 px-2"
+                  className="text-xs h-8 px-2 min-w-[60px]"
                 >
                   <QrCode className="w-4 h-4 mr-1" />
                   QR
@@ -95,7 +95,7 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
                   variant="ghost"
                   size="sm"
                   onClick={() => copyToClipboard(receiverAddress)}
-                  className="text-xs h-8 px-2"
+                  className="text-xs h-8 px-2 min-w-[70px]"
                 >
                   <Copy className="w-4 h-4 mr-1" />
                   Copy
@@ -106,22 +106,22 @@ function GasPaymentSection({ gasFeePaid, onConfirmPayment, receiverAddress }: Ga
             
             {showQrCode && qrCodeUrl && (
               <div className="flex justify-center mt-3 p-3 bg-white rounded-lg">
-                <img src={qrCodeUrl} alt="Wallet Address QR Code" className="w-48 h-48" />
+                <img src={qrCodeUrl} alt="Wallet Address QR Code" className="w-full max-w-[200px] h-auto" />
               </div>
             )}
           </div>
 
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button
               onClick={onConfirmPayment}
-              className="bg-yellow-500 text-yellow-950 dark:text-black hover:bg-yellow-600 flex-1"
+              className="bg-yellow-500 text-yellow-950 dark:text-black hover:bg-yellow-600 flex-1 min-h-[44px]"
             >
               I've Sent the Flash Fee
             </Button>
             <Button
               variant="outline"
               onClick={() => setShowQrCode(!showQrCode)}
-              className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black"
+              className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black min-h-[44px]"
             >
               <QrCode className="w-4 h-4" />
             </Button>
@@ -355,7 +355,7 @@ export default function Send() {
                         id="recipientAddress"
                         value={formData.recipientAddress}
                         onChange={(e) => setFormData({ ...formData, recipientAddress: e.target.value })}
-                        className="bg-primary border-gray-600 focus:border-accent"
+                        className="bg-primary border-gray-600 focus:border-accent min-h-[48px] text-base"
                         placeholder="Enter wallet address"
                       />
                       <p className="text-xs text-muted-foreground">Enter a valid cryptocurrency wallet address</p>
@@ -389,7 +389,7 @@ export default function Send() {
                           step="0.000001"
                           value={formData.amount}
                           onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-                          className="bg-primary border-gray-600 focus:border-accent pr-16"
+                          className="bg-primary border-gray-600 focus:border-accent pr-16 min-h-[48px] text-base"
                           placeholder="0.00"
                         />
                         <div className="absolute right-3 top-3 text-muted-foreground">

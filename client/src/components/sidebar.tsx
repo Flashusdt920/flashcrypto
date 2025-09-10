@@ -31,7 +31,7 @@ export default function Sidebar() {
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="p-2 rounded-lg hover:bg-gray-700 transition-colors"
+              className="p-2 rounded-lg hover:bg-gray-700 transition-colors min-w-[44px] min-h-[44px]"
               aria-label="Toggle menu"
             >
               {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -87,7 +87,7 @@ export default function Sidebar() {
                 onClick={() => setIsOpen(false)}
               >
                 <button
-                  className={`sidebar-item flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 w-full text-left ${
+                  className={`sidebar-item flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 w-full text-left min-h-[48px] ${
                     isActive 
                       ? 'bg-accent bg-opacity-20 text-accent' 
                       : 'text-white hover:text-accent'
