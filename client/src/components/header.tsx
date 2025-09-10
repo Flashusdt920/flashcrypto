@@ -2,11 +2,31 @@ import { useAuth } from '@/hooks/use-auth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useQuery } from '@tanstack/react-query';
 import { BoltLogo } from './bolt-logo';
-import { Link } from 'wouter';
+import { Link, useLocation } from 'wouter';
 
 export default function Header() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
+  const [location] = useLocation();
+  
+  // Get page title based on current route
+  const getPageTitle = () => {
+    switch(location) {
+      case '/home':
+      case '/dashboard':
+        return 'Dashboard';
+      case '/send':
+        return 'Send Crypto';
+      case '/history':
+        return 'Transaction History';
+      case '/settings':
+        return 'Settings';
+      case '/admin':
+        return 'Admin Panel';
+      default:
+        return 'Dashboard';
+    }
+  };
 
   const { data: transactions = [] } = useQuery({
     queryKey: ['/api/transactions', user?.id],
@@ -26,10 +46,10 @@ export default function Header() {
   };
 
   return (
-    <header className={`glass-card border-b border-gray-700 p-4 ${isMobile ? 'mt-16' : ''}`}>
+    <header className="glass-card border-b border-gray-700 p-4 mt-16">
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
-          <h2 className="text-lg sm:text-xl font-semibold truncate">Dashboard</h2>
+          <h2 className="text-lg sm:text-xl font-semibold truncate">{getPageTitle()}</h2>
           <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Welcome back to Bolt Crypto Flasher</p>
         </div>
         
