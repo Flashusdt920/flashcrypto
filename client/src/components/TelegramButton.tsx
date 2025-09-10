@@ -13,7 +13,7 @@ export default function TelegramButton() {
     <div className="fixed bottom-6 right-6 z-50">
       <Button
         onClick={handleClick}
-        className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 animate-pulse group"
+        className="h-14 w-14 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 shadow-lg hover:shadow-xl transition-all duration-300 group"
         size="icon"
         title="Contact us on Telegram"
       >

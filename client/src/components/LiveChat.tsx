@@ -22,9 +22,9 @@ export default function LiveChat() {
     const timer = setTimeout(() => {
       const chatButton = document.getElementById('chat-button');
       if (chatButton) {
-        chatButton.classList.add('animate-bounce');
+        // chatButton.classList.add('animate-bounce'); // Disabled to prevent screen recording flicker
         setTimeout(() => {
-          chatButton?.classList.remove('animate-bounce');
+          // chatButton?.classList.remove('animate-bounce'); // Disabled to prevent screen recording flicker
         }, 3000);
       }
     }, 30000);
@@ -74,7 +74,7 @@ export default function LiveChat() {
         }`}
       >
         <MessageCircle className="w-7 h-7 text-white" />
-        <span className="absolute top-0 right-0 w-3 h-3 bg-green-400 rounded-full animate-pulse"></span>
+        <span className="absolute top-0 right-0 w-3 h-3 bg-green-400 rounded-full"></span>
       </button>
 
       {/* Chat Window */}
@@ -95,7 +95,7 @@ export default function LiveChat() {
                 <div>
                   <p className="text-white font-semibold">Live Support</p>
                   <p className="text-white/80 text-xs flex items-center gap-1">
-                    <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                    <span className="w-2 h-2 bg-green-400 rounded-full"></span>
                     Online Now
                   </p>
                 </div>

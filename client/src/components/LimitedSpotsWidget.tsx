@@ -26,7 +26,7 @@ export default function LimitedSpotsWidget() {
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
-          <AlertCircle className="w-5 h-5 text-red-400 animate-pulse" />
+          <AlertCircle className="w-5 h-5 text-red-400" />
           <span className="text-white font-semibold">Limited Availability</span>
         </div>
         <div className="flex items-center gap-1">
