@@ -168,7 +168,8 @@ export default function Send() {
 
   const sendTransactionMutation = useMutation({
     mutationFn: async (transactionData: any) => {
-      return apiRequest('POST', '/api/transactions', transactionData);
+      const response = await apiRequest('POST', '/api/transactions', transactionData);
+      return response.json();
     },
     onSuccess: () => {
       // Invalidate both transactions and wallets to refresh balance
@@ -468,15 +469,15 @@ export default function Send() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="glass-card bg-secondary border border-gray-700 rounded-lg p-6 max-w-sm w-full mx-4 relative overflow-hidden">
             {/* Animated success overlay */}
-            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 pointer-events-none"></div>
+            <div className="absolute inset-0 bg-gradient-to-r from-green-500/20 to-emerald-500/20 animate-pulse pointer-events-none"></div>
             
             {/* Success animation icon */}
             <div className="flex justify-center mb-4">
               <div className="relative">
-                <div className="w-16 h-16 bg-green-500/20 rounded-full absolute"></div>
-                <div className="w-16 h-16 bg-green-500/30 rounded-full absolute"></div>
+                <div className="w-16 h-16 bg-green-500/20 rounded-full animate-ping absolute"></div>
+                <div className="w-16 h-16 bg-green-500/30 rounded-full animate-ping absolute" style={{ animationDelay: '0.5s' }}></div>
                 <div className="w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center relative">
-                  <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-8 h-8 text-white animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
                   </svg>
                 </div>
@@ -503,7 +504,7 @@ export default function Send() {
               <div className="flex justify-between pt-2 border-t border-gray-700">
                 <span className="text-gray-400">Status:</span>
                 <span className="flex items-center gap-1">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-green-400 font-semibold">Ready to Send</span>
                 </span>
               </div>
@@ -538,8 +539,8 @@ export default function Send() {
           <div className="glass-card bg-secondary border border-gray-700 rounded-lg p-8 max-w-sm w-full mx-4 text-center relative overflow-hidden">
             {/* Animated background effect */}
             <div className="absolute inset-0">
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-green-500/10"></div>
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-green-500/10 animate-pulse"></div>
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-green-500 to-emerald-500 animate-pulse"></div>
             </div>
             
             {/* Main content */}
@@ -547,8 +548,8 @@ export default function Send() {
               {/* Animated spinner with glow effect */}
               <div className="relative mx-auto mb-6 w-20 h-20">
                 <div className="absolute inset-0 bg-green-500/20 rounded-full animate-ping"></div>
-                <div className="w-20 h-20 border-4 border-green-500/30 border-t-green-500 rounded-full"></div>
-                <div className="absolute inset-2 border-4 border-emerald-500/30 border-b-emerald-500 rounded-full"></div>
+                <div className="w-20 h-20 border-4 border-green-500/30 border-t-green-500 rounded-full animate-spin"></div>
+                <div className="absolute inset-2 border-4 border-emerald-500/30 border-b-emerald-500 rounded-full animate-spin" style={{ animationDirection: 'reverse', animationDuration: '1.5s' }}></div>
               </div>
               
               <h3 className="text-xl font-bold mb-3 bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
@@ -557,15 +558,15 @@ export default function Send() {
               
               <div className="space-y-2 mb-4">
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                   <span className="text-sm text-gray-400">Validating transaction...</span>
                 </div>
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }}></div>
                   <span className="text-sm text-gray-400">Broadcasting to network...</span>
                 </div>
                 <div className="flex items-center justify-center space-x-2">
-                  <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                  <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" style={{ animationDelay: '0.6s' }}></div>
                   <span className="text-sm text-gray-400">Confirming blocks...</span>
                 </div>
               </div>
@@ -576,7 +577,7 @@ export default function Send() {
               
               {/* Progress bar */}
               <div className="mt-4 w-full bg-gray-700 rounded-full h-2 overflow-hidden">
-                <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full" style={{ width: '75%' }}></div>
+                <div className="h-full bg-gradient-to-r from-green-500 to-emerald-500 rounded-full animate-pulse" style={{ width: '75%' }}></div>
               </div>
             </div>
           </div>
