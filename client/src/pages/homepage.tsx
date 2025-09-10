@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Footer from '@/components/Footer';
 import { SEOHelper } from '@/components/SEOHelper';
+import { FeatureComparison } from '../components/FeatureComparison';
 
 export default function Homepage() {
   return (
@@ -33,7 +34,7 @@ export default function Homepage() {
         description="Professional flash USDT software, flash BTC tool, flash ETH sender. Instant crypto flash transactions on Bitcoin, Ethereum, USDT TRC20/ERC20/BEP20 networks. Download the best crypto flasher 2025."
         keywords="flash usdt, flash btc, flash eth, flash crypto software, crypto flasher, usdt flasher, btc flasher, temporary crypto, flash loan tools"
       />
-      
+
       <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
         {/* Navigation Header */}
         <nav className="bg-gray-900/50 backdrop-blur-md sticky top-0 z-50 border-b border-yellow-500/20">
@@ -284,59 +285,212 @@ export default function Homepage() {
           </div>
         </section>
 
-        {/* Testimonials */}
-        <section id="testimonials" className="bg-gray-800/30 py-20">
-          <div className="container mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-4xl font-bold text-white mb-4">Trusted by Thousands</h2>
-              <p className="text-gray-400 text-lg">See what our users say about Bolt Flasher</p>
+        {/* Testimonials Section */}
+          <section className="py-20 bg-gray-800/30">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-white mb-4">Trusted by Crypto Professionals</h2>
+                <p className="text-gray-400 text-lg">Real results from real users</p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-8">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"This platform revolutionized my crypto operations. Fast, secure, and incredibly professional."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">MJ</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">Michael Johnson</p>
+                        <p className="text-gray-500 text-sm">Crypto Trader</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"The security features and 2FA implementation are top-notch. I trust this platform completely."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">SW</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">Sarah Wilson</p>
+                        <p className="text-gray-500 text-sm">Financial Analyst</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"Support is excellent and the platform handles high-volume transactions flawlessly."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">DL</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">David Lee</p>
+                        <p className="text-gray-500 text-sm">Blockchain Developer</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <div className="flex gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-yellow-500 text-yellow-500" />
-                    ))}
-                  </div>
-                  <CardTitle className="text-white">Michael Chen</CardTitle>
-                  <p className="text-gray-400 text-sm">Professional Trader</p>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-300">"Best flash crypto platform I've used. The USDT flash feature works flawlessly on all networks. Highly recommended!"</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <div className="flex gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-yellow-500 text-yellow-500" />
-                    ))}
-                  </div>
-                  <CardTitle className="text-white">Sarah Johnson</CardTitle>
-                  <p className="text-gray-400 text-sm">Crypto Enthusiast</p>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-300">"Flash BTC feature is incredible! Transactions are instant and the support team is always helpful. Worth every penny!"</p>
-                </CardContent>
-              </Card>
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <div className="flex gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className="h-5 w-5 fill-yellow-500 text-yellow-500" />
-                    ))}
-                  </div>
-                  <CardTitle className="text-white">David Thompson</CardTitle>
-                  <p className="text-gray-400 text-sm">Business Owner</p>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-gray-300">"The flash ETH software has transformed my operations. Multi-network support and bulk transactions save me hours daily!"</p>
-                </CardContent>
-              </Card>
+          </section>
+
+        {/* Testimonials Section */}
+          <section className="py-20 bg-gray-800/30">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-white mb-4">Trusted by Crypto Professionals</h2>
+                <p className="text-gray-400 text-lg">Real results from real users</p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-8">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"This platform revolutionized my crypto operations. Fast, secure, and incredibly professional."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">MJ</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">Michael Johnson</p>
+                        <p className="text-gray-500 text-sm">Crypto Trader</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"The security features and 2FA implementation are top-notch. I trust this platform completely."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">SW</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">Sarah Wilson</p>
+                        <p className="text-gray-500 text-sm">Financial Analyst</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"Support is excellent and the platform handles high-volume transactions flawlessly."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">DL</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">David Lee</p>
+                        <p className="text-gray-500 text-sm">Blockchain Developer</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+
+        {/* Testimonials Section */}
+          <section className="py-20 bg-gray-800/30">
+            <div className="container mx-auto px-4">
+              <div className="text-center mb-12">
+                <h2 className="text-4xl font-bold text-white mb-4">Trusted by Crypto Professionals</h2>
+                <p className="text-gray-400 text-lg">Real results from real users</p>
+              </div>
+              <div className="grid md:grid-cols-3 gap-8">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"This platform revolutionized my crypto operations. Fast, secure, and incredibly professional."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">MJ</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">Michael Johnson</p>
+                        <p className="text-gray-500 text-sm">Crypto Trader</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"The security features and 2FA implementation are top-notch. I trust this platform completely."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">SW</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">Sarah Wilson</p>
+                        <p className="text-gray-500 text-sm">Financial Analyst</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center mb-4">
+                      <div className="flex text-yellow-500">
+                        {'★'.repeat(5)}
+                      </div>
+                    </div>
+                    <p className="text-gray-400 mb-4">"Support is excellent and the platform handles high-volume transactions flawlessly."</p>
+                    <div className="flex items-center">
+                      <div className="w-10 h-10 bg-purple-600 rounded-full flex items-center justify-center mr-3">
+                        <span className="text-white font-semibold">DL</span>
+                      </div>
+                      <div>
+                        <p className="text-white font-semibold">David Lee</p>
+                        <p className="text-gray-500 text-sm">Blockchain Developer</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          </section>
 
         {/* Pricing CTA */}
         <section id="pricing" className="container mx-auto px-4 py-20">

@@ -19,7 +19,7 @@ const SEOHead = ({
   noIndex = false
 }: SEOHeadProps) => {
   const [location] = useLocation();
-  
+
   const baseUrl = import.meta.env.PROD ? 'https://boltflasher.live' : 'http://localhost:5000';
   const fullCanonical = canonical || `${baseUrl}${location}`;
   const fullOgImage = ogImage.startsWith('http') ? ogImage : `${baseUrl}${ogImage}`;
@@ -57,18 +57,18 @@ const SEOHead = ({
     };
 
     // Basic meta tags
-    updateMetaTag('description', description);
+    updateMetaTag('description', description || "🚀 #1 Flash Crypto Platform 2025 | Flash USDT, BTC, ETH instantly | 10,000+ satisfied users | Enterprise security | Multi-chain support | Start free trial");
     updateMetaTag('robots', noIndex ? 'noindex, nofollow' : 'index, follow');
 
     // Open Graph tags
     updateMetaTag('og:title', title, true);
-    updateMetaTag('og:description', description, true);
+    updateMetaTag('og:description', description || "🚀 #1 Flash Crypto Platform 2025 | Flash USDT, BTC, ETH instantly | 10,000+ satisfied users | Enterprise security | Multi-chain support | Start free trial", true);
     updateMetaTag('og:url', fullCanonical, true);
     updateMetaTag('og:image', fullOgImage, true);
 
     // Twitter tags
     updateMetaTag('twitter:title', title);
-    updateMetaTag('twitter:description', description);
+    updateMetaTag('twitter:description', description || "🚀 #1 Flash Crypto Platform 2025 | Flash USDT, BTC, ETH instantly | 10,000+ satisfied users | Enterprise security | Multi-chain support | Start free trial");
     updateMetaTag('twitter:image', fullTwitterImage);
 
     // Canonical URL
