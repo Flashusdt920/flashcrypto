@@ -39,10 +39,12 @@ export default function Homepage() {
         <nav className="bg-gray-900/50 backdrop-blur-md sticky top-0 z-50 border-b border-yellow-500/20">
           <div className="container mx-auto px-4 py-4">
             <div className="flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <Zap className="h-8 w-8 text-yellow-500" />
-                <span className="text-2xl font-bold text-white">Bolt Flasher</span>
-              </div>
+              <Link href="/home">
+                <div className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity">
+                  <Zap className="h-8 w-8 text-yellow-500" />
+                  <span className="text-2xl font-bold text-white">Bolt Flasher</span>
+                </div>
+              </Link>
               <div className="hidden md:flex items-center gap-6">
                 <Link href="#features" className="text-gray-300 hover:text-yellow-500 transition">Features</Link>
                 <Link href="#how-it-works" className="text-gray-300 hover:text-yellow-500 transition">How It Works</Link>

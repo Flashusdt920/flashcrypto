@@ -9,7 +9,6 @@ const navItems = [
   { path: '/home', icon: ChartLine, label: 'Dashboard' },
   { path: '/send', icon: NotebookPen, label: 'Send Crypto' },
   { path: '/history', icon: History, label: 'Transaction History' },
-  { path: '/charts', icon: BarChart3, label: 'Price Charts' },
   { path: '/settings', icon: Settings, label: 'Settings' },
 ];
 

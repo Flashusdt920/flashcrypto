@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/use-auth';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import SEOHead from '@/components/SEOHead';
@@ -9,7 +9,179 @@ import CountryFlags from '@/components/CountryFlags';
 import { SecurityAuditBadge } from '@/components/SecurityAudit';
 import { apiRequest, queryClient } from '@/lib/queryClient';
 import { useToast } from '@/hooks/use-toast';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts';
+import { useState } from 'react';
+import { Activity } from 'lucide-react';
+
+// Price Chart Component
+function PriceChartSection() {
+  const [selectedSymbol, setSelectedSymbol] = useState('BTC');
+  const [timeframe, setTimeframe] = useState('7d');
+
+  // Fetch market data
+  const { data: marketData = [] } = useQuery<any[]>({
+    queryKey: ['/api/market/prices'],
+    refetchInterval: 30000, // Refresh every 30 seconds
+  });
+
+  // Fetch historical chart data
+  const { data: chartData = [] } = useQuery<any[]>({
+    queryKey: ['/api/market/history', selectedSymbol, timeframe],
+    refetchInterval: 60000, // Refresh every minute
+  });
+
+  const supportedCoins = ['BTC', 'ETH', 'BNB', 'TRX', 'SOL', 'USDT'];
+
+  const formatPrice = (price: number) => {
+    if (price < 1) return `$${price.toFixed(6)}`;
+    if (price < 100) return `$${price.toFixed(4)}`;
+    return `$${price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  };
+
+  const formatVolume = (volume: number) => {
+    if (volume >= 1e9) return `$${(volume / 1e9).toFixed(2)}B`;
+    if (volume >= 1e6) return `$${(volume / 1e6).toFixed(2)}M`;
+    if (volume >= 1e3) return `$${(volume / 1e3).toFixed(2)}K`;
+    return `$${volume.toLocaleString()}`;
+  };
+
+  const getChangeColor = (change: number) => {
+    return change >= 0 ? 'text-green-500' : 'text-red-500';
+  };
+
+  const getChangeIcon = (change: number) => {
+    return change >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />;
+  };
+
+  const selectedCoinData = marketData.find((coin: any) => coin.symbol === selectedSymbol);
+
+  return (
+    <div className="space-y-6">
+      {/* Market Overview Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        {marketData.slice(0, 4).map((coin: any) => (
+          <div key={coin.symbol} className="p-4 bg-secondary rounded-lg border border-gray-700">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-400">{coin.symbol}</p>
+                <p className="text-xl font-bold">{formatPrice(coin.price)}</p>
+              </div>
+              <div className={`flex items-center space-x-1 ${getChangeColor(coin.change24h)}`}>
+                {getChangeIcon(coin.change24h)}
+                <span className="text-sm font-medium">
+                  {coin.change24h > 0 ? '+' : ''}{coin.change24h.toFixed(2)}%
+                </span>
+              </div>
+            </div>
+            <div className="mt-2 flex justify-between text-xs text-gray-400">
+              <span>Vol: {formatVolume(coin.volume24h)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Chart and Controls */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        {/* Controls */}
+        <div className="space-y-4">
+          <div>
+            <p className="text-sm font-medium mb-2">Select Coin</p>
+            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+              {supportedCoins.map((symbol) => (
+                <Button
+                  key={symbol}
+                  variant={selectedSymbol === symbol ? "default" : "outline"}
+                  size="sm"
+                  className="justify-start"
+                  onClick={() => setSelectedSymbol(symbol)}
+                >
+                  {symbol}
+                </Button>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <p className="text-sm font-medium mb-2">Timeframe</p>
+            <div className="grid grid-cols-2 gap-2">
+              {['1d', '7d', '30d', '90d'].map((tf) => (
+                <Button
+                  key={tf}
+                  variant={timeframe === tf ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setTimeframe(tf)}
+                >
+                  {tf}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Chart */}
+        <div className="lg:col-span-3">
+          <div className="mb-4 flex items-center justify-between">
+            <h4 className="text-lg font-semibold">{selectedSymbol} Price Chart</h4>
+            {selectedCoinData && (
+              <div className={`flex items-center space-x-2 ${getChangeColor(selectedCoinData.change24h)}`}>
+                <span className="text-lg font-bold">
+                  {formatPrice(selectedCoinData.price)}
+                </span>
+                <span className="text-sm">
+                  ({selectedCoinData.change24h > 0 ? '+' : ''}{selectedCoinData.change24h.toFixed(2)}%)
+                </span>
+              </div>
+            )}
+          </div>
+          
+          {chartData.length > 0 ? (
+            <ResponsiveContainer width="100%" height={300}>
+              <AreaChart data={chartData}>
+                <defs>
+                  <linearGradient id="colorPrice" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="#facc15" stopOpacity={0.8}/>
+                    <stop offset="95%" stopColor="#facc15" stopOpacity={0.1}/>
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="#333" />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fontSize: 12, fill: '#888' }}
+                />
+                <YAxis 
+                  domain={['dataMin', 'dataMax']}
+                  tick={{ fontSize: 12, fill: '#888' }}
+                  tickFormatter={(value) => formatPrice(value)}
+                />
+                <Tooltip 
+                  formatter={(value: any) => [formatPrice(value), 'Price']}
+                  labelFormatter={(label) => `Date: ${label}`}
+                  contentStyle={{ backgroundColor: '#1a1a1a', border: '1px solid #333' }}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="price"
+                  stroke="#facc15"
+                  strokeWidth={2}
+                  fillOpacity={1}
+                  fill="url(#colorPrice)"
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="flex items-center justify-center h-[300px] text-gray-500">
+              <div className="text-center">
+                <Activity className="w-12 h-12 mx-auto mb-4 opacity-50" />
+                <p>Loading chart data...</p>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -245,6 +417,18 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+      </div>
+
+      {/* Price Charts Section */}
+      <div className="mt-8">
+        <Card className="glass-card border-0">
+          <CardHeader>
+            <CardTitle className="text-xl font-bold">Market Charts</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <PriceChartSection />
+          </CardContent>
+        </Card>
       </div>
 
       {/* New Enhanced Features Section */}
