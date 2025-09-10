@@ -49,7 +49,7 @@ export default function ProgressModal({ isOpen, onClose }: ProgressModalProps) {
       <DialogContent className="glass-card border-0 max-w-sm">
         <div className="text-center p-8">
           <div className="mb-6">
-            <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+            <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <DialogTitle className="text-lg font-semibold mb-2">Processing Transaction</DialogTitle>
             <p className="text-muted-foreground">Please wait while your transaction is being processed</p>
           </div>
@@ -65,7 +65,7 @@ export default function ProgressModal({ isOpen, onClose }: ProgressModalProps) {
                   {index < currentStep ? (
                     <CheckCircle className="w-4 h-4 text-green-500" />
                   ) : index === currentStep ? (
-                    <Icon className="w-4 h-4 text-accent" />
+                    <Icon className="w-4 h-4 text-accent animate-spin" />
                   ) : (
                     <Clock className="w-4 h-4 text-muted-foreground" />
                   )}

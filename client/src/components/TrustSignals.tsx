@@ -145,7 +145,7 @@ export function LiveTransactionFeed() {
   return (
     <div className="bg-black/40 rounded-lg border border-purple-500/20 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Activity className="w-5 h-5 text-green-400" />
+        <Activity className="w-5 h-5 text-green-400 animate-pulse" />
         <h3 className="text-lg font-semibold text-white">Live Transactions</h3>
       </div>
       
@@ -160,7 +160,7 @@ export function LiveTransactionFeed() {
               className="flex items-center justify-between p-3 bg-gray-800/50 rounded-lg border border-gray-700"
             >
               <div className="flex items-center gap-3">
-                <div className="w-2 h-2 bg-green-400 rounded-full" />
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 <div>
                   <p className="text-sm text-white">
                     {tx.amount} {tx.crypto} sent successfully

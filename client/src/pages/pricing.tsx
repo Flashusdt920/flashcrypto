@@ -498,11 +498,11 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
             <div className="flex flex-wrap justify-center items-center gap-6 opacity-60">
               <div className="text-sm text-gray-400">Trusted by professionals worldwide</div>
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
                 <span className="text-sm text-gray-400">24/7 Support</span>
               </div>
               <div className="flex items-center space-x-2">
-                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
                 <span className="text-sm text-gray-400">SSL Secured</span>
               </div>
             </div>

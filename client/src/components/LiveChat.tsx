@@ -22,9 +22,9 @@ export default function LiveChat() {
     const timer = setTimeout(() => {
       const chatButton = document.getElementById('chat-button');
       if (chatButton) {
-        // chatButton.classList.add('animate-bounce'); // Disabled to prevent screen recording flicker
+        chatButton.classList.add('animate-bounce');
         setTimeout(() => {
-          // chatButton?.classList.remove('animate-bounce'); // Disabled to prevent screen recording flicker
+          chatButton?.classList.remove('animate-bounce');
         }, 3000);
       }
     }, 30000);

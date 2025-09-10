@@ -105,7 +105,7 @@ export default function SimulatedWallet({
           {showReceiving && (
             <div className="mt-3 space-y-2">
               <div className="flex items-center gap-2 text-green-400">
-                <ArrowDownCircle className="h-4 w-4" />
+                <ArrowDownCircle className="h-4 w-4 animate-bounce" />
                 <span className="text-sm">
                   Receiving +{formatBalance(parseFloat(incomingAmount || '0'))} {token}
                 </span>
@@ -134,7 +134,7 @@ export default function SimulatedWallet({
           <div className="bg-black/30 p-3 rounded-lg space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-xs text-gray-400">Transaction Hash</span>
-              <Clock className="h-3 w-3 text-yellow-400" />
+              <Clock className="h-3 w-3 text-yellow-400 animate-spin" />
             </div>
             <p className="font-mono text-xs text-green-400 break-all">
               {transactionHash}
@@ -151,7 +151,7 @@ export default function SimulatedWallet({
         {/* Network Info */}
         <div className="flex items-center justify-between text-xs">
           <div className="flex items-center gap-2 text-gray-400">
-            <div className="h-2 w-2 bg-green-400 rounded-full" />
+            <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse" />
             <span>Network: {token === 'USDT' ? 'TRC-20' : 'Mainnet'}</span>
           </div>
           <div className="flex items-center gap-1 text-gray-400">

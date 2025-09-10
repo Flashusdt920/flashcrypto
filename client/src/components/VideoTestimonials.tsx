@@ -148,7 +148,7 @@ export default function VideoTestimonials() {
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center">
-                    <div className="text-purple-400 mb-4">
+                    <div className="animate-pulse text-purple-400 mb-4">
                       <Play className="w-16 h-16 mx-auto" />
                     </div>
                     <p className="text-white">Playing video testimonial...</p>

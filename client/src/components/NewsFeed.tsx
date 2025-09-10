@@ -189,7 +189,7 @@ export function NewsFeed() {
       {filteredNews.some(n => n.impact === 'high' && (new Date().getTime() - n.timestamp.getTime()) < 3600000) && (
         <Card className="bg-red-900/20 border-red-500/30 p-4">
           <div className="flex items-center gap-3">
-            <AlertCircle className="w-5 h-5 text-red-400" />
+            <AlertCircle className="w-5 h-5 text-red-400 animate-pulse" />
             <div className="flex-1">
               <p className="text-red-400 font-semibold">Breaking News</p>
               <p className="text-gray-300 text-sm">High-impact events detected in the last hour</p>

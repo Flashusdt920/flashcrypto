@@ -130,7 +130,7 @@ export default function Dashboard() {
               disabled={resetBalanceMutation.isPending}
               className="bg-yellow-500/10 border-yellow-500/30 hover:bg-yellow-500/20"
             >
-              <RefreshCw className="w-4 h-4 mr-2" />
+              <RefreshCw className={`w-4 h-4 mr-2 ${resetBalanceMutation.isPending ? 'animate-spin' : ''}`} />
               Reset Wallet Balances
             </Button>
           </div>

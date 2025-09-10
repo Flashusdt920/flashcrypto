@@ -307,7 +307,7 @@ export default function AdminPanel() {
       <div className="min-h-screen bg-primary text-white p-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center">
-            <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full mx-auto mb-4"></div>
+            <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
             <p className="text-muted">Loading users...</p>
           </div>
         </div>
