@@ -3,28 +3,31 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useQuery } from '@tanstack/react-query';
 import { BoltLogo } from './bolt-logo';
 import { Link, useLocation } from 'wouter';
+import { ThemeToggle } from './ThemeToggle';
+import { LanguageSelector, useLanguage } from './MultiLanguage';
 
 export default function Header() {
   const { user } = useAuth();
   const isMobile = useIsMobile();
   const [location] = useLocation();
+  const { t } = useLanguage();
   
   // Get page title based on current route
   const getPageTitle = () => {
     switch(location) {
       case '/home':
       case '/dashboard':
-        return 'Dashboard';
+        return t('dashboard');
       case '/send':
-        return 'Send Crypto';
+        return t('send');
       case '/history':
-        return 'Transaction History';
+        return t('transactions');
       case '/settings':
-        return 'Settings';
+        return t('settings');
       case '/admin':
         return 'Admin Panel';
       default:
-        return 'Dashboard';
+        return t('dashboard');
     }
   };
 
@@ -50,10 +53,12 @@ export default function Header() {
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
           <h2 className="text-lg sm:text-xl font-semibold truncate">{getPageTitle()}</h2>
-          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Welcome back to Bolt Crypto Flasher</p>
+          <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">{t('welcome')}</p>
         </div>
         
         <div className="flex items-center space-x-2 sm:space-x-4">
+          <LanguageSelector />
+          <ThemeToggle />
           <Link href="/home">
             <BoltLogo size={20} className="hidden sm:block cursor-pointer hover:opacity-80 transition-opacity" />
           </Link>
