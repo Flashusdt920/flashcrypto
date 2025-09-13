@@ -30,21 +30,51 @@ export class BitcoinService {
 
   async getBalance(address: string): Promise<string> {
     try {
-      const response = await axios.get(`${this.apiBaseUrl}/address/${address}`);
+      const response = await axios.get(`${this.apiBaseUrl}/address/${address}`, {
+        timeout: 5000,
+        validateStatus: (status) => status < 500 // Accept any status less than 500
+      });
+      
+      // Handle proxy authentication errors
+      if (response.status === 407) {
+        console.warn('Proxy authentication required for external API. Using fallback data.');
+        return '0';
+      }
+      
       const satoshis = response.data.chain_stats.funded_txo_sum - response.data.chain_stats.spent_txo_sum;
       return (satoshis / 100000000).toString(); // Convert to BTC
-    } catch (error) {
-      console.error('Error getting BTC balance:', error);
+    } catch (error: any) {
+      // Handle specific error codes
+      if (error.response?.status === 407) {
+        console.warn('HTTP 407: Proxy authentication required. Using fallback balance.');
+      } else if (error.code === 'ECONNABORTED') {
+        console.warn('Request timeout. External API might be blocked.');
+      } else {
+        console.error('Error getting BTC balance:', error.message || error);
+      }
       return '0';
     }
   }
 
   async getUTXOs(address: string): Promise<any[]> {
     try {
-      const response = await axios.get(`${this.apiBaseUrl}/address/${address}/utxo`);
+      const response = await axios.get(`${this.apiBaseUrl}/address/${address}/utxo`, {
+        timeout: 5000,
+        validateStatus: (status) => status < 500
+      });
+      
+      if (response.status === 407) {
+        console.warn('Proxy authentication required. Returning empty UTXOs.');
+        return [];
+      }
+      
       return response.data;
-    } catch (error) {
-      console.error('Error getting UTXOs:', error);
+    } catch (error: any) {
+      if (error.response?.status === 407) {
+        console.warn('HTTP 407: Proxy authentication required for UTXO fetch.');
+      } else {
+        console.error('Error getting UTXOs:', error.message || error);
+      }
       return [];
     }
   }
@@ -124,17 +154,38 @@ export class BitcoinService {
 
   async getRawTransaction(txid: string): Promise<string> {
     try {
-      const response = await axios.get(`${this.apiBaseUrl}/tx/${txid}/hex`);
+      const response = await axios.get(`${this.apiBaseUrl}/tx/${txid}/hex`, {
+        timeout: 5000,
+        validateStatus: (status) => status < 500
+      });
+      
+      if (response.status === 407) {
+        console.warn('Proxy authentication required for transaction fetch.');
+        return '';
+      }
+      
       return response.data;
-    } catch (error) {
-      console.error('Error getting raw transaction:', error);
+    } catch (error: any) {
+      if (error.response?.status === 407) {
+        console.warn('HTTP 407: Proxy authentication required.');
+      } else {
+        console.error('Error getting raw transaction:', error.message || error);
+      }
       return '';
     }
   }
 
   async getTransactionStatus(hash: string): Promise<TransactionResult> {
     try {
-      const response = await axios.get(`${this.apiBaseUrl}/tx/${hash}/status`);
+      const response = await axios.get(`${this.apiBaseUrl}/tx/${hash}/status`, {
+        timeout: 5000,
+        validateStatus: (status) => status < 500
+      });
+      
+      if (response.status === 407) {
+        console.warn('Proxy authentication required. Returning pending status.');
+        return { hash, status: 'pending' };
+      }
       
       return {
         hash,
@@ -142,8 +193,12 @@ export class BitcoinService {
         blockNumber: response.data.block_height?.toString(),
         confirmations: response.data.confirmations
       };
-    } catch (error) {
-      console.error('Error getting BTC transaction status:', error);
+    } catch (error: any) {
+      if (error.response?.status === 407) {
+        console.warn('HTTP 407: Cannot check transaction status due to proxy.');
+        return { hash, status: 'pending' };
+      }
+      console.error('Error getting BTC transaction status:', error.message || error);
       return { hash, status: 'failed' };
     }
   }
