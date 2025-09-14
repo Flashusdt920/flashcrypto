@@ -333,8 +333,8 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
         canonical="/pricing"
         ogImage="/pricing-preview.png"
       />
-      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center p-3 sm:p-4">
-      <div className="w-full max-w-6xl">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center p-2 sm:p-3 lg:p-4">
+      <div className="w-full max-w-6xl px-2 sm:px-4">
         {/* Header with Navigation Buttons */}
         <div className="flex justify-between items-center mb-6 sm:mb-8">
           <div className="flex gap-3">
@@ -364,22 +364,22 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
           </div>
         </div>
 
-        <div className="text-center mb-6 sm:mb-8">
-          <h1 className="text-2xl sm:text-4xl font-bold text-white mb-2">Premium Access Required</h1>
-          <p className="text-gray-300 text-sm sm:text-base">Welcome {user.username}! Unlock full platform access with our premium plan</p>
+        <div className="text-center mb-4 sm:mb-6 lg:mb-8">
+          <h1 className="text-xl sm:text-2xl lg:text-4xl font-bold text-white mb-2">Premium Access Required</h1>
+          <p className="text-gray-300 text-xs sm:text-sm lg:text-base px-2">Welcome {user.username}! Unlock full platform access with our premium plan</p>
         </div>
         
         <div className="flex justify-center mb-12">
           <Card 
             className="w-full max-w-2xl bg-black bg-opacity-50 border border-purple-500 shadow-2xl hover:shadow-purple-500/20 transition-all transform scale-105"
           >
-            <CardHeader className="text-center p-6 sm:p-8">
-              <div className="bg-gradient-to-r from-purple-500 to-violet-500 text-white text-sm font-bold py-2 px-4 rounded-full mb-4 inline-block">
+            <CardHeader className="text-center p-4 sm:p-6 lg:p-8">
+              <div className="bg-gradient-to-r from-purple-500 to-violet-500 text-white text-xs sm:text-sm font-bold py-1.5 sm:py-2 px-3 sm:px-4 rounded-full mb-3 sm:mb-4 inline-block">
                 LIFETIME ACCESS
               </div>
-              <CardTitle className="text-3xl sm:text-4xl font-bold text-white mb-2">{premiumPlan.name}</CardTitle>
-              <div className="text-4xl sm:text-5xl font-bold text-purple-400">${premiumPlan.price}</div>
-              <p className="text-gray-400 text-sm mt-2">One-time USDT Payment</p>
+              <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">{premiumPlan.name}</CardTitle>
+              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-400">${premiumPlan.price}</div>
+              <p className="text-gray-400 text-xs sm:text-sm mt-2">One-time USDT Payment</p>
             </CardHeader>
             <CardContent className="p-6 sm:p-8">
               <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
