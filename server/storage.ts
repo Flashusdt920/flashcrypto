@@ -73,6 +73,8 @@ export class DatabaseStorage implements IStorage {
 
   private async initializeDefaultData() {
     try {
+      if (!db) return; // Skip initialization if database is not available
+      
       // Check if default users already exist
       let existingAdmin = await this.getUserByUsername("admin");
       let existingHenry = await this.getUserByUsername("SoftwareHenry");
@@ -98,7 +100,7 @@ export class DatabaseStorage implements IStorage {
         lastName: "Software",
       }).returning();
 
-      // Create premium subscription plan
+      // Create premium subscription plan (if it doesn't exist)
       const plans = await db.insert(subscriptionPlans).values([
         {
           id: 'premium',
@@ -119,7 +121,7 @@ export class DatabaseStorage implements IStorage {
             'Lifetime Updates'
           ]
         }
-      ]).returning();
+      ]).onConflictDoNothing().returning();
 
       // Initialize network configurations
       await db.insert(networkConfigs).values([
@@ -157,8 +159,16 @@ export class DatabaseStorage implements IStorage {
         }
       ]).onConflictDoNothing().returning();
 
+      // Get or verify the premium plan exists
+      let premiumPlan = plans[0];
+      if (!premiumPlan) {
+        // Plan already exists, fetch it
+        const existingPlans = await db.select().from(subscriptionPlans).where(eq(subscriptionPlans.id, 'premium'));
+        premiumPlan = existingPlans[0];
+      }
+      
       // Create admin subscriptions if they don't exist
-      if (adminUser[0] && henryUser[0] && plans[0]) {
+      if (adminUser[0] && henryUser[0] && premiumPlan) {
         // Check if subscriptions exist
         const adminSub = await db.select().from(userSubscriptions).where(eq(userSubscriptions.userId, adminUser[0].id));
         const henrySub = await db.select().from(userSubscriptions).where(eq(userSubscriptions.userId, henryUser[0].id));
@@ -166,7 +176,7 @@ export class DatabaseStorage implements IStorage {
         if (adminSub.length === 0) {
           await db.insert(userSubscriptions).values({
             userId: adminUser[0].id,
-            planId: plans[0].id,
+            planId: premiumPlan.id,
             status: "active",
             paymentTxHash: "admin-default",
             expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
@@ -176,7 +186,7 @@ export class DatabaseStorage implements IStorage {
         if (henrySub.length === 0) {
           await db.insert(userSubscriptions).values({
             userId: henryUser[0].id,
-            planId: plans[0].id,
+            planId: premiumPlan.id,
             status: "active", 
             paymentTxHash: "admin-default",
             expiresAt: new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000), // 10 years
