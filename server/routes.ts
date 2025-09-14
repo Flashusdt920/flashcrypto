@@ -20,7 +20,10 @@ const requireNotRejected = async (req: any, res: any, next: any) => {
     const userId = req.params.userId || req.body.userId || req.query.userId;
     
     if (!userId) {
-      return next(); // No userId, let the route handle authentication
+      return res.status(401).json({ 
+        code: 'unauthorized',
+        message: 'Authentication required. Please provide a valid user ID.' 
+      });
     }
 
     // Check if user is admin (bypass check)
@@ -190,9 +193,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Validate userId is present
+      if (!userId) {
+        return res.status(400).json({ 
+          message: "User ID is required to create a transaction" 
+        });
+      }
+
       // Create transaction using storage service
       const transactionData = {
-        userId: userId || '1',
+        userId,
         toAddress,
         amount: amount.toString(),
         token,

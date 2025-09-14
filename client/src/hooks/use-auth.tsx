@@ -14,6 +14,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   hasActiveSubscription: boolean;
+  subscriptionStatus: 'none' | 'pending' | 'active' | 'rejected' | 'expired' | 'canceled';
   login: (username: string, password: string) => Promise<boolean>;
   logout: () => void;
   checkSubscription: () => Promise<boolean>;
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<'none' | 'pending' | 'active' | 'rejected' | 'expired' | 'canceled'>('none');
 
   const checkSubscription = async (): Promise<boolean> => {
     if (!user) return false;
@@ -35,6 +37,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Admin users bypass subscription check (by username or role)
     if (ADMIN_USERS.includes(user.username) || user.role === 'admin') {
       setHasActiveSubscription(true);
+      setSubscriptionStatus('active');
       return true;
     }
 
@@ -44,20 +47,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       if (response.ok) {
         const subscription = await response.json();
-        const hasActive = subscription && subscription.status === 'active';
+        const status = subscription.status || 'none';
+        setSubscriptionStatus(status);
+        const hasActive = status === 'active';
         setHasActiveSubscription(hasActive);
         return hasActive;
       } else if (response.status === 404) {
         // 404 means no subscription found - this is normal for new users
         setHasActiveSubscription(false);
+        setSubscriptionStatus('none');
         return false;
       }
       // Other error statuses
       setHasActiveSubscription(false);
+      setSubscriptionStatus('none');
       return false;
     } catch (error) {
       console.error('Subscription check error:', error);
       setHasActiveSubscription(false);
+      setSubscriptionStatus('none');
       return false;
     }
   };
@@ -99,6 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       checkSubscription();
     } else {
       setHasActiveSubscription(false);
+      setSubscriptionStatus('none');
     }
   }, [user]);
 
@@ -147,6 +156,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } finally {
       setUser(null);
       setHasActiveSubscription(false);
+      setSubscriptionStatus('none');
       localStorage.removeItem('auth_token');
       localStorage.removeItem('auth_user');
     }
@@ -158,6 +168,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isAuthenticated: !!user,
       isLoading,
       hasActiveSubscription,
+      subscriptionStatus,
       login,
       logout,
       checkSubscription,

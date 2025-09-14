@@ -18,6 +18,7 @@ import Header from "./components/header";
 import NotFound from "./pages/not-found";
 import Pricing from '@/pages/pricing';
 import TelegramSupport from './components/TelegramSupport';
+import { AccessDenied } from './components/AccessDenied';
 import { LanguageProvider } from './components/MultiLanguage';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
 import Terms from './pages/terms';
@@ -37,7 +38,7 @@ import { useEffect } from 'react';
 
 function AppContent() {
   useKeyboardShortcuts();
-  const { isAuthenticated, isLoading, hasActiveSubscription, user, checkSubscription, logout } = useAuth();
+  const { isAuthenticated, isLoading, hasActiveSubscription, subscriptionStatus, user, checkSubscription, logout } = useAuth();
   
   // Initialize dark mode by default
   useEffect(() => {
@@ -78,6 +79,16 @@ function AppContent() {
         <Route path="/" component={Homepage} />
         <Route component={NotFound} />
       </Switch>
+    );
+  }
+
+  // If user has a rejected subscription, show access denied page
+  if (isAuthenticated && subscriptionStatus === 'rejected') {
+    return (
+      <div className="relative">
+        <AccessDenied />
+        <TelegramSupport />
+      </div>
     );
   }
 
