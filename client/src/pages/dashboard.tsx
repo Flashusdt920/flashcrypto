@@ -59,35 +59,35 @@ function PriceChartSection() {
   return (
     <div className="space-y-6">
       {/* Market Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {marketData.slice(0, 4).map((coin: any) => (
-          <div key={coin.symbol} className="p-4 bg-secondary rounded-lg border border-gray-700">
-            <div className="flex items-center justify-between">
+          <div key={coin.symbol} className="p-3 sm:p-4 bg-secondary rounded-lg border border-gray-700">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
               <div>
-                <p className="text-sm font-medium text-gray-400">{coin.symbol}</p>
-                <p className="text-xl font-bold">{formatPrice(coin.price)}</p>
+                <p className="text-xs sm:text-sm font-medium text-gray-400">{coin.symbol}</p>
+                <p className="text-lg sm:text-xl font-bold">{formatPrice(coin.price)}</p>
               </div>
               <div className={`flex items-center space-x-1 ${getChangeColor(coin.change24h)}`}>
                 {getChangeIcon(coin.change24h)}
-                <span className="text-sm font-medium">
+                <span className="text-xs sm:text-sm font-medium">
                   {coin.change24h > 0 ? '+' : ''}{coin.change24h.toFixed(2)}%
                 </span>
               </div>
             </div>
             <div className="mt-2 flex justify-between text-xs text-gray-400">
-              <span>Vol: {formatVolume(coin.volume24h)}</span>
+              <span className="truncate">Vol: {formatVolume(coin.volume24h)}</span>
             </div>
           </div>
         ))}
       </div>
 
       {/* Chart and Controls */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6">
         {/* Controls */}
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           <div>
-            <p className="text-sm font-medium mb-2">Select Coin</p>
-            <div className="grid grid-cols-2 lg:grid-cols-1 gap-2">
+            <p className="text-xs sm:text-sm font-medium mb-2">Select Coin</p>
+            <div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-1 gap-1 sm:gap-2">
               {supportedCoins.map((symbol) => (
                 <Button
                   key={symbol}
@@ -103,8 +103,8 @@ function PriceChartSection() {
           </div>
           
           <div>
-            <p className="text-sm font-medium mb-2">Timeframe</p>
-            <div className="grid grid-cols-2 gap-2">
+            <p className="text-xs sm:text-sm font-medium mb-2">Timeframe</p>
+            <div className="grid grid-cols-2 gap-1 sm:gap-2">
               {['1d', '7d', '30d', '90d'].map((tf) => (
                 <Button
                   key={tf}
@@ -120,12 +120,12 @@ function PriceChartSection() {
         </div>
 
         {/* Chart */}
-        <div className="lg:col-span-3">
-          <div className="mb-4 flex items-center justify-between">
-            <h4 className="text-lg font-semibold">{selectedSymbol} Price Chart</h4>
+        <div className="lg:col-span-3 mt-4 lg:mt-0">
+          <div className="mb-3 sm:mb-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <h4 className="text-base sm:text-lg font-semibold">{selectedSymbol} Price Chart</h4>
             {selectedCoinData && (
-              <div className={`flex items-center space-x-2 ${getChangeColor(selectedCoinData.change24h)}`}>
-                <span className="text-lg font-bold">
+              <div className={`flex items-center space-x-1 sm:space-x-2 ${getChangeColor(selectedCoinData.change24h)}`}>
+                <span className="text-base sm:text-lg font-bold">
                   {formatPrice(selectedCoinData.price)}
                 </span>
                 <span className="text-sm">

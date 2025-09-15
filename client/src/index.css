@@ -112,6 +112,7 @@
     .glass-card {
       backdrop-filter: blur(8px);
       border-radius: 0.375rem;
+      padding: 1rem;
     }
     
     .transaction-card:hover {
@@ -123,14 +124,106 @@
       transition: transform 0.3s ease-in-out;
     }
     
-    .sidebar-mobile.open {
-      transform: translateX(0);
+    /* Better mobile spacing */
+    .mobile-padding {
+      padding-left: 1rem;
+      padding-right: 1rem;
     }
     
-    .mobile-overlay {
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(4px);
+    /* Stack cards vertically on mobile */
+    .mobile-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
     }
+    
+    /* Responsive text sizes */
+    h1 {
+      font-size: 1.75rem;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+    
+    h3 {
+      font-size: 1.25rem;
+    }
+    
+    /* Better touch targets */
+    button, .btn-touch {
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    /* Responsive tables */
+    .responsive-table {
+      display: block;
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    
+    /* Card responsive spacing */
+    .card-mobile {
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    /* Form mobile optimization */
+    .form-mobile {
+      gap: 1rem;
+    }
+    
+    .form-mobile input,
+    .form-mobile select,
+    .form-mobile textarea {
+      min-height: 44px;
+      font-size: 16px; /* Prevents zoom on iOS */
+    }
+    
+    /* Dashboard mobile grid */
+    .dashboard-grid-mobile {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+    
+    /* Price card mobile */
+    .price-card-mobile {
+      width: 100%;
+      margin: 0;
+    }
+    
+    /* Transaction item mobile */
+    .transaction-mobile {
+      flex-direction: column;
+      gap: 0.75rem;
+      padding: 1rem;
+    }
+    
+    /* Hide elements on mobile */
+    .mobile-hidden {
+      display: none;
+    }
+    
+    /* Show elements only on mobile */
+    .mobile-only {
+      display: block;
+    }
+  }
+  
+  @media (min-width: 769px) {
+    .mobile-only {
+      display: none;
+    }
+  }
+  
+  .sidebar-mobile.open {
+    transform: translateX(0);
+  }
+  
+  .mobile-overlay {
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
   }
 
   /* Comprehensive Mobile Optimizations */
