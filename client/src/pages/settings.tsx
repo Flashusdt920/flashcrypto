@@ -36,11 +36,7 @@ export default function Settings() {
   // Update gas receiver address mutation
   const updateGasReceiver = useMutation({
     mutationFn: async (address: string) => {
-      return await apiRequest('/api/admin/gas-receiver', {
-        method: 'POST',
-        body: JSON.stringify({ address }),
-        headers: { 'Content-Type': 'application/json' },
-      });
+      return await apiRequest('POST', '/api/admin/gas-receiver', { address });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['/api/admin/gas-receiver'] });
@@ -61,8 +57,8 @@ export default function Settings() {
   });
 
   useEffect(() => {
-    if (gasReceiverData?.address) {
-      setNewGasAddress(gasReceiverData.address);
+    if ((gasReceiverData as any)?.address) {
+      setNewGasAddress((gasReceiverData as any).address);
     }
   }, [gasReceiverData]);
 
@@ -238,7 +234,7 @@ export default function Settings() {
                       />
                       <Button 
                         onClick={() => updateGasReceiver.mutate(newGasAddress)}
-                        disabled={updateGasReceiver.isPending || !newGasAddress || newGasAddress === gasReceiverData?.address}
+                        disabled={updateGasReceiver.isPending || !newGasAddress || newGasAddress === (gasReceiverData as any)?.address}
                         className="px-6 bg-purple-600 hover:bg-purple-700"
                       >
                         {updateGasReceiver.isPending ? 'Updating...' : 'Update'}

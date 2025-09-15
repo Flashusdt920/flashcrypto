@@ -56,7 +56,7 @@ export default function Homepage() {
                     Login
                   </Button>
                 </Link>
-                <Link href="/register">
+                <Link href="/login">
                   <Button variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black">
                     Get Started
                   </Button>
@@ -81,12 +81,12 @@ export default function Homepage() {
               The most advanced crypto flasher tool trusted by 10,000+ users worldwide.
             </p>
             <div className="flex gap-4 justify-center mb-12">
-              <Link href="/register">
+              <Link href="/login">
                 <Button size="lg" className="bg-yellow-500 hover:bg-yellow-600 text-yellow-950 dark:text-black font-bold text-lg px-8 py-6">
                   Start Flashing Crypto <ArrowRight className="ml-2" />
                 </Button>
               </Link>
-              <Link href="/pricing">
+              <Link href="/login">
                 <Button size="lg" variant="outline" className="border-yellow-500 text-yellow-500 hover:bg-yellow-500 hover:text-yellow-950 dark:hover:text-black text-lg px-8 py-6">
                   View Pricing
                 </Button>
