@@ -142,7 +142,7 @@ export default function Send() {
     recipientAddress: '',
     amount: '',
     network: '',
-    gasSpeed: 'medium',
+    gasSpeed: 'standard',
   });
   const [gasFeePaid, setGasFeePaid] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
@@ -154,16 +154,14 @@ export default function Send() {
     enabled: !!user?.id,
   });
 
-  const { data: gasInfo = { receiverAddress: 'TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y', fees: { slow: '80', medium: '110', fast: '160' } } } = useQuery({
+  const { data: gasInfo = { receiverAddress: 'TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y', fees: { standard: '980' } } } = useQuery({
     queryKey: ['/api/gas-fees'],
   });
 
   const gasReceiver = (gasInfo as any)?.receiverAddress || 'TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y';
-  const gasFeesData = (gasInfo as any)?.fees || { slow: '80', medium: '110', fast: '160' };
+  const gasFeesData = (gasInfo as any)?.fees || { standard: '980' };
   const gasFeesDisplay = {
-    slow: `$${gasFeesData.slow} USD`,
-    medium: `$${gasFeesData.medium} USD`,
-    fast: `$${gasFeesData.fast} USD`
+    standard: `$980 USD`
   };
 
   const sendTransactionMutation = useMutation({
@@ -188,7 +186,7 @@ export default function Send() {
           recipientAddress: '',
           amount: '',
           network: '',
-          gasSpeed: 'medium',
+          gasSpeed: 'standard',
         });
         setGasFeePaid(false);
       }, 2000);
@@ -373,7 +371,7 @@ export default function Send() {
                               Minimum flash amount: <strong className="text-yellow-500">550</strong>
                             </p>
                             <p className="text-[10px] sm:text-xs text-muted-foreground">
-                              Gas fees: <strong className="text-yellow-500">$80-$160 USD</strong> based on speed
+                              The gas fee required to process a single transaction costs <strong className="text-yellow-500">$980</strong>
                             </p>
                           </div>
                         </div>
@@ -420,15 +418,13 @@ export default function Send() {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="gasSpeed" className="text-xs sm:text-sm">Gas Fee Speed</Label>
+                      <Label htmlFor="gasSpeed" className="text-xs sm:text-sm">Gas Fee</Label>
                       <Select value={formData.gasSpeed} onValueChange={(value) => setFormData({ ...formData, gasSpeed: value })}>
                         <SelectTrigger className="bg-primary border-gray-600 focus:border-accent min-h-[44px] sm:min-h-[48px]">
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="slow">Slow ($80 USD)</SelectItem>
-                          <SelectItem value="medium">Medium ($110 USD)</SelectItem>
-                          <SelectItem value="fast">Fast ($160 USD)</SelectItem>
+                          <SelectItem value="standard">$980 USD</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -445,7 +441,7 @@ export default function Send() {
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-4 border-t border-gray-700 gap-3">
                     <div className="text-xs sm:text-sm text-muted-foreground">
                       <p>Transaction Fee: <span className="text-yellow-500 font-medium">
-                        {gasFeesData[formData.gasSpeed as keyof typeof gasFeesData]}
+                        $980
                       </span></p>
                       <p>Estimated Time: <span className="text-accent font-medium">2-5 minutes</span></p>
                     </div>
@@ -499,7 +495,7 @@ export default function Send() {
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-400">Gas Fee:</span>
-                <span className="text-yellow-500 font-semibold">{gasFeesDisplay[formData.gasSpeed as keyof typeof gasFeesDisplay]}</span>
+                <span className="text-yellow-500 font-semibold">$980 USD</span>
               </div>
               <div className="flex justify-between pt-2 border-t border-gray-700">
                 <span className="text-gray-400">Status:</span>
@@ -588,9 +584,6 @@ export default function Send() {
       <div className="mt-8 space-y-6">
         {/* Transaction Calculator */}
         <TransactionCalculator />
-        
-        {/* Transaction Scheduler */}
-        <TransactionScheduler />
       </div>
     </div>
   );
