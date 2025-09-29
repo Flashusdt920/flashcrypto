@@ -35,7 +35,7 @@ export default function Sidebar() {
             {/* Premium Menu Toggle */}
             <button
               onClick={() => setIsOpen(!isOpen)}
-              className="relative p-2.5 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-yellow-500/10 hover:border-yellow-500/30 transition-all duration-300 group min-w-[48px] min-h-[48px]"
+              className="relative p-2 sm:p-2.5 rounded-xl bg-gradient-to-br from-gray-800/50 to-gray-900/50 border border-yellow-500/10 hover:border-yellow-500/30 transition-all duration-300 group w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center"
               aria-label="Toggle menu"
             >
               {isOpen ? (
@@ -48,30 +48,30 @@ export default function Sidebar() {
 
             {/* Premium Brand */}
             <Link href="/home">
-              <div className="flex items-center gap-3 cursor-pointer group">
+              <div className="flex items-center gap-2 sm:gap-3 cursor-pointer group">
                 <div className="relative">
-                  <BoltLogo size={28} className="relative z-10" />
+                  <BoltLogo size={24} className="relative z-10" />
                   <div className="absolute inset-0 bg-yellow-500/30 blur-xl group-hover:bg-yellow-500/50 transition-all duration-300"></div>
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gold-gradient tracking-tight">
+                  <h1 className="text-base sm:text-xl font-bold text-gold-gradient tracking-tight">
                     BOLT FLASHER
                   </h1>
-                  <p className="text-[10px] text-gray-400 uppercase tracking-wider">Enterprise Platform</p>
+                  <p className="text-[9px] sm:text-[10px] text-gray-400 uppercase tracking-wider">Enterprise Platform</p>
                 </div>
               </div>
             </Link>
           </div>
           
-          {/* Premium User Info */}
-          <div className="flex items-center gap-4">
-            <div className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-800/30 to-gray-900/30 border border-yellow-500/10">
+          {/* Premium User Info - Mobile Optimized */}
+          <div className="flex items-center gap-2 sm:gap-4">
+            <div className="hidden lg:flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-gray-800/30 to-gray-900/30 border border-yellow-500/10">
               <div className="status-online"></div>
               <span className="text-xs text-gray-400 uppercase tracking-wider">System Online</span>
             </div>
-            <div className="text-right hidden sm:block">
-              <p className="text-[11px] text-gray-400 uppercase tracking-wider font-medium">Authenticated User</p>
-              <p className="text-sm font-bold text-gold tracking-tight">{user?.username}</p>
+            <div className="text-right">
+              <p className="text-[10px] sm:text-[11px] text-gray-400 uppercase tracking-wider font-medium hidden sm:block">Authenticated User</p>
+              <p className="text-xs sm:text-sm font-bold text-gold tracking-tight">{user?.username}</p>
             </div>
           </div>
         </div>
@@ -86,7 +86,7 @@ export default function Sidebar() {
       )}
 
       {/* Enterprise Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-72 enterprise-sidebar z-50 transform transition-all duration-500 ease-in-out ${
+      <div className={`fixed left-0 top-0 h-full w-64 sm:w-72 enterprise-sidebar z-50 transform transition-all duration-500 ease-in-out ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         {/* Sidebar Header */}

@@ -111,9 +111,9 @@ function AppContent() {
   return (
     <div className="min-h-screen bg-primary text-white">
       <Sidebar />
-      <div className="min-h-screen">
+      <div className="min-h-screen pt-[68px]">
         <Header />
-        <main className="px-2 py-3 sm:p-6 pb-20 pt-20">
+        <main className="px-2 py-3 sm:p-6 pb-20">
           <Switch>
             <Route path="/dashboard" component={Dashboard} />
             <Route path="/home" component={Dashboard} />

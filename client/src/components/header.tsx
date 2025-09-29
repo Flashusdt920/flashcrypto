@@ -68,7 +68,7 @@ export default function Header() {
   };
 
   return (
-    <header className="enterprise-header px-4 sm:px-6 py-4 mt-[68px] relative overflow-hidden">
+    <header className="enterprise-header px-4 sm:px-6 py-4 relative overflow-hidden">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0 bg-gradient-to-br from-yellow-500/10 via-transparent to-yellow-600/10"></div>
@@ -114,8 +114,8 @@ export default function Header() {
         {/* Stats Bar */}
         <div className="flex items-center justify-between pt-3 border-t border-yellow-500/10">
           <div className="flex items-center gap-6">
-            {/* Balance Display */}
-            <div className="flex items-center gap-3">
+            {/* Balance Display - Hidden on Mobile */}
+            <div className="hidden sm:flex items-center gap-3">
               <div className="p-2 rounded-lg bg-gradient-to-br from-green-500/10 to-green-600/5">
                 <TrendingUp className="w-4 h-4 text-green-500" />
               </div>
@@ -134,16 +134,16 @@ export default function Header() {
             </div>
           </div>
           
-          {/* User Profile */}
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <p className="text-[10px] text-gray-500 uppercase tracking-wider hidden sm:block">Current Session</p>
+          {/* User Profile - Responsive */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="text-right hidden sm:block">
+              <p className="text-[10px] text-gray-500 uppercase tracking-wider">Current Session</p>
               <p className="text-sm font-semibold text-yellow-500">
                 {user?.username}
               </p>
             </div>
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 flex items-center justify-center border border-yellow-500/20">
-              <span className="text-sm font-bold text-yellow-500">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-yellow-500/20 to-yellow-600/10 flex items-center justify-center border border-yellow-500/20">
+              <span className="text-xs sm:text-sm font-bold text-yellow-500">
                 {user?.username?.[0]?.toUpperCase()}
               </span>
             </div>
