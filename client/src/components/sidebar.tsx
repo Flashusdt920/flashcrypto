@@ -86,7 +86,7 @@ export default function Sidebar() {
       )}
 
       {/* Enterprise Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-64 sm:w-72 enterprise-sidebar z-50 transform transition-all duration-500 ease-in-out ${
+      <div className={`fixed left-0 top-0 h-full w-64 sm:w-72 enterprise-sidebar z-50 transform transition-all duration-500 ease-in-out flex flex-col ${
         isOpen ? 'translate-x-0' : '-translate-x-full'
       }`}>
         {/* Sidebar Header */}
@@ -111,7 +111,7 @@ export default function Sidebar() {
         </div>
 
         {/* Navigation Section */}
-        <nav className="px-4 py-6 space-y-1">
+        <nav className="px-4 py-6 space-y-1 flex-1 overflow-y-auto">
           <p className="text-[10px] text-gray-500 uppercase tracking-widest font-medium px-3 mb-3">Main Navigation</p>
           
           {allNavItems.map((item) => {
@@ -159,8 +159,8 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* Premium Features Section */}
-        <div className="px-4 py-4 border-t border-yellow-500/10">
+        {/* Premium Features Section - Hidden on Mobile for Space */}
+        <div className="hidden sm:block px-4 py-4 border-t border-yellow-500/10">
           <div className="px-3 py-2">
             <p className="text-[10px] text-gray-500 uppercase tracking-widest font-medium mb-2">Platform Status</p>
             <div className="space-y-2">
@@ -180,8 +180,8 @@ export default function Sidebar() {
           </div>
         </div>
 
-        {/* Logout Section */}
-        <div className="absolute bottom-0 left-0 right-0 px-4 py-6 border-t border-yellow-500/10">
+        {/* Logout Section - No Overlap */}
+        <div className="px-4 py-4 sm:py-6 border-t border-yellow-500/10 mt-auto bg-gray-900/50">
           <button
             onClick={() => {
               logout();
