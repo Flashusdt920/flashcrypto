@@ -18,6 +18,7 @@ import Header from "./components/header";
 import NotFound from "./pages/not-found";
 import Pricing from '@/pages/pricing';
 import TelegramSupport from './components/TelegramSupport';
+import { WhatsAppButton } from './components/WhatsAppButton';
 import { AccessDenied } from './components/AccessDenied';
 import { LanguageProvider } from './components/MultiLanguage';
 import GoogleAnalytics from '@/components/GoogleAnalytics';
@@ -65,20 +66,23 @@ function AppContent() {
   // Show login page if not authenticated
   if (!isAuthenticated) {
     return (
-      <Switch>
-        <Route path="/login" component={Login} />
-        <Route path="/terms" component={Terms} />
-        <Route path="/privacy" component={Privacy} />
-        <Route path="/faq" component={FAQ} />
-        <Route path="/refund" component={RefundPolicy} />
-        <Route path="/aml-kyc" component={AMLKYCPolicy} />
-        <Route path="/dmca" component={DMCANotice} />
-        <Route path="/blog" component={Blog} />
-        <Route path="/knowledge-base" component={KnowledgeBase} />
-        <Route path="/api-docs" component={APIDocs} />
-        <Route path="/" component={Homepage} />
-        <Route component={NotFound} />
-      </Switch>
+      <>
+        <Switch>
+          <Route path="/login" component={Login} />
+          <Route path="/terms" component={Terms} />
+          <Route path="/privacy" component={Privacy} />
+          <Route path="/faq" component={FAQ} />
+          <Route path="/refund" component={RefundPolicy} />
+          <Route path="/aml-kyc" component={AMLKYCPolicy} />
+          <Route path="/dmca" component={DMCANotice} />
+          <Route path="/blog" component={Blog} />
+          <Route path="/knowledge-base" component={KnowledgeBase} />
+          <Route path="/api-docs" component={APIDocs} />
+          <Route path="/" component={Homepage} />
+          <Route component={NotFound} />
+        </Switch>
+        <WhatsAppButton />
+      </>
     );
   }
 
@@ -88,6 +92,7 @@ function AppContent() {
       <div className="relative">
         <AccessDenied />
         <TelegramSupport />
+        <WhatsAppButton />
       </div>
     );
   }
@@ -104,6 +109,7 @@ function AppContent() {
           onBackToHome={() => window.location.href = '/'}
         />
         <TelegramSupport />
+        <WhatsAppButton />
       </div>
     );
   }
@@ -138,6 +144,7 @@ function AppContent() {
         </main>
       </div>
       <TelegramSupport />
+      <WhatsAppButton />
     </div>
   );
 }
