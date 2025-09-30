@@ -10,7 +10,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiRequest } from '@/lib/queryClient';
 import { Copy, Check, Star, Quote, LogOut, Home } from 'lucide-react';
 import QRCode from 'qrcode';
-import PromoCode from '@/components/PromoCode';
 
 interface PricingProps {
   user: any;
@@ -142,26 +141,44 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
 
   const usdtAddress = "TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y";
 
-  // Single premium plan
-  const premiumPlan = {
-    id: 'premium',
-    name: 'Premium Access',
-    price: '7500',
-    features: [
-      'Unlimited Flash Transactions',
-      'All Networks Supported (BTC, ETH, USDT, BNB, TRX)',
-      'Priority 24/7 Support',
-      'Advanced Security Features',
-      'Bulk Transaction Processing',
-      'Transaction Templates',
-      'Portfolio Tracker',
-      'Price Alerts & Notifications',
-      'API Access',
-      'Affiliate Program Access',
-      'Custom Integration Support',
-      'Lifetime Updates'
-    ]
-  };
+  // Subscription plans
+  const plans = [
+    {
+      id: 'standard',
+      name: 'Standard Access',
+      price: '2500',
+      features: [
+        'Flash Transactions (500 per month)',
+        'Basic Networks (BTC, ETH, USDT)',
+        'Standard Support',
+        'Basic Security Features',
+        'Single Transaction Processing',
+        'Basic Templates',
+        'Dashboard Access',
+        'Email Notifications',
+        'Monthly Updates'
+      ]
+    },
+    {
+      id: 'premium',
+      name: 'Premium Access',
+      price: '7500',
+      features: [
+        'Unlimited Flash Transactions',
+        'All Networks Supported (BTC, ETH, USDT, BNB, TRX)',
+        'Priority 24/7 Support',
+        'Advanced Security Features',
+        'Bulk Transaction Processing',
+        'Transaction Templates',
+        'Portfolio Tracker',
+        'Price Alerts & Notifications',
+        'API Access',
+        'Affiliate Program Access',
+        'Custom Integration Support',
+        'Lifetime Updates'
+      ]
+    }
+  ];
 
   // Generate QR code for USDT address
   useEffect(() => {
@@ -278,16 +295,6 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
               )}
             </div>
 
-            {/* Promo Code Section */}
-            <PromoCode 
-              onApply={(discount) => {
-                toast({
-                  title: "Promo Code Applied!",
-                  description: `You saved ${discount}% on your subscription`,
-                });
-              }}
-            />
-
             <div className="space-y-2">
               <Label htmlFor="txHash" className="text-white">Transaction Hash</Label>
               <Input
@@ -369,38 +376,56 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
           <p className="text-gray-300 text-xs sm:text-sm lg:text-base px-2">Welcome {user.username}! Unlock full platform access with our premium plan</p>
         </div>
         
-        <div className="flex justify-center mb-12">
-          <Card 
-            className="w-full max-w-2xl bg-black bg-opacity-50 border border-purple-500 shadow-2xl hover:shadow-purple-500/20 transition-all transform scale-105"
-          >
-            <CardHeader className="text-center p-4 sm:p-6 lg:p-8">
-              <div className="bg-gradient-to-r from-purple-500 to-violet-500 text-white text-xs sm:text-sm font-bold py-1.5 sm:py-2 px-3 sm:px-4 rounded-full mb-3 sm:mb-4 inline-block">
-                LIFETIME ACCESS
-              </div>
-              <CardTitle className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-2">{premiumPlan.name}</CardTitle>
-              <div className="text-3xl sm:text-4xl lg:text-5xl font-bold text-purple-400">${premiumPlan.price}</div>
-              <p className="text-gray-400 text-xs sm:text-sm mt-2">One-time USDT Payment</p>
-            </CardHeader>
-            <CardContent className="p-6 sm:p-8">
-              <ul className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-                {premiumPlan.features.map((feature: string, index: number) => (
-                  <li key={index} className="flex items-center text-gray-300 text-base sm:text-lg">
-                    <Check className="w-5 h-5 text-green-500 mr-3 flex-shrink-0" />
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              <Button
-                onClick={() => handlePlanSelect(premiumPlan)}
-                className="w-full text-lg sm:text-xl bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white py-6"
-              >
-                Get Premium Access Now
-              </Button>
-              <p className="text-center text-gray-400 text-sm mt-4">
-                ⚡ Instant activation after payment approval
-              </p>
-            </CardContent>
-          </Card>
+        <div className="grid md:grid-cols-2 gap-6 sm:gap-8 mb-12">
+          {plans.map((plan, index) => (
+            <Card 
+              key={plan.id}
+              className={`bg-black bg-opacity-50 border ${
+                plan.id === 'premium' 
+                  ? 'border-purple-500 shadow-2xl hover:shadow-purple-500/20 transform scale-105' 
+                  : 'border-gray-600 shadow-xl hover:shadow-gray-500/20'
+              } transition-all`}
+            >
+              <CardHeader className="text-center p-4 sm:p-6 lg:p-8">
+                {plan.id === 'premium' && (
+                  <div className="bg-gradient-to-r from-purple-500 to-violet-500 text-white text-xs sm:text-sm font-bold py-1.5 sm:py-2 px-3 sm:px-4 rounded-full mb-3 sm:mb-4 inline-block">
+                    MOST POPULAR
+                  </div>
+                )}
+                {plan.id === 'standard' && (
+                  <div className="bg-gradient-to-r from-gray-500 to-gray-600 text-white text-xs sm:text-sm font-bold py-1.5 sm:py-2 px-3 sm:px-4 rounded-full mb-3 sm:mb-4 inline-block">
+                    STARTER
+                  </div>
+                )}
+                <CardTitle className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2">{plan.name}</CardTitle>
+                <div className="text-2xl sm:text-3xl lg:text-4xl font-bold text-purple-400">${plan.price}</div>
+                <p className="text-gray-400 text-xs sm:text-sm mt-2">One-time USDT Payment</p>
+              </CardHeader>
+              <CardContent className="p-4 sm:p-6">
+                <ul className="space-y-2 sm:space-y-3 mb-4 sm:mb-6">
+                  {plan.features.map((feature: string, index: number) => (
+                    <li key={index} className="flex items-center text-gray-300 text-sm sm:text-base">
+                      <Check className="w-4 h-4 text-green-500 mr-2 flex-shrink-0" />
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+                <Button
+                  onClick={() => handlePlanSelect(plan)}
+                  className={`w-full text-base sm:text-lg ${
+                    plan.id === 'premium'
+                      ? 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700'
+                      : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800'
+                  } text-white py-4 sm:py-5`}
+                >
+                  Get {plan.name}
+                </Button>
+                <p className="text-center text-gray-400 text-xs sm:text-sm mt-3">
+                  ⚡ Instant activation after payment
+                </p>
+              </CardContent>
+            </Card>
+          ))}
         </div>
 
         {/* Testimonials Section */}

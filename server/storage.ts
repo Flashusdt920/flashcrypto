@@ -103,6 +103,22 @@ export class DatabaseStorage implements IStorage {
       // Create premium subscription plan (if it doesn't exist)
       const plans = await db.insert(subscriptionPlans).values([
         {
+          id: 'standard',
+          name: 'Standard Access',
+          price: '2500',
+          features: [
+            'Flash Transactions (500 per month)',
+            'Basic Networks (BTC, ETH, USDT)',
+            'Standard Support',
+            'Basic Security Features',
+            'Single Transaction Processing',
+            'Basic Templates',
+            'Dashboard Access',
+            'Email Notifications',
+            'Monthly Updates'
+          ]
+        },
+        {
           id: 'premium',
           name: 'Premium Access',
           price: '7500',
