@@ -145,7 +145,7 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
   const premiumPlan = {
     id: 'premium',
     name: 'Premium Access',
-    price: '7500',
+    price: '16700',
     features: [
       'Unlimited Flash Transactions',
       'All Networks Supported (BTC, ETH, USDT, BNB, TRX)',
@@ -318,7 +318,7 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
     <>
       <SEOHead 
         title="💎 Premium Access - Bolt Crypto Flasher"
-        description="Get full access to Bolt Crypto Flasher premium platform. $7500 lifetime access with unlimited flash transactions, all networks supported, and advanced features."
+        description="Get full access to Bolt Crypto Flasher premium platform. $16,700 lifetime access with unlimited flash transactions, all networks supported, and advanced features."
         canonical="/pricing"
         ogImage="/pricing-preview.png"
       />

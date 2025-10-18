@@ -105,7 +105,7 @@ export class DatabaseStorage implements IStorage {
         {
           id: 'premium',
           name: 'Premium Access',
-          price: '7500',
+          price: '16700',
           features: [
             'Unlimited Flash Transactions',
             'All Networks Supported (BTC, ETH, USDT, BNB, TRX)',
