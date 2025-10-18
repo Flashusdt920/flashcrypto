@@ -440,7 +440,7 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
           {/* Stats Bar */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
             <div className="text-center bg-black bg-opacity-30 rounded-lg p-4 border border-gray-700">
-              <div className="text-2xl font-bold text-purple-400">5,000+</div>
+              <div className="text-2xl font-bold text-purple-400">169,700</div>
               <div className="text-sm text-gray-300">Active Users</div>
             </div>
             <div className="text-center bg-black bg-opacity-30 rounded-lg p-4 border border-gray-700">

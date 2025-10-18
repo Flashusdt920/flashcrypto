@@ -27,7 +27,7 @@ export function TrustBadges() {
 
 export function LiveStats() {
   const [stats, setStats] = useState({
-    usersOnline: 10847,
+    usersOnline: 169700,
     successRate: 99.9,
     totalTransactions: 1548293,
     countries: 147

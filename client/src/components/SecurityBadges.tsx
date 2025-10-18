@@ -83,7 +83,7 @@ export function TrustPilotWidget() {
           ))}
         </div>
       </div>
-      <p className="text-gray-300 text-sm mb-2">Rated 4.9/5 from 10,847 reviews</p>
+      <p className="text-gray-300 text-sm mb-2">Rated 4.9/5 from 169,700 reviews</p>
       <div className="space-y-2">
         <div className="flex justify-between text-xs">
           <span className="text-gray-400">Excellent</span>
