@@ -324,6 +324,44 @@ export default function Pricing({ user, onSubscriptionComplete, onLogout, onBack
       />
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-900 flex items-center justify-center p-2 sm:p-3 lg:p-4">
       <div className="w-full max-w-6xl px-2 sm:px-4">
+        {/* Maintenance Complete Notice */}
+        <div className="mb-6 sm:mb-8">
+          <Card className="bg-gradient-to-r from-green-900/40 to-green-800/40 border border-green-500/30 backdrop-blur-sm">
+            <CardContent className="p-4 sm:p-6">
+              <div className="flex items-start space-x-3">
+                <div className="flex-shrink-0">
+                  <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <Check className="w-6 h-6 text-green-400" />
+                  </div>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-lg sm:text-xl font-bold text-green-400 mb-2">
+                    System Maintenance Complete ✅
+                  </h3>
+                  <p className="text-gray-200 text-sm sm:text-base leading-relaxed mb-3">
+                    We're pleased to announce that our scheduled maintenance is now complete! All new upgrades have been successfully implemented and are fully operational. The platform is running better than ever with enhanced performance, improved security, and new advanced features.
+                  </p>
+                  <div className="bg-black/30 rounded-lg p-3 sm:p-4 border border-yellow-500/20">
+                    <p className="text-yellow-300 text-sm sm:text-base mb-2">
+                      <strong>Important Note About Pricing:</strong>
+                    </p>
+                    <p className="text-gray-300 text-sm leading-relaxed">
+                      We sincerely apologize for the price adjustment to $16,700. This increase reflects the significant infrastructure upgrades, enhanced security measures, and premium features we've added to ensure you receive the highest quality service. We understand this may be unexpected, and we deeply value your continued trust in our platform.
+                    </p>
+                    <p className="text-gray-200 text-sm mt-3 font-medium">
+                      We would be honored to continue serving you and helping you achieve your cryptocurrency goals. Your success is our priority, and we're committed to providing exceptional value that exceeds your investment.
+                    </p>
+                  </div>
+                  <div className="mt-4 flex items-center space-x-2">
+                    <div className="h-2 w-2 bg-green-400 rounded-full animate-pulse"></div>
+                    <span className="text-green-400 text-sm font-medium">All Systems Operational</span>
+                  </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Header with Navigation Buttons */}
         <div className="flex justify-between items-center mb-6 sm:mb-8">
           <div className="flex gap-3">
