@@ -1,50 +1,41 @@
-import React, { lazy, Suspense } from "react";
+import React from "react";
 import { Route, Switch, useLocation, Redirect } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider, useAuth } from "./hooks/use-auth";
-import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
-import { useEffect } from 'react';
-import { lazyLoad, PageLoader } from './utils/lazyLoad';
-
-// Critical components loaded immediately
 import Login from "./pages/login";
 import Homepage from "./pages/homepage";
+import Dashboard from "./pages/dashboard";
+import Send from "./pages/send";
+import History from "./pages/history";
+import Charts from "./pages/charts";
+import Settings from "./pages/settings";
+import AdminPanel from "./pages/admin";
+import Sidebar from "./components/sidebar";
+import Header from "./components/header";
+import NotFound from "./pages/not-found";
+import Pricing from '@/pages/pricing';
+import TelegramSupport from './components/TelegramSupport';
 import { WhatsAppButton } from './components/WhatsAppButton';
-
-// Lazy load heavy components
-const Dashboard = lazyLoad(() => import("./pages/dashboard"));
-const Send = lazyLoad(() => import("./pages/send"));
-const History = lazyLoad(() => import("./pages/history"));
-const Charts = lazyLoad(() => import("./pages/charts"));
-const Settings = lazyLoad(() => import("./pages/settings"));
-const AdminPanel = lazyLoad(() => import("./pages/admin"));
-const Sidebar = lazy(() => import("./components/sidebar"));
-const Header = lazy(() => import("./components/header"));
-const NotFound = lazyLoad(() => import("./pages/not-found"));
-const Pricing = lazyLoad(() => import('@/pages/pricing'));
-const TelegramSupport = lazy(() => import('./components/TelegramSupport'));
-const AccessDenied = lazy(() => import('./components/AccessDenied').then(m => ({ default: m.AccessDenied })));
-const LanguageProvider = lazy(() => import('./components/MultiLanguage').then(m => ({ default: m.LanguageProvider })));
-const GoogleAnalytics = lazy(() => import('@/components/GoogleAnalytics'));
-
-// Lazy load legal pages
-const Terms = lazyLoad(() => import('./pages/terms'));
-const Privacy = lazyLoad(() => import('./pages/privacy'));
-const FAQ = lazyLoad(() => import('./pages/faq'));
-const RefundPolicy = lazyLoad(() => import('./pages/refund'));
-const AMLKYCPolicy = lazyLoad(() => import('./pages/aml-kyc'));
-const DMCANotice = lazyLoad(() => import('./pages/dmca'));
-const Blog = lazyLoad(() => import('./pages/blog'));
-const KnowledgeBase = lazyLoad(() => import('./pages/knowledge-base'));
-const APIDocs = lazyLoad(() => import('./pages/api-docs'));
-
-// Lazy load heavy UI components
-const CookieConsent = lazy(() => import('./components/CookieConsent'));
-const AgeVerification = lazy(() => import('./components/AgeVerification'));
-const ExitIntentPopup = lazy(() => import('./components/ExitIntentPopup'));
+import { AccessDenied } from './components/AccessDenied';
+import { LanguageProvider } from './components/MultiLanguage';
+import GoogleAnalytics from '@/components/GoogleAnalytics';
+import Terms from './pages/terms';
+import Privacy from './pages/privacy';
+import FAQ from './pages/faq';
+import RefundPolicy from './pages/refund';
+import AMLKYCPolicy from './pages/aml-kyc';
+import DMCANotice from './pages/dmca';
+import Blog from './pages/blog';
+import KnowledgeBase from './pages/knowledge-base';
+import APIDocs from './pages/api-docs';
+import CookieConsent from './components/CookieConsent';
+import AgeVerification from './components/AgeVerification';
+import ExitIntentPopup from './components/ExitIntentPopup';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useEffect } from 'react';
 
 function AppContent() {
   useKeyboardShortcuts();
@@ -52,6 +43,7 @@ function AppContent() {
   
   // Initialize dark mode by default
   useEffect(() => {
+    // Check if theme is already set, if not, default to dark
     if (!localStorage.getItem('theme')) {
       localStorage.setItem('theme', 'dark');
       document.documentElement.classList.add('dark');
@@ -98,16 +90,15 @@ function AppContent() {
   if (isAuthenticated && subscriptionStatus === 'rejected') {
     return (
       <div className="relative">
-        <Suspense fallback={<PageLoader />}>
-          <AccessDenied />
-          <TelegramSupport />
-        </Suspense>
+        <AccessDenied />
+        <TelegramSupport />
         <WhatsAppButton />
       </div>
     );
   }
 
   // If user is authenticated but doesn't have active subscription, show pricing
+  // This applies to all users except admins
   if (isAuthenticated && !hasActiveSubscription) {
     return (
       <div className="relative">
@@ -117,9 +108,7 @@ function AppContent() {
           onLogout={logout}
           onBackToHome={() => window.location.href = '/'}
         />
-        <Suspense fallback={null}>
-          <TelegramSupport />
-        </Suspense>
+        <TelegramSupport />
         <WhatsAppButton />
       </div>
     );
@@ -127,13 +116,9 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-primary text-white">
-      <Suspense fallback={<PageLoader />}>
-        <Sidebar />
-      </Suspense>
+      <Sidebar />
       <div className="min-h-screen pt-[68px]">
-        <Suspense fallback={null}>
-          <Header />
-        </Suspense>
+        <Header />
         <main className="px-2 py-3 sm:p-6 pb-20">
           <Switch>
             <Route path="/dashboard" component={Dashboard} />
@@ -158,16 +143,14 @@ function AppContent() {
           </Switch>
         </main>
       </div>
-      <Suspense fallback={null}>
-        <TelegramSupport />
-      </Suspense>
+      <TelegramSupport />
       <WhatsAppButton />
     </div>
   );
 }
 
 function App() {
-  // Open Telegram link when app visibility changes
+  // Open Telegram link when app visibility changes (user leaves/closes tab)
   React.useEffect(() => {
     let hasOpenedTelegram = false;
 
@@ -187,24 +170,18 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <Suspense fallback={<PageLoader />}>
-        <LanguageProvider>
-          <AuthProvider>
-            <TooltipProvider>
-              <Suspense fallback={null}>
-                <GoogleAnalytics />
-              </Suspense>
-              <Toaster />
-              <Suspense fallback={null}>
-                <AgeVerification />
-                <CookieConsent />
-                <ExitIntentPopup />
-              </Suspense>
-              <AppContent />
-            </TooltipProvider>
-          </AuthProvider>
-        </LanguageProvider>
-      </Suspense>
+      <LanguageProvider>
+        <AuthProvider>
+          <TooltipProvider>
+            <GoogleAnalytics />
+            <Toaster />
+            <AgeVerification />
+            <CookieConsent />
+            <ExitIntentPopup />
+            <AppContent />
+          </TooltipProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </QueryClientProvider>
   );
 }
