@@ -1,12 +1,11 @@
 import { MessageCircle } from 'lucide-react';
 
 export function WhatsAppButton() {
-  const whatsappNumber = "46766923514";
-  const defaultMessage = "Hello, I need assistance with Bolt Flasher.";
+  // Direct WhatsApp message link for Alex
+  const whatsappMessageLink = "https://wa.me/message/DRQEAFSUHZMLC1";
   
   const handleWhatsAppClick = () => {
-    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(defaultMessage)}`;
-    window.open(whatsappUrl, '_blank');
+    window.open(whatsappMessageLink, '_blank');
   };
 
   return (
@@ -37,7 +36,7 @@ export function WhatsAppButton() {
       <div className="absolute bottom-full right-0 mb-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
         <div className="bg-gray-900 text-white text-xs rounded-lg py-2 px-3 whitespace-nowrap border border-gray-700">
           <div className="font-semibold">Need Help?</div>
-          <div className="text-gray-300">Chat with Support</div>
+          <div className="text-gray-300">Message Alex on WhatsApp</div>
           <div className="absolute top-full right-4 transform -translate-x-1/2 w-0 h-0 border-l-4 border-l-transparent border-r-4 border-r-transparent border-t-4 border-t-gray-900"></div>
         </div>
       </div>
