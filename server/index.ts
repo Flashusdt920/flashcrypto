@@ -5,6 +5,14 @@ import { setupVite, serveStatic, log } from "./vite";
 
 const app = express();
 
+// IMPORTANT: Serve Google verification file FIRST before ANY middleware
+// This prevents any redirects or middleware from interfering
+app.get('/google4c248d7f08aff326.html', (_req: Request, res: Response) => {
+  res.status(200);
+  res.type('text/html');
+  res.send('google-site-verification: google4c248d7f08aff326.html');
+});
+
 // Configure CORS to allow all origins and methods
 app.use(cors({
   origin: true, // Allow all origins
@@ -48,12 +56,6 @@ app.use((req, res, next) => {
 
 (async () => {
   const server = await registerRoutes(app);
-
-  // Serve Google verification file directly BEFORE Vite
-  app.get('/google4c248d7f08aff326.html', (_req: Request, res: Response) => {
-    res.type('text/html');
-    res.send('google-site-verification: google4c248d7f08aff326.html');
-  });
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
