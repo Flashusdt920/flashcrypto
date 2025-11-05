@@ -1,0 +1,55 @@
+{
+  "appId": "com.boltflasher.app",
+  "productName": "Bolt Flasher",
+  "directories": {
+    "output": "dist-electron",
+    "buildResources": "electron/assets"
+  },
+  "files": [
+    "electron/**/*",
+    "dist/**/*",
+    "server/public/**/*",
+    "node_modules/**/*",
+    "!node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}",
+    "!node_modules/*/{test,__tests__,tests,powered-test,example,examples}",
+    "!node_modules/**/*.d.ts",
+    "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}",
+    "!.editorconfig",
+    "!**/._*",
+    "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}",
+    "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}",
+    "!**/{appveyor.yml,.travis.yml,circle.yml}",
+    "!**/{npm-debug.log,yarn.lock,.yarn-integrity,.yarn-metadata.json}"
+  ],
+  "win": {
+    "target": [
+      {
+        "target": "nsis",
+        "arch": ["x64"]
+      },
+      {
+        "target": "portable",
+        "arch": ["x64"]
+      }
+    ],
+    "icon": "client/public/bolt-logo-256.png"
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "installerIcon": "client/public/bolt-logo-256.png",
+    "uninstallerIcon": "client/public/bolt-logo-256.png",
+    "installerHeaderIcon": "client/public/bolt-logo-256.png",
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true,
+    "shortcutName": "Bolt Flasher"
+  },
+  "mac": {
+    "target": "dmg",
+    "icon": "client/public/bolt-logo-256.png"
+  },
+  "linux": {
+    "target": "AppImage",
+    "icon": "client/public/bolt-logo-256.png"
+  }
+}
