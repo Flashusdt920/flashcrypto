@@ -1,35 +1,94 @@
-const { app, BrowserWindow, shell } = require('electron');
+const { app, BrowserWindow, Menu, shell, dialog } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
-const isDev = process.env.NODE_ENV === 'development';
+const isDev = require('electron-is-dev');
 
 let mainWindow;
 let serverProcess;
 
 function createWindow() {
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
-    minWidth: 800,
-    minHeight: 600,
+    width: 1400,
+    height: 900,
+    minWidth: 1000,
+    minHeight: 700,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
       webSecurity: true
     },
-    icon: path.join(__dirname, 'assets', 'icon.png'),
+    icon: path.join(__dirname, '..', 'client', 'public', 'bolt-logo-256.png'),
     titleBarStyle: 'default',
     show: false,
-    title: 'Bolt Crypto Flasher'
+    title: 'Bolt Flasher - Professional Cryptocurrency Flash Platform',
+    backgroundColor: '#1a1a1a'
   });
+
+  // Set custom menu
+  const menu = Menu.buildFromTemplate([
+    {
+      label: 'File',
+      submenu: [
+        {
+          label: 'Home',
+          click: () => mainWindow.loadURL('http://localhost:5000/home')
+        },
+        {
+          label: 'Dashboard',
+          click: () => mainWindow.loadURL('http://localhost:5000/dashboard')
+        },
+        { type: 'separator' },
+        {
+          label: 'Exit',
+          click: () => app.quit()
+        }
+      ]
+    },
+    {
+      label: 'View',
+      submenu: [
+        { role: 'reload' },
+        { role: 'forceReload' },
+        { type: 'separator' },
+        { role: 'resetZoom' },
+        { role: 'zoomIn' },
+        { role: 'zoomOut' },
+        { type: 'separator' },
+        { role: 'togglefullscreen' }
+      ]
+    },
+    {
+      label: 'Help',
+      submenu: [
+        {
+          label: 'Support',
+          click: () => shell.openExternal('https://t.me/Henryphilipbolt')
+        },
+        {
+          label: 'About',
+          click: () => {
+            dialog.showMessageBox(mainWindow, {
+              type: 'info',
+              title: 'About Bolt Flasher',
+              message: 'Bolt Flasher',
+              detail: 'Version 1.0.0\n\nProfessional Cryptocurrency Flash Platform\n\n© 2025 Bolt Flasher. All rights reserved.',
+              buttons: ['OK']
+            });
+          }
+        }
+      ]
+    }
+  ]);
+
+  Menu.setApplicationMenu(menu);
 
   // Start the Express server
   startServer();
 
   // Load the app after a short delay to ensure server is ready
   setTimeout(() => {
-    mainWindow.loadURL('http://localhost:5000');
+    mainWindow.loadURL('http://localhost:5000/home');
   }, 3000);
 
   mainWindow.once('ready-to-show', () => {
