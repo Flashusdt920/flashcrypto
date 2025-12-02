@@ -160,9 +160,7 @@ npm run build:all
 
 ## 🔑 Default Credentials
 
-### Admin Accounts
-- **Username**: `admin` | **Password**: `usdt123`
-- **Username**: `SoftwareHenry` | **Password**: `Rmabuw190`
+
 
 ### Test Wallet
 - **Flash Fee Address**: `TQm8yS3XZHgXiHMtMWbrQwwmLCztyvAG8y`
@@ -256,7 +254,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📈 SEO Keywords
 
-Flash USDT, Flash BTC, Flash ETH, Crypto Flasher, Temporary Crypto, USDT TRC20, USDT ERC20, BEP20, Flash Loan, Flash Mint, Flash Swap, Blockchain Flash Tools, Cryptocurrency Flash Software
+
 
 ---
 
