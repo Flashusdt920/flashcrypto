@@ -1,5 +1,6 @@
 // Offline storage implementation for production exe builds
 import type { IStorage } from "./storage";
+import { buildFallbackNetworkConfigs } from "./default-data";
 import { 
   type User, type InsertUser, type UpdateUser,
   type Wallet, type InsertWallet,
@@ -227,7 +228,7 @@ class OfflineStorage implements IStorage {
   }
 
   async getNetworkConfigs() {
-    return [];
+    return buildFallbackNetworkConfigs();
   }
 
   async getMarketData() {

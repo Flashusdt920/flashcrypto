@@ -11,6 +11,7 @@ import { db } from './db';
 import { eq, and, sql } from 'drizzle-orm';
 import { randomUUID } from "crypto";
 import { offlineStorage } from './offline-storage';
+import { DEFAULT_NETWORK_CONFIGS, buildFallbackNetworkConfigs } from './default-data';
 
 export interface IStorage {
   // User operations
@@ -124,40 +125,7 @@ export class DatabaseStorage implements IStorage {
       ]).onConflictDoNothing().returning();
 
       // Initialize network configurations
-      await db.insert(networkConfigs).values([
-        {
-          network: "ETH",
-          name: "Ethereum",
-          rpcUrl: "https://mainnet.infura.io/v3/YOUR_INFURA_KEY",
-          chainId: "1",
-          blockExplorer: "https://etherscan.io",
-          nativeCurrency: "ETH"
-        },
-        {
-          network: "BSC",
-          name: "BNB Smart Chain", 
-          rpcUrl: "https://bsc-dataseed1.binance.org",
-          chainId: "56",
-          blockExplorer: "https://bscscan.com",
-          nativeCurrency: "BNB"
-        },
-        {
-          network: "TRX",
-          name: "TRON",
-          rpcUrl: "https://api.trongrid.io",
-          chainId: "mainnet",
-          blockExplorer: "https://tronscan.org",
-          nativeCurrency: "TRX"
-        },
-        {
-          network: "BTC",
-          name: "Bitcoin",
-          rpcUrl: "https://blockstream.info/api",
-          chainId: "mainnet", 
-          blockExplorer: "https://blockstream.info",
-          nativeCurrency: "BTC"
-        }
-      ]).onConflictDoNothing().returning();
+      await this.seedDefaultNetworkConfigs();
 
       // Get or verify the premium plan exists
       let premiumPlan = plans[0];
@@ -263,6 +231,17 @@ export class DatabaseStorage implements IStorage {
       }
     } catch (error) {
       console.error("Error initializing default data:", error);
+    }
+  }
+
+  private async seedDefaultNetworkConfigs() {
+    try {
+      if (!db) return;
+      await db.insert(networkConfigs)
+        .values(DEFAULT_NETWORK_CONFIGS)
+        .onConflictDoNothing();
+    } catch (error) {
+      console.error('Error seeding default network configurations:', error);
     }
   }
 
@@ -542,7 +521,24 @@ export class DatabaseStorage implements IStorage {
 
   // Network configuration operations
   async getNetworkConfigs(): Promise<NetworkConfig[]> {
-    return await db.select().from(networkConfigs).where(eq(networkConfigs.isActive, true));
+    if (!db) {
+      return buildFallbackNetworkConfigs();
+    }
+
+    let configs = await db
+      .select()
+      .from(networkConfigs)
+      .where(eq(networkConfigs.isActive, true));
+
+    if (configs.length === 0) {
+      await this.seedDefaultNetworkConfigs();
+      configs = await db
+        .select()
+        .from(networkConfigs)
+        .where(eq(networkConfigs.isActive, true));
+    }
+
+    return configs.length > 0 ? configs : buildFallbackNetworkConfigs();
   }
 
   async updateWalletBalance(walletId: string, balance: string): Promise<void> {
